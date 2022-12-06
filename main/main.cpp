@@ -46,6 +46,7 @@ void app_main(void)
     // printf("OGN Tracker on ESP32\n");
 
     CONS_UART_Init();
+    printf("OGN Tracker on ESP32\n");
     CONS_Mutex = xSemaphoreCreateMutex();    // semaphore for sharing the writing to the console
     I2C_Mutex  = xSemaphoreCreateMutex();    // semaphore for sharing the I2C bus
 #ifdef WITH_AXP
