@@ -13,7 +13,7 @@
 #include "driver/adc.h"
 #include "esp_adc_cal.h"
 
-#if ESP_IDF_VERSION_MINOR>=3
+#if ESP_IDF_VERSION_MAJOR==4 && ESP_IDF_VERSION_MINOR>=3 || ESP_IDF_VERSION_MAJOR>4
 #include "soc/adc_channel.h" // v4.3
 #endif
 
@@ -222,6 +222,9 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 #if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2)
 #define PIN_LED_PCB  GPIO_NUM_25  // status LED on the PCB: 25, GPIO25 is DAC2
 #endif
+#if defined(WITH_HELTEC_V3)
+#define PIN_LED_PCB  GPIO_NUM_35  // status LED on the PCB: 35
+#endif
 
 #if defined(WITH_TBEAM) // || defined(WITH_TBEAM_V10)
 #define PIN_LED_PCB  GPIO_NUM_14  // blue LED on the PCB: 14
@@ -271,6 +274,16 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 #define PIN_RFM_MOSI GPIO_NUM_27  // SPI MOSI
 #endif // HELTEC TTGO
 
+#if defined(WITH_HELTEC_V3)
+#define PIN_RFM_RST  GPIO_NUM_12  // Reset
+#define PIN_RFM_IRQ  GPIO_NUM_14  // packet done on receive or transmit
+#define PIN_RFM_SS   GPIO_NUM_8  // SPI chip-select
+#define PIN_RFM_SCK  GPIO_NUM_9   // SPI clock
+#define PIN_RFM_MISO GPIO_NUM_11  // SPI MISO
+#define PIN_RFM_MOSI GPIO_NUM_10  // SPI MOSI
+#define PIN_RFM_BUSY GPIO_NUM_13  // for the Heltec V3 with SX1262
+#endif // HELTEC TTGO
+
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10) || defined(WITH_LORA32)
 #define PIN_RFM_RST  GPIO_NUM_23  // Reset - not clear if T-Beam is using it, or maybe only the older version
 #define PIN_RFM_IRQ  GPIO_NUM_26  // packet done on receive or transmit
@@ -313,7 +326,7 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 // #define PIN_RFM_RST  GPIO_NUM_4   // RFM RESET
 #endif
 
-#define RFM_SPI_HOST  VSPI_HOST   // or H or VSPI_HOST ?
+#define RFM_SPI_HOST  SPI3_HOST   // or H or VSPI_HOST ?
 #define RFM_SPI_DMA   1           // DMA channel
 #define RFM_SPI_SPEED 4000000     // [Hz] 2MHz SPI clock rate for RF chip
 
@@ -376,6 +389,13 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 #define PIN_GPS_TXD  GPIO_NUM_13  // green     green    green
 #define PIN_GPS_RXD  GPIO_NUM_39 // blue      yellow   yellow
 #define PIN_GPS_PPS  GPIO_NUM_38 // white     blue
+#endif
+
+#if defined(WITH_HELTEC_V3)
+                                  // VK2828U   GN-801   MAVlink
+#define PIN_GPS_TXD  GPIO_NUM_4  // green     green    green
+#define PIN_GPS_RXD  GPIO_NUM_5 // blue      yellow   yellow
+#define PIN_GPS_PPS  GPIO_NUM_6 // white     blue
 #endif
 
 // Note: I had a problem with GPS ENABLE on GPIO13, thus I tied the enable wire to 3.3V for the time being.
@@ -441,6 +461,13 @@ uint8_t BARO_I2C = (uint8_t)I2C_BUS;
 #define PIN_OLED_RST GPIO_NUM_16  // OLED RESET: low-active
 #endif // HELTEC || TTGO
 
+#if defined(WITH_HELTEC_V3)
+#define PIN_I2C_SCL GPIO_NUM_18   // SCL pin
+#define PIN_I2C_SDA GPIO_NUM_17    // SDA pin
+#define OLED_I2C_ADDR 0x3C        // I2C address of the OLED display
+#define PIN_OLED_RST GPIO_NUM_21  // OLED RESET: low-active
+#endif // HELTECv3
+
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10) || defined(WITH_LORA32) // T-Beam
 #define PIN_I2C_SCL GPIO_NUM_22   // SCL pin => this way the pin pattern fits the BMP280 module
 #define PIN_I2C_SDA GPIO_NUM_21   // SDA pin
@@ -490,6 +517,10 @@ uint8_t BARO_I2C = (uint8_t)I2C_BUS;
 
 #if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2) || defined(WITH_TTGO)
 #define PIN_BEEPER    GPIO_NUM_17
+#endif // HELTEC || TTGO
+
+#if defined(WITH_HELTEC_V3)
+#define PIN_BEEPER    GPIO_NUM_1
 #endif // HELTEC || TTGO
 
 #ifdef WITH_OGN_AKR
@@ -547,7 +578,7 @@ uint8_t BARO_I2C = (uint8_t)I2C_BUS;
 #define PIN_BUTTON    GPIO_NUM_34
 #endif
 
-#if defined(WITH_TTGO) || defined(WITH_HELTEC) || defined(WITH_HELTEC_V2)
+#if defined(WITH_TTGO) || defined(WITH_HELTEC) || defined(WITH_HELTEC_V2) || defined(WITH_HELTEC_V3)
 #define PIN_BUTTON    GPIO_NUM_0
 #endif
 
@@ -1504,7 +1535,11 @@ static esp_adc_cal_characteristics_t *ADC_characs =
 static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO35_CHANNEL;
 static adc1_channel_t ADC_Chan_Knob = ADC1_GPIO34_CHANNEL;
 #else
-static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO36_CHANNEL;
+  #ifdef WITH_HELTEC_V3
+  static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO1_CHANNEL;
+  #else
+  static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO36_CHANNEL;
+  #endif
 #endif
 static const adc_atten_t ADC_atten = ADC_ATTEN_DB_11;
 static const adc_unit_t ADC_unit = ADC_UNIT_1;
@@ -1513,9 +1548,9 @@ static const adc_unit_t ADC_unit = ADC_UNIT_1;
 static int ADC_Init(void)
 { // if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP) == ESP_OK) // Check TP is burned into eFuse
   // if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_VREF) == ESP_OK) // Check Vref is burned into eFuse
-  adc1_config_width(ADC_WIDTH_BIT_12);
+  adc1_config_width((adc_bits_width_t)3);
   adc1_config_channel_atten(ADC_Chan_Batt, ADC_atten);
-  esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_unit, ADC_atten, ADC_WIDTH_BIT_12, ADC_Vref, ADC_characs); // calibrate ADC1
+  esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_unit, ADC_atten, (adc_bits_width_t)3, ADC_Vref, ADC_characs); // calibrate ADC1
   return 0; }
 
 #ifdef WITH_AXP

@@ -459,7 +459,7 @@ static void Table_System(httpd_req_t *Req)
 #ifdef WITH_TTGO
   Len+=Format_String(Line+Len, "TTGO");
 #endif
-#if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2)
+#if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2) || defined(WITH_HELTEC_V3)
   Len+=Format_String(Line+Len, "HELTEC");
 #endif
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10)

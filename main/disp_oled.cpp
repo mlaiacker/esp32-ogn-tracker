@@ -121,7 +121,7 @@ void OLED_DrawLogo(u8g2_t *OLED, GPS_Position *GPS)  // draw logo and hardware o
 #ifdef WITH_TTGO
   u8g2_DrawStr(OLED, 0, 16 ,"TTGO");
 #endif
-#if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2)
+#if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2) || defined(WITH_HELTEC_V3)
   u8g2_DrawStr(OLED, 0, 16 ,"HELTEC");
 #endif
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10)
