@@ -448,15 +448,15 @@ extern "C" void vTaskRF(void *pvParameters)
   RX_OGN_CountDelay.Clear();
 
   RX_Channel = RF_FreqPlan.getChannel(TimeSync_Time(), 0, 1); // set initial RX channel
-  for (;;){  
-    vTaskDelay(50);  // ************* stop here **************  
-  }
   SetRxChannel();
   TRX.setModeRX();
   TRX.ClearIrqFlags();
 
   RX_RSSI.Set(2 * 112);
 
+/*  for (;;){  
+    vTaskDelay(50);  // ************* stop here **************  
+  }*/
   for (;;)
   {
 
