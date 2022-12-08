@@ -182,7 +182,7 @@ static void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
 // { if(LCD_PIN_CS>GPIO_NUM_NC) gpio_set_level(LCD_PIN_CS, 1); }
 
 static ledc_timer_config_t LEDC_Timer =
-{ speed_mode      : LEDC_HIGH_SPEED_MODE,   // timer mode
+{ speed_mode      : LEDC_LOW_SPEED_MODE,   // timer mode
   duty_resolution : LEDC_TIMER_8_BIT,       // resolution of PWM duty: 0..255
   timer_num       : LEDC_TIMER_0,           // timer index
   freq_hz         : 1000                    // frequency of PWM signal
@@ -190,7 +190,7 @@ static ledc_timer_config_t LEDC_Timer =
 
 static ledc_channel_config_t LEDC_Channel =
   { gpio_num   : LCD_PIN_BCKL,
-    speed_mode : LEDC_HIGH_SPEED_MODE,
+    speed_mode : LEDC_LOW_SPEED_MODE,
     channel    : LEDC_CHANNEL_1,
     intr_type  : LEDC_INTR_DISABLE,
     timer_sel  : LEDC_TIMER_0,

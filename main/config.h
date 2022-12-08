@@ -1,12 +1,12 @@
-#define DEFAULT_AcftType        7          // [0..15] default aircraft-type: Powered Aircraft
+#define DEFAULT_AcftType       13          // [0..15] default aircraft-type: Powered Aircraft
 #define DEFAULT_GeoidSepar     40          // [m]
 #define DEFAULT_CONbaud    115200
 #define DEFAULT_PPSdelay      100
-#define DEFAULT_FreqPlan        0
+#define DEFAULT_FreqPlan        1
 #define DEFAULT_DispPage        3          // Fab501 Page to Display After Boot or Reset	
-#define WIFI_ADDRESS_IP1	192	 // 192.168.1.1 for IP Address
+#define WIFI_ADDRESS_IP1	192	 // 192.168.7.1 for IP Address
 #define WIFI_ADDRESS_IP2	168
-#define WIFI_ADDRESS_IP3	1
+#define WIFI_ADDRESS_IP3	7
 #define WIFI_ADDRESS_IP4	1
 #define WIFI_ADDRESS_GW1	0	// 0.0.0.0 for Gateway
 #define WIFI_ADDRESS_GW2	0
@@ -36,7 +36,7 @@
 // #define WITH_U8G2_FLIP                     // flip the OLED screen (rotate by 180deg)
 
 //#define WITH_RFM95                         // RF chip selection:  both HELTEC and TTGO use sx1276 which is same as RFM95
-#define WITH_SX1262                         // SX1262 Support
+#define WITH_SX1262                         // SX1262 Support used in heltec V3
 
 // #define WITH_SLEEP                         // with software sleep mode controlled by the long-press on the button
 
@@ -53,10 +53,10 @@
 //#define WITH_GPS_UBX                       // GPS understands UBX
 // #define WITH_GPS_MTK                       // GPS understands MTK
 // #define WITH_GPS_SRF
- #define WITH_MAVLINK
+#define WITH_MAVLINK
 
-#define WITH_GPS_UBX_PASS                  // to pass directly UBX packets to/from GPS
-#define WITH_GPS_NMEA_PASS                  // to pass directly NMEA to/from GPS
+//#define WITH_GPS_UBX_PASS                  // to pass directly UBX packets to/from GPS
+//#define WITH_GPS_NMEA_PASS                  // to pass directly NMEA to/from GPS
 
 // #define WITH_BMP180                        // BMP180 pressure sensor
 // #define WITH_BMP280                        // BMP280 pressure sensor
@@ -67,16 +67,16 @@
 // #define WITH_BMX055                        // BMX055 magnetic and IMU sensor
 
 //#define WITH_LORAWAN                       // LoRaWAN connectivity
-#define WITH_FANET                         // FANET transmission and reception
-#define WITH_PAW			   // Add PAW transmission
+//#define WITH_FANET                         // FANET transmission and reception
+//#define WITH_PAW			   // Add PAW transmission
 
-#define WITH_PFLAA                         // PFLAU and PFLAA for compatibility with XCsoar and LK8000
+//#define WITH_PFLAA                         // PFLAU and PFLAA for compatibility with XCsoar and LK8000
 // #define WITH_POGNT
 // #define WITH_GDL90
 // #define WITH_PGAV5
 #define WITH_LOOKOUT
 
-#define WITH_SKYDEMON			//Adapt NMEA Output for SKYDEMON
+//#define WITH_SKYDEMON			//Adapt NMEA Output for SKYDEMON
 
 #define WITH_CONFIG                        // interpret the console input: $POGNS to change parameters
 
@@ -93,9 +93,12 @@
 // #define WITH_SDLOG                         // log own position and other data to uSD card
 
 //#define WITH_STRATUX
-#define WITH_BT_SPP                        // Bluetooth serial port for smartphone/tablet link
-#define WITH_WIFI                          // attempt to connect to the wifi router for uploading the log files
+//#define WITH_BT_SPP                        // Bluetooth serial port for smartphone/tablet link
+#define WITH_BLE_SPP
+//#define WITH_WIFI                          // attempt to connect to the wifi router for uploading the log files
 #define WITH_AP                            // Open Access Point MOde
 #define WITH_HTTP                           // Open Web Interface
 
 // #define WITH_ENCRYPT                       // Encrypt (optionally) the position
+
+//#define DEBUG_PRINT

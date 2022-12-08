@@ -1,19 +1,19 @@
 // ======================================================================================================
 
-#include "freertos/FreeRTOS.h"    // FreeeRTOS
+#include "freertos/FreeRTOS.h" // FreeeRTOS
 #include "freertos/task.h"
 
-#include "hal.h"                  // Hardware Abstraction Layer
+#include "hal.h" // Hardware Abstraction Layer
 
-#include "rf.h"                   // RF control/transmission/reception task
-#include "proc.h"                 // GPS/RF process taskk
-#include "gps.h"                  // GPS control data acquisiton
+#include "rf.h"   // RF control/transmission/reception task
+#include "proc.h" // GPS/RF process taskk
+#include "gps.h"  // GPS control data acquisiton
 #include "sens.h"
 #include "imu.h"
-#include "ctrl.h"                 // Control task
-#include "log.h"                  // Data logging task
-#include "knob.h"                 // potentiometer as rotary encoder
-#include "sound.h"                // sounds, warnings, alarms
+#include "ctrl.h"  // Control task
+#include "log.h"   // Data logging task
+#include "knob.h"  // potentiometer as rotary encoder
+#include "sound.h" // sounds, warnings, alarms
 #include "disp.h"
 
 #ifdef WITH_SDLOG
@@ -37,41 +37,45 @@
 #endif
 
 #ifdef WITH_APRS
-#include "aprs.h"                 // APRS task
+#include "aprs.h" // APRS task
 #endif
 
-extern "C"
-void app_main(void)
-{
-    // printf("OGN Tracker on ESP32\n");
+#define DEBUG_PRINT
 
+extern "C" void app_main(void)
+{
     CONS_UART_Init();
-    printf("OGN Tracker on ESP32\n");
-    CONS_Mutex = xSemaphoreCreateMutex();    // semaphore for sharing the writing to the console
-    I2C_Mutex  = xSemaphoreCreateMutex();    // semaphore for sharing the I2C bus
+    CONS_Mutex = xSemaphoreCreateMutex(); // semaphore for sharing the writing to the console
+    I2C_Mutex = xSemaphoreCreateMutex();  // semaphore for sharing the I2C bus
 #ifdef WITH_AXP
     // AXP_Mutex  = xSemaphoreCreateMutex();    // semaphore for sharing the AXP power controller
 #endif
 
-    NVS_Init();                              // initialize Non-Volatile-Storage in Flash and read the tracker parameters
+    NVS_Init(); // initialize Non-Volatile-Storage in Flash and read the tracker parameters
 
     Parameters.setDefault(getUniqueAddress()); // set default parameter values
-    if(Parameters.ReadFromNVS()!=ESP_OK)     // try to get parameters from NVS
-    { Parameters.WriteToNVS(); }             // if did not work: try to save (default) parameters to NVS
+    if (Parameters.ReadFromNVS() != ESP_OK)    // try to get parameters from NVS
+    {
+        Parameters.WriteToNVS();
+    } // if did not work: try to save (default) parameters to NVS
 
 #ifdef WITH_SPIFFS
-    SPIFFS_Register();                       // initialize the file system in the Flash
+    SPIFFS_Register(); // initialize the file system in the Flash
 #endif
-    IO_Configuration();                      // initialize the GPIO/UART/I2C/SPI for Radio, GPS, OLED, Baro
+    IO_Configuration(); // initialize the GPIO/UART/I2C/SPI for Radio, GPS, OLED, Baro
 
 #ifdef WITH_SD
-    if(SD_isMounted())                       // if SD card succesfully mounted at startup
-    { Parameters.SaveToFlash=0;
-      if(Parameters.ReadFromFile("/sdcard/TRACKER.CFG")>0)    // try to read parameters from the TRACKER.CFG file
-      { if(Parameters.SaveToFlash) Parameters.WriteToNVS(); } // if succesfull and SaveToFlash==1 then save them to flash
-// #ifdef WITH_SPIFFS
-//       FlashLog_CopyToSD();                                   // copy all flash log files to the SD card
-// #endif
+    if (SD_isMounted()) // if SD card succesfully mounted at startup
+    {
+        Parameters.SaveToFlash = 0;
+        if (Parameters.ReadFromFile("/sdcard/TRACKER.CFG") > 0) // try to read parameters from the TRACKER.CFG file
+        {
+            if (Parameters.SaveToFlash)
+                Parameters.WriteToNVS();
+        } // if succesfull and SaveToFlash==1 then save them to flash
+          // #ifdef WITH_SPIFFS
+          //       FlashLog_CopyToSD();                                   // copy all flash log files to the SD card
+          // #endif
     }
 #endif
 
@@ -85,23 +89,28 @@ void app_main(void)
     Format_String(CONS_UART_Write, "\n");
     xSemaphoreGive(CONS_Mutex);
 #endif
-    WANdev.Reset(getUniqueID(), Parameters.AppKey);     // set default LoRaWAN config.
-    if(WANdev.ReadFromNVS()!=ESP_OK)                    // if can't read the LoRaWAN setup from NVS
-    { WANdev.WriteToNVS(); }                            // then store the default
-    if(Parameters.hasAppKey())
-    { if(!Parameters.sameAppKey(WANdev.AppKey))         // if LoRaWAN key different from the one in Parameters
-      { WANdev.Reset(getUniqueID(), Parameters.AppKey); // then reset LoRaWAN to this key
-        WANdev.WriteToNVS();                            // and save LoRaWAN config. to NVS
-        xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
-        Format_String(CONS_UART_Write, "LoRaWAN: AppKey <- ");
-        Format_HexBytes(CONS_UART_Write, Parameters.AppKey, 16);
-        // Format_String(CONS_UART_Write, " => ");
-        // Format_SignDec(CONS_UART_Write, Err);
-        Format_String(CONS_UART_Write, "\n");
-        xSemaphoreGive(CONS_Mutex);
-      }
-      Parameters.clrAppKey();                           // clear the AppKey in the Parameters and save it to Flash
-      Parameters.WriteToNVS(); }
+    WANdev.Reset(getUniqueID(), Parameters.AppKey); // set default LoRaWAN config.
+    if (WANdev.ReadFromNVS() != ESP_OK)             // if can't read the LoRaWAN setup from NVS
+    {
+        WANdev.WriteToNVS();
+    } // then store the default
+    if (Parameters.hasAppKey())
+    {
+        if (!Parameters.sameAppKey(WANdev.AppKey)) // if LoRaWAN key different from the one in Parameters
+        {
+            WANdev.Reset(getUniqueID(), Parameters.AppKey); // then reset LoRaWAN to this key
+            WANdev.WriteToNVS();                            // and save LoRaWAN config. to NVS
+            xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
+            Format_String(CONS_UART_Write, "LoRaWAN: AppKey <- ");
+            Format_HexBytes(CONS_UART_Write, Parameters.AppKey, 16);
+            // Format_String(CONS_UART_Write, " => ");
+            // Format_SignDec(CONS_UART_Write, Err);
+            Format_String(CONS_UART_Write, "\n");
+            xSemaphoreGive(CONS_Mutex);
+        }
+        Parameters.clrAppKey(); // clear the AppKey in the Parameters and save it to Flash
+        Parameters.WriteToNVS();
+    }
     // WANdev.Disconnect();                                // restart with network join-request/accept at each restart
 
 #ifdef DEBUG_PRINT
@@ -125,27 +134,29 @@ void app_main(void)
 #endif
 
 #if defined(WITH_BT_SPP) || defined(WITH_BLE_SPP)
-    { int32_t Err=BT_SPP_Init();                // start BT SPP
-// #ifdef DEBUG_PRINT
-      xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
-      Format_String(CONS_UART_Write, "BT_SPP_Init() => ");
-      Format_SignDec(CONS_UART_Write, Err);
-      Format_String(CONS_UART_Write, "\n");
-      xSemaphoreGive(CONS_Mutex);
-// #endif
+    {
+        int32_t Err = BT_SPP_Init(); // start BT SPP
+                                     // #ifdef DEBUG_PRINT
+        xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
+        Format_String(CONS_UART_Write, "BT_SPP_Init() => ");
+        Format_SignDec(CONS_UART_Write, Err);
+        Format_String(CONS_UART_Write, "\n");
+        xSemaphoreGive(CONS_Mutex);
+        // #endif
     }
 #endif
 
 #ifdef WITH_SDLOG
     Log_Mutex = xSemaphoreCreateMutex();
-    xTaskCreate(vTaskSDLOG, "SDLOG", 3000, 0, tskIDLE_PRIORITY+1, 0);
+    xTaskCreate(vTaskSDLOG, "SDLOG", 3000, 0, tskIDLE_PRIORITY + 1, 0);
 #endif
 
 #ifdef WITH_LOG
-    xTaskCreate(vTaskLOG ,  "LOG",   4500, 0, tskIDLE_PRIORITY+1, 0);
+    xTaskCreate(vTaskLOG, "LOG", 4500, 0, tskIDLE_PRIORITY + 1, 0);
 #endif
 
-    xTaskCreate(vTaskRF,    "RF",    2000, 0, tskIDLE_PRIORITY+5, 0);
+    xTaskCreate(vTaskRF,    "RF",    4000, 0, tskIDLE_PRIORITY+5, 0);
+
     xTaskCreate(vTaskPROC,  "PROC",  2000, 0, tskIDLE_PRIORITY+3, 0);
 
     xTaskCreate(vTaskGPS,   "GPS",   2000, 0, tskIDLE_PRIORITY+4, 0);
@@ -181,17 +192,17 @@ void app_main(void)
     if(!StartAP)
       xTaskCreate(vTaskAPRS,  "APRS",  4000, 0, tskIDLE_PRIORITY+2, 0);
 #endif
+
 #if defined(WITH_OLED) || defined(WITH_U8G2_OLED) || defined(WITH_ST7789) || defined(WITH_ILI9341)
-    xTaskCreate(vTaskDISP,  "DISP",  2000, 0, tskIDLE_PRIORITY+2, 0);
+    xTaskCreate(vTaskDISP, "DISP", 2000, 0, tskIDLE_PRIORITY + 2, 0);
 #endif
 #ifdef WITH_SOUND
-    xTaskCreate(vTaskSOUND, "SOUND", 2000, 0, tskIDLE_PRIORITY+3, 0);
+    xTaskCreate(vTaskSOUND, "SOUND", 2000, 0, tskIDLE_PRIORITY + 3, 0);
 #endif
-    xTaskCreate(vTaskTICK , "TICK",  1000, 0, tskIDLE_PRIORITY+3, 0);
+    xTaskCreate(vTaskTICK, "TICK", 1000, 0, tskIDLE_PRIORITY + 3, 0);
     // xTaskCreate(vTaskCTRL,  "CTRL",  1536, 0, tskIDLE_PRIORITY+2, 0);
     vTaskCTRL(0); // run directly the CTRL task, instead of creating a separate one.
 
     // while(1)
     // { vTaskDelay(10000); }
 }
-

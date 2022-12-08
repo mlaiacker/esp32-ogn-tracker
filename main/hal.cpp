@@ -13,7 +13,7 @@
 #include "driver/adc.h"
 #include "esp_adc_cal.h"
 
-#if ESP_IDF_VERSION_MAJOR==4 && ESP_IDF_VERSION_MINOR>=3 || ESP_IDF_VERSION_MAJOR>4
+#if ESP_IDF_VERSION_MAJOR == 4 && ESP_IDF_VERSION_MINOR >= 3 || ESP_IDF_VERSION_MAJOR > 4
 #include "soc/adc_channel.h" // v4.3
 #endif
 
@@ -75,10 +75,11 @@
 #endif
 
 #ifdef WITH_TFT_LCD
-extern "C" {
+extern "C"
+{
 #include "tftspi.h"
 #include "tft.h"
-           }
+}
 #endif
 
 #if defined(WITH_ST7789) || defined(WITH_ILI9341)
@@ -93,7 +94,7 @@ extern "C" {
 #include "bq24295.h"
 #endif
 
-uint8_t PowerMode = 2;                    // 0=sleep/minimal power, 1=comprimize, 2=full power
+uint8_t PowerMode = 2; // 0=sleep/minimal power, 1=comprimize, 2=full power
 
 // ======================================================================================================
 /*
@@ -214,160 +215,159 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 
 */
 
-
 #ifdef WITH_TTGO
-#define PIN_LED_PCB  GPIO_NUM_2   // status LED on the PCB
+#define PIN_LED_PCB GPIO_NUM_2 // status LED on the PCB
 #endif
 
 #if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2)
-#define PIN_LED_PCB  GPIO_NUM_25  // status LED on the PCB: 25, GPIO25 is DAC2
+#define PIN_LED_PCB GPIO_NUM_25 // status LED on the PCB: 25, GPIO25 is DAC2
 #endif
 #if defined(WITH_HELTEC_V3)
-#define PIN_LED_PCB  GPIO_NUM_35  // status LED on the PCB: 35
+#define PIN_LED_PCB GPIO_NUM_35 // status LED on the PCB: 35
 #endif
 
-#if defined(WITH_TBEAM) // || defined(WITH_TBEAM_V10)
-#define PIN_LED_PCB  GPIO_NUM_14  // blue LED on the PCB: 14
+#if defined(WITH_TBEAM)         // || defined(WITH_TBEAM_V10)
+#define PIN_LED_PCB GPIO_NUM_14 // blue LED on the PCB: 14
 // #define PIN_LED_PCB_INV
 #endif
 
 #ifdef WITH_FollowMe
-#define PIN_LED_PCB  GPIO_NUM_2   // debug LED
-#define PIN_LED_TX   GPIO_NUM_15
+#define PIN_LED_PCB GPIO_NUM_2 // debug LED
+#define PIN_LED_TX GPIO_NUM_15
 #ifdef WITH_BQ
 #define PIN_POWER_GOOD GPIO_NUM_26
 #endif
 #endif
 
 #ifdef WITH_OGN_AKR
-#define PIN_LED_PCB  GPIO_NUM_2   // debug LED
-#define PIN_LED_TX   GPIO_NUM_36  // debug LED
+#define PIN_LED_PCB GPIO_NUM_2 // debug LED
+#define PIN_LED_TX GPIO_NUM_36 // debug LED
 #endif
 
 // #define PIN_LED_TX   GPIO_NUM_??
 // #define PIN_LED_RX   GPIO_NUM_??
 
 #ifdef WITH_JACEK
-#define PIN_RFM_RST  GPIO_NUM_17  // Reset
-#define PIN_RFM_IRQ  GPIO_NUM_16  // packet done on receive or transmit
-#define PIN_RFM_SS   GPIO_NUM_21  // SPI chip-select
-#define PIN_RFM_SCK  GPIO_NUM_5   // SPI clock
-#define PIN_RFM_MISO GPIO_NUM_18  // SPI MISO
-#define PIN_RFM_MOSI GPIO_NUM_19  // SPI MOSI
-#endif // JACEK
+#define PIN_RFM_RST GPIO_NUM_17  // Reset
+#define PIN_RFM_IRQ GPIO_NUM_16  // packet done on receive or transmit
+#define PIN_RFM_SS GPIO_NUM_21   // SPI chip-select
+#define PIN_RFM_SCK GPIO_NUM_5   // SPI clock
+#define PIN_RFM_MISO GPIO_NUM_18 // SPI MISO
+#define PIN_RFM_MOSI GPIO_NUM_19 // SPI MOSI
+#endif                           // JACEK
 
 #ifdef WITH_M5_JACEK
-#define PIN_RFM_RST  GPIO_NUM_13  // Reset
-#define PIN_RFM_IRQ  GPIO_NUM_35  // Packet done on receive or transmit
-#define PIN_RFM_SS   GPIO_NUM_12  // SPI chip-select
-#define PIN_RFM_SCK  GPIO_NUM_18  // SPI clock (same as LCD)
-#define PIN_RFM_MISO GPIO_NUM_19  // SPI MISO  (save as LCD)
-#define PIN_RFM_MOSI GPIO_NUM_23  // SPI MOSI  (save as LCD)
-#endif // M5_JACEK
+#define PIN_RFM_RST GPIO_NUM_13  // Reset
+#define PIN_RFM_IRQ GPIO_NUM_35  // Packet done on receive or transmit
+#define PIN_RFM_SS GPIO_NUM_12   // SPI chip-select
+#define PIN_RFM_SCK GPIO_NUM_18  // SPI clock (same as LCD)
+#define PIN_RFM_MISO GPIO_NUM_19 // SPI MISO  (save as LCD)
+#define PIN_RFM_MOSI GPIO_NUM_23 // SPI MOSI  (save as LCD)
+#endif                           // M5_JACEK
 
 #if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2) || defined(WITH_TTGO)
-#define PIN_RFM_RST  GPIO_NUM_14  // Reset
-#define PIN_RFM_IRQ  GPIO_NUM_26  // packet done on receive or transmit
-#define PIN_RFM_SS   GPIO_NUM_18  // SPI chip-select
-#define PIN_RFM_SCK  GPIO_NUM_5   // SPI clock
-#define PIN_RFM_MISO GPIO_NUM_19  // SPI MISO
-#define PIN_RFM_MOSI GPIO_NUM_27  // SPI MOSI
-#endif // HELTEC TTGO
+#define PIN_RFM_RST GPIO_NUM_14  // Reset
+#define PIN_RFM_IRQ GPIO_NUM_26  // packet done on receive or transmit
+#define PIN_RFM_SS GPIO_NUM_18   // SPI chip-select
+#define PIN_RFM_SCK GPIO_NUM_5   // SPI clock
+#define PIN_RFM_MISO GPIO_NUM_19 // SPI MISO
+#define PIN_RFM_MOSI GPIO_NUM_27 // SPI MOSI
+#endif                           // HELTEC TTGO
 
 #if defined(WITH_HELTEC_V3)
-#define PIN_RFM_RST  GPIO_NUM_12  // Reset
-#define PIN_RFM_IRQ  GPIO_NUM_14  // packet done on receive or transmit
-#define PIN_RFM_SS   GPIO_NUM_8  // SPI chip-select
-#define PIN_RFM_SCK  GPIO_NUM_9   // SPI clock
-#define PIN_RFM_MISO GPIO_NUM_11  // SPI MISO
-#define PIN_RFM_MOSI GPIO_NUM_10  // SPI MOSI
-#define PIN_RFM_BUSY GPIO_NUM_13  // for the Heltec V3 with SX1262
-#endif // HELTEC TTGO
+#define PIN_RFM_RST GPIO_NUM_12  // Reset
+#define PIN_RFM_IRQ GPIO_NUM_14  // packet done on receive or transmit
+#define PIN_RFM_SS GPIO_NUM_8    // SPI chip-select
+#define PIN_RFM_SCK GPIO_NUM_9   // SPI clock
+#define PIN_RFM_MISO GPIO_NUM_11 // SPI MISO
+#define PIN_RFM_MOSI GPIO_NUM_10 // SPI MOSI
+#define PIN_RFM_BUSY GPIO_NUM_13 // for the Heltec V3 with SX1262
+#endif                           // HELTEC TTGO
 
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10) || defined(WITH_LORA32)
-#define PIN_RFM_RST  GPIO_NUM_23  // Reset - not clear if T-Beam is using it, or maybe only the older version
-#define PIN_RFM_IRQ  GPIO_NUM_26  // packet done on receive or transmit
-#define PIN_RFM_SS   GPIO_NUM_18  // SPI chip-select
-#define PIN_RFM_SCK  GPIO_NUM_5   // SPI clock
-#define PIN_RFM_MISO GPIO_NUM_19  // SPI MISO
-#define PIN_RFM_MOSI GPIO_NUM_27  // SPI MOSI
-#endif // TBEAM
+#define PIN_RFM_RST GPIO_NUM_23  // Reset - not clear if T-Beam is using it, or maybe only the older version
+#define PIN_RFM_IRQ GPIO_NUM_26  // packet done on receive or transmit
+#define PIN_RFM_SS GPIO_NUM_18   // SPI chip-select
+#define PIN_RFM_SCK GPIO_NUM_5   // SPI clock
+#define PIN_RFM_MISO GPIO_NUM_19 // SPI MISO
+#define PIN_RFM_MOSI GPIO_NUM_27 // SPI MOSI
+#endif                           // TBEAM
 
 #ifdef WITH_TBEAM_V10
 #ifdef WITH_SX1262
-#define PIN_RFM_BUSY GPIO_NUM_32  // for the T-Beam with SX1262 (watch for conflict with the LCD)
+#define PIN_RFM_BUSY GPIO_NUM_32 // for the T-Beam with SX1262 (watch for conflict with the LCD)
 #endif
 #endif
 
 #ifdef WITH_FollowMe
 // #define PIN_RFM_RST  GPIO_NUM_32  // Reset
-#define PIN_RFM_IRQ  GPIO_NUM_35  // 39 // packet done on receive or transmit
-#define PIN_RFM_SS   GPIO_NUM_5   // SPI chip-select
-#define PIN_RFM_SCK  GPIO_NUM_18  // SPI clock
-#define PIN_RFM_MISO GPIO_NUM_19  // SPI MISO
-#define PIN_RFM_MOSI GPIO_NUM_23  // SPI MOSI
-#endif // FollowMe
+#define PIN_RFM_IRQ GPIO_NUM_35  // 39 // packet done on receive or transmit
+#define PIN_RFM_SS GPIO_NUM_5    // SPI chip-select
+#define PIN_RFM_SCK GPIO_NUM_18  // SPI clock
+#define PIN_RFM_MISO GPIO_NUM_19 // SPI MISO
+#define PIN_RFM_MOSI GPIO_NUM_23 // SPI MOSI
+#endif                           // FollowMe
 
 #ifdef WITH_OGN_AKR
-#define PIN_RFM_IRQ  GPIO_NUM_33  // 39 // packet done on receive or transmit
-#define PIN_RFM_SS   GPIO_NUM_5   // SPI chip-select
-#define PIN_RFM_SCK  GPIO_NUM_18  // SPI clock
-#define PIN_RFM_MISO GPIO_NUM_19  // SPI MISO
-#define PIN_RFM_MOSI GPIO_NUM_23  // SPI MOSI
-#define PIN_RFM_RST  GPIO_NUM_4   // RFM RESET
+#define PIN_RFM_IRQ GPIO_NUM_33  // 39 // packet done on receive or transmit
+#define PIN_RFM_SS GPIO_NUM_5    // SPI chip-select
+#define PIN_RFM_SCK GPIO_NUM_18  // SPI clock
+#define PIN_RFM_MISO GPIO_NUM_19 // SPI MISO
+#define PIN_RFM_MOSI GPIO_NUM_23 // SPI MOSI
+#define PIN_RFM_RST GPIO_NUM_4   // RFM RESET
 #endif
 
 #ifdef WITH_CUBE_BOARD
-#define PIN_RFM_IRQ  GPIO_NUM_34  // packet done on receive or transmit
-#define PIN_RFM_SS   GPIO_NUM_15  // SPI chip-select
-#define PIN_RFM_SCK  GPIO_NUM_14  // SPI clock
-#define PIN_RFM_MISO GPIO_NUM_12  // SPI MISO
-#define PIN_RFM_MOSI GPIO_NUM_13  // SPI MOSI
+#define PIN_RFM_IRQ GPIO_NUM_34  // packet done on receive or transmit
+#define PIN_RFM_SS GPIO_NUM_15   // SPI chip-select
+#define PIN_RFM_SCK GPIO_NUM_14  // SPI clock
+#define PIN_RFM_MISO GPIO_NUM_12 // SPI MISO
+#define PIN_RFM_MOSI GPIO_NUM_13 // SPI MOSI
 // #define PIN_RFM_RST  GPIO_NUM_4   // RFM RESET
 #endif
 
-#define RFM_SPI_HOST  SPI3_HOST   // or H or VSPI_HOST ?
-#define RFM_SPI_DMA   1           // DMA channel
-#define RFM_SPI_SPEED 4000000     // [Hz] 2MHz SPI clock rate for RF chip
+#define RFM_SPI_HOST SPI2_HOST // or H or VSPI_HOST ?
+#define RFM_SPI_DMA 1          // DMA channel
+#define RFM_SPI_SPEED 4000000  // [Hz] 2MHz SPI clock rate for RF chip
 
 #ifdef WITH_ST7789
-#ifdef WITH_TBEAM                  // old T-Beam
-#define LCD_PIN_MOSI GPIO_NUM_2    // SDA
-#define LCD_PIN_MISO GPIO_NUM_NC   // MISO not connected
-#define LCD_PIN_CLK  GPIO_NUM_13   // SCL
-#endif // TBEAM
-#ifdef WITH_TBEAM_V10              // new T-Beam
-#define LCD_PIN_MOSI GPIO_NUM_14   // 13   // SDA
-#define LCD_PIN_MISO GPIO_NUM_NC   // MISO not connected
-#define LCD_PIN_CLK  GPIO_NUM_13   // 2   // SCL
+#ifdef WITH_TBEAM                // old T-Beam
+#define LCD_PIN_MOSI GPIO_NUM_2  // SDA
+#define LCD_PIN_MISO GPIO_NUM_NC // MISO not connected
+#define LCD_PIN_CLK GPIO_NUM_13  // SCL
+#endif                           // TBEAM
+#ifdef WITH_TBEAM_V10            // new T-Beam
+#define LCD_PIN_MOSI GPIO_NUM_14 // 13   // SDA
+#define LCD_PIN_MISO GPIO_NUM_NC // MISO not connected
+#define LCD_PIN_CLK GPIO_NUM_13  // 2   // SCL
 // #define LCD_PIN_MOSI GPIO_NUM_2 // 13   // SDA
 // #define LCD_PIN_MISO GPIO_NUM_NC   // MISO not connected
 // #define LCD_PIN_CLK  GPIO_NUM_13 // 14   // SCL
 // #define LCD_PIN_RST  GPIO_NUM_15 // NC  // RST
-#endif // TBEAM v1.0
-#define LCD_SPI_SPEED 10000000     // [Hz]
-#define LCD_SPI_HOST HSPI_HOST     // VSPI_HOST or HSPI_HOST
-#define LCD_SPI_DMA          2     // DMA channel
-#define LCD_SPI_MODE         3     // for ST7789 with CS tied to LOW
+#endif                         // TBEAM v1.0
+#define LCD_SPI_SPEED 10000000 // [Hz]
+#define LCD_SPI_HOST HSPI_HOST // VSPI_HOST or HSPI_HOST
+#define LCD_SPI_DMA 2          // DMA channel
+#define LCD_SPI_MODE 3         // for ST7789 with CS tied to LOW
 #endif
 
 #ifdef WITH_JACEK
-#define PIN_GPS_TXD  GPIO_NUM_32
-#define PIN_GPS_RXD  GPIO_NUM_34
-#define PIN_GPS_PPS  GPIO_NUM_35
+#define PIN_GPS_TXD GPIO_NUM_32
+#define PIN_GPS_RXD GPIO_NUM_34
+#define PIN_GPS_PPS GPIO_NUM_35
 #endif // JACEK
 
 #ifdef WITH_M5_JACEK
-#define PIN_GPS_TXD  GPIO_NUM_17
-#define PIN_GPS_RXD  GPIO_NUM_16
-#define PIN_GPS_PPS  GPIO_NUM_26
+#define PIN_GPS_TXD GPIO_NUM_17
+#define PIN_GPS_RXD GPIO_NUM_16
+#define PIN_GPS_PPS GPIO_NUM_26
 #endif // M5_JACEK
 
 #ifdef WITH_LORA32
-#define PIN_GPS_TXD  GPIO_NUM_12
-#define PIN_GPS_RXD  GPIO_NUM_35
-#define PIN_GPS_PPS  GPIO_NUM_34
-#define PIN_GPS_ENA  GPIO_NUM_13
+#define PIN_GPS_TXD GPIO_NUM_12
+#define PIN_GPS_RXD GPIO_NUM_35
+#define PIN_GPS_PPS GPIO_NUM_34
+#define PIN_GPS_ENA GPIO_NUM_13
 #endif // LORA32
 
 #ifdef WITH_TBEAM_V10
@@ -375,109 +375,109 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 #endif
 
 #if defined(WITH_HELTEC) || defined(WITH_TTGO)
-                                  // VK2828U   GN-801   MAVlink
-#define PIN_GPS_TXD  GPIO_NUM_13  // green     green    green
-#define PIN_GPS_RXD  GPIO_NUM_35 // blue      yellow   yellow
-#define PIN_GPS_PPS  GPIO_NUM_34 // white     blue
+                       // VK2828U   GN-801   MAVlink
+#define PIN_GPS_TXD GPIO_NUM_13 // green     green    green
+#define PIN_GPS_RXD GPIO_NUM_35 // blue      yellow   yellow
+#define PIN_GPS_PPS GPIO_NUM_34 // white     blue
 // #define PIN_GPS_RXD  GPIO_NUM_38  // for a new HELTEC
 // #define PIN_GPS_PPS  GPIO_NUM_37  // for a new HELTEC
 // #define PIN_GPS_ENA  GPIO_NUM_13  // yellow    white
 #endif // HELTEC || TTGO
 
 #if defined(WITH_HELTEC_V2)
-                                  // VK2828U   GN-801   MAVlink
-#define PIN_GPS_TXD  GPIO_NUM_13  // green     green    green
-#define PIN_GPS_RXD  GPIO_NUM_39 // blue      yellow   yellow
-#define PIN_GPS_PPS  GPIO_NUM_38 // white     blue
+                       // VK2828U   GN-801   MAVlink
+#define PIN_GPS_TXD GPIO_NUM_13 // green     green    green
+#define PIN_GPS_RXD GPIO_NUM_39 // blue      yellow   yellow
+#define PIN_GPS_PPS GPIO_NUM_38 // white     blue
 #endif
 
 #if defined(WITH_HELTEC_V3)
-                                  // VK2828U   GN-801   MAVlink
-#define PIN_GPS_TXD  GPIO_NUM_4  // green     green    green
-#define PIN_GPS_RXD  GPIO_NUM_5 // blue      yellow   yellow
-#define PIN_GPS_PPS  GPIO_NUM_6 // white     blue
+                       // VK2828U   GN-801   MAVlink
+#define PIN_GPS_TXD GPIO_NUM_4 // green     green    green
+#define PIN_GPS_RXD GPIO_NUM_5 // blue      yellow   yellow
+#define PIN_GPS_PPS GPIO_NUM_6 // white     blue
 #endif
 
 // Note: I had a problem with GPS ENABLE on GPIO13, thus I tied the enable wire to 3.3V for the time being.
 
 #ifdef WITH_TBEAM
-#define PIN_GPS_TXD  GPIO_NUM_15
-#define PIN_GPS_RXD  GPIO_NUM_12
+#define PIN_GPS_TXD GPIO_NUM_15
+#define PIN_GPS_RXD GPIO_NUM_12
 #endif // TBEAM
 
 #ifdef WITH_TBEAM_V10
-#define PIN_GPS_TXD  GPIO_NUM_12
-#define PIN_GPS_RXD  GPIO_NUM_34
-#define PIN_GPS_PPS  GPIO_NUM_37
+#define PIN_GPS_TXD GPIO_NUM_12
+#define PIN_GPS_RXD GPIO_NUM_34
+#define PIN_GPS_PPS GPIO_NUM_37
 #endif // TBEAM v1.0
 
-#ifdef WITH_FollowMe              // L80 GPS with PPS, Enable and Reset
-#define PIN_GPS_TXD  GPIO_NUM_17
-#define PIN_GPS_RXD  GPIO_NUM_16
-#define PIN_GPS_PPS  GPIO_NUM_34  // high active
-#define PIN_GPS_ENA  GPIO_NUM_33  // Enable: high-active
+#ifdef WITH_FollowMe // L80 GPS with PPS, Enable and Reset
+#define PIN_GPS_TXD GPIO_NUM_17
+#define PIN_GPS_RXD GPIO_NUM_16
+#define PIN_GPS_PPS GPIO_NUM_34 // high active
+#define PIN_GPS_ENA GPIO_NUM_33 // Enable: high-active
 
-#define PIN_PERIPH_RST GPIO_NUM_4   // Reset: high-active
+#define PIN_PERIPH_RST GPIO_NUM_4 // Reset: high-active
 #endif
 
-#ifdef WITH_OGN_AKR              // L86-M33 GPS with PPS
-#define PIN_GPS_TXD  GPIO_NUM_17
-#define PIN_GPS_RXD  GPIO_NUM_16
-#define PIN_GPS_PPS  GPIO_NUM_32  // high active
+#ifdef WITH_OGN_AKR // L86-M33 GPS with PPS
+#define PIN_GPS_TXD GPIO_NUM_17
+#define PIN_GPS_RXD GPIO_NUM_16
+#define PIN_GPS_PPS GPIO_NUM_32 // high active
 #endif
 
 #ifdef WITH_CUBE_BOARD
-#define PIN_GPS_TXD  GPIO_NUM_32
-#define PIN_GPS_RXD  GPIO_NUM_35
+#define PIN_GPS_TXD GPIO_NUM_32
+#define PIN_GPS_RXD GPIO_NUM_35
 #endif
 
-#define CONS_UART UART_NUM_0      // UART0 for the console (the system does this for us)
-#define GPS_UART  UART_NUM_1      // UART1 for GPS data read and dialog
+#define CONS_UART UART_NUM_0 // UART0 for the console (the system does this for us)
+#define GPS_UART UART_NUM_1  // UART1 for GPS data read and dialog
 
-#define I2C_BUS     I2C_NUM_1     // use bus #1 to talk to OLED and Baro sensor
+#define I2C_BUS I2C_NUM_1 // use bus #1 to talk to OLED and Baro sensor
 
 #ifdef WITH_FollowMe
-#define AERO_UART     UART_NUM_2  // UART2
-#define PIN_AERO_TXD  GPIO_NUM_25
-#define PIN_AERO_RXD  GPIO_NUM_27
+#define AERO_UART UART_NUM_2 // UART2
+#define PIN_AERO_TXD GPIO_NUM_25
+#define PIN_AERO_RXD GPIO_NUM_27
 #endif
 
 uint8_t BARO_I2C = (uint8_t)I2C_BUS;
 
 #ifdef WITH_JACEK
-#define PIN_I2C_SCL GPIO_NUM_26   // SCL pin
-#define PIN_I2C_SDA GPIO_NUM_27   // SDA pin
-#endif // JACEK
+#define PIN_I2C_SCL GPIO_NUM_26 // SCL pin
+#define PIN_I2C_SDA GPIO_NUM_27 // SDA pin
+#endif                          // JACEK
 
 #if defined(WITH_M5_JACEK) || defined(WITH_OGN_AKR) || defined(WITH_CUBE_BOARD)
-#define PIN_I2C_SCL GPIO_NUM_22   // SCL pin
-#define PIN_I2C_SDA GPIO_NUM_21   // SDA pin
-#endif // M5_JACEK || WITH_OGN_AKR
+#define PIN_I2C_SCL GPIO_NUM_22 // SCL pin
+#define PIN_I2C_SDA GPIO_NUM_21 // SDA pin
+#endif                          // M5_JACEK || WITH_OGN_AKR
 
 #if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2) || defined(WITH_TTGO)
-#define PIN_I2C_SCL GPIO_NUM_15   // SCL pin
-#define PIN_I2C_SDA GPIO_NUM_4    // SDA pin
-#define OLED_I2C_ADDR 0x3C        // I2C address of the OLED display
-#define PIN_OLED_RST GPIO_NUM_16  // OLED RESET: low-active
-#endif // HELTEC || TTGO
+#define PIN_I2C_SCL GPIO_NUM_15  // SCL pin
+#define PIN_I2C_SDA GPIO_NUM_4   // SDA pin
+#define OLED_I2C_ADDR 0x3C       // I2C address of the OLED display
+#define PIN_OLED_RST GPIO_NUM_16 // OLED RESET: low-active
+#endif                           // HELTEC || TTGO
 
 #if defined(WITH_HELTEC_V3)
-#define PIN_I2C_SCL GPIO_NUM_18   // SCL pin
-#define PIN_I2C_SDA GPIO_NUM_17    // SDA pin
-#define OLED_I2C_ADDR 0x3C        // I2C address of the OLED display
-#define PIN_OLED_RST GPIO_NUM_21  // OLED RESET: low-active
-#endif // HELTECv3
+#define PIN_I2C_SCL GPIO_NUM_18  // SCL pin
+#define PIN_I2C_SDA GPIO_NUM_17  // SDA pin
+#define OLED_I2C_ADDR 0x3C       // I2C address of the OLED display
+#define PIN_OLED_RST GPIO_NUM_21 // OLED RESET: low-active
+#endif                           // HELTECv3
 
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10) || defined(WITH_LORA32) // T-Beam
-#define PIN_I2C_SCL GPIO_NUM_22   // SCL pin => this way the pin pattern fits the BMP280 module
-#define PIN_I2C_SDA GPIO_NUM_21   // SDA pin
-#define OLED_I2C_ADDR 0x3C        // I2C address of the OLED display
-#endif // TBEAM
+#define PIN_I2C_SCL GPIO_NUM_22                                            // SCL pin => this way the pin pattern fits the BMP280 module
+#define PIN_I2C_SDA GPIO_NUM_21                                            // SDA pin
+#define OLED_I2C_ADDR 0x3C                                                 // I2C address of the OLED display
+#endif                                                                     // TBEAM
 
-#ifdef WITH_FollowMe              //
-#define PIN_I2C_SCL GPIO_NUM_22   // SCL pin
-#define PIN_I2C_SDA GPIO_NUM_21   // SDA pin
-#define OLED_I2C_ADDR 0x3C        // I2C address of the OLED display
+#ifdef WITH_FollowMe            //
+#define PIN_I2C_SCL GPIO_NUM_22 // SCL pin
+#define PIN_I2C_SDA GPIO_NUM_21 // SDA pin
+#define OLED_I2C_ADDR 0x3C      // I2C address of the OLED display
 // #define PIN_OLED_RST GPIO_NUM_15  // OLED RESET: low-active
 #endif
 
@@ -486,58 +486,58 @@ uint8_t BARO_I2C = (uint8_t)I2C_BUS;
 // #endif
 
 #ifdef WITH_LORA32
-#define PIN_SD_CS     GPIO_NUM_13 // SD card interface in SPI mode
-#define PIN_SD_SCK    GPIO_NUM_14
-#define PIN_SD_MISO   GPIO_NUM_2
-#define PIN_SD_MOSI   GPIO_NUM_15
-#define SD_SPI_DMA              2
+#define PIN_SD_CS GPIO_NUM_13 // SD card interface in SPI mode
+#define PIN_SD_SCK GPIO_NUM_14
+#define PIN_SD_MISO GPIO_NUM_2
+#define PIN_SD_MOSI GPIO_NUM_15
+#define SD_SPI_DMA 2
 #endif
 
 #ifdef WITH_JACEK
 
-#define PIN_OLED_RST  GPIO_NUM_33 // OLED RESET: low-active
-#define OLED_I2C_ADDR 0x3C        // I2C address of the OLED display
+#define PIN_OLED_RST GPIO_NUM_33 // OLED RESET: low-active
+#define OLED_I2C_ADDR 0x3C       // I2C address of the OLED display
 
-#define PIN_POWER     GPIO_NUM_22 // power to GPS, RF, ...
+#define PIN_POWER GPIO_NUM_22     // power to GPS, RF, ...
 #define PIN_POWER_LDO GPIO_NUM_23 // LOW=low power LDO, HIGH=higher power LDO
 
-#define PIN_SD_CS     GPIO_NUM_12 // SD card interface in SPI mode
-#define PIN_SD_SCK    GPIO_NUM_13
-#define PIN_SD_MISO   GPIO_NUM_2
-#define PIN_SD_MOSI   GPIO_NUM_15
-#define SD_SPI_DMA              2
+#define PIN_SD_CS GPIO_NUM_12 // SD card interface in SPI mode
+#define PIN_SD_SCK GPIO_NUM_13
+#define PIN_SD_MISO GPIO_NUM_2
+#define PIN_SD_MOSI GPIO_NUM_15
+#define SD_SPI_DMA 2
 
-#define PIN_BEEPER    GPIO_NUM_14
+#define PIN_BEEPER GPIO_NUM_14
 
 #endif // JACEK
 
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10)
-#define PIN_BEEPER    GPIO_NUM_25 // same as DAC
-#endif // TBEAM
+#define PIN_BEEPER GPIO_NUM_25 // same as DAC
+#endif                         // TBEAM
 
 #if defined(WITH_HELTEC) || defined(WITH_HELTEC_V2) || defined(WITH_TTGO)
-#define PIN_BEEPER    GPIO_NUM_17
+#define PIN_BEEPER GPIO_NUM_17
 #endif // HELTEC || TTGO
 
 #if defined(WITH_HELTEC_V3)
-#define PIN_BEEPER    GPIO_NUM_1
+#define PIN_BEEPER GPIO_NUM_2
 #endif // HELTEC || TTGO
 
 #ifdef WITH_OGN_AKR
-#define PIN_BEEPER    GPIO_NUM_25
+#define PIN_BEEPER GPIO_NUM_25
 #endif
 
 #ifdef WITH_M5_JACEK
 
-#define PIN_GPS_ANT   GPIO_NUM_5  // internal(H) or external(L) GPS antenna
+#define PIN_GPS_ANT GPIO_NUM_5 // internal(H) or external(L) GPS antenna
 
-#define PIN_SD_CS     GPIO_NUM_11 // SD card interface in SPI mode
-#define PIN_SD_SCK    GPIO_NUM_6
-#define PIN_SD_MISO   GPIO_NUM_7
-#define PIN_SD_MOSI   GPIO_NUM_8
-#define SD_SPI_DMA             2
+#define PIN_SD_CS GPIO_NUM_11 // SD card interface in SPI mode
+#define PIN_SD_SCK GPIO_NUM_6
+#define PIN_SD_MISO GPIO_NUM_7
+#define PIN_SD_MOSI GPIO_NUM_8
+#define SD_SPI_DMA 2
 
-#define PIN_BEEPER    GPIO_NUM_25 // DAC
+#define PIN_BEEPER GPIO_NUM_25 // DAC
 
 #endif // M5_JACEK
 
@@ -547,43 +547,43 @@ uint8_t BARO_I2C = (uint8_t)I2C_BUS;
 #endif
 
 #if defined(WITH_FollowMe) || defined(WITH_OGN_AKR)
-#define PIN_SD_MISO   GPIO_NUM_12 // SD card in simple SPI mode, using HSPI IOMUX pins
-#define PIN_SD_MOSI   GPIO_NUM_13
-#define PIN_SD_SCK    GPIO_NUM_14
-#define PIN_SD_CS     GPIO_NUM_15
-#define SD_SPI_DMA              2
+#define PIN_SD_MISO GPIO_NUM_12 // SD card in simple SPI mode, using HSPI IOMUX pins
+#define PIN_SD_MOSI GPIO_NUM_13
+#define PIN_SD_SCK GPIO_NUM_14
+#define PIN_SD_CS GPIO_NUM_15
+#define SD_SPI_DMA 2
 #endif // FollowMe || WITH_OGN_AKR
 
-#ifdef WITH_M5_JACEK              // the three buttons below the LCD
+#ifdef WITH_M5_JACEK // the three buttons below the LCD
 
-#define PIN_BUTTON_L  GPIO_NUM_37 // Left
-#define PIN_BUTTON    GPIO_NUM_38 // Center
-#define PIN_BUTTON_R  GPIO_NUM_39 // Right
+#define PIN_BUTTON_L GPIO_NUM_37 // Left
+#define PIN_BUTTON GPIO_NUM_38   // Center
+#define PIN_BUTTON_R GPIO_NUM_39 // Right
 
 #endif
 
-#if defined(WITH_FollowMe) // || defined(WITH_TBEAM) || defined(WITH_TBEAM_V10)
-#define PIN_BUTTON    GPIO_NUM_39 // or 38 ?
+#if defined(WITH_FollowMe)     // || defined(WITH_TBEAM) || defined(WITH_TBEAM_V10)
+#define PIN_BUTTON GPIO_NUM_39 // or 38 ?
 #endif
 
 #if defined(WITH_TBEAM_V10)
-#define PIN_BUTTON    GPIO_NUM_38
+#define PIN_BUTTON GPIO_NUM_38
 #endif
 
 #ifdef WITH_JACEK
-#define PIN_BUTTON    GPIO_NUM_38
+#define PIN_BUTTON GPIO_NUM_38
 #endif
 
 #ifdef WITH_OGN_AKR
-#define PIN_BUTTON    GPIO_NUM_34
+#define PIN_BUTTON GPIO_NUM_34
 #endif
 
 #if defined(WITH_TTGO) || defined(WITH_HELTEC) || defined(WITH_HELTEC_V2) || defined(WITH_HELTEC_V3)
-#define PIN_BUTTON    GPIO_NUM_0
+#define PIN_BUTTON GPIO_NUM_0
 #endif
 
 #ifndef PIN_BUTTON
-#define PIN_BUTTON    GPIO_NUM_39
+#define PIN_BUTTON GPIO_NUM_39
 #endif
 
 // ======================================================================================================
@@ -594,14 +594,22 @@ FIFO<uint8_t, 8> KeyBuffer;
 // 48-bit unique ID of the chip
 
 uint64_t getUniqueID(void)
-{ uint8_t MAC[6]; esp_efuse_mac_get_default(MAC);
-  uint64_t ID=MAC[0];
-  for(int Idx=1; Idx<6; Idx++)
-  { ID<<=8; ID|=MAC[Idx]; }
-  return ID; }
+{
+  uint8_t MAC[6];
+  esp_efuse_mac_get_default(MAC);
+  uint64_t ID = MAC[0];
+  for (int Idx = 1; Idx < 6; Idx++)
+  {
+    ID <<= 8;
+    ID |= MAC[Idx];
+  }
+  return ID;
+}
 
 uint32_t getUniqueAddress(void)
-{ return getUniqueID()&0x00FFFFFF; }
+{
+  return getUniqueID() & 0x00FFFFFF;
+}
 
 /*
 uint64_t getUniqueID(void)
@@ -617,7 +625,7 @@ uint32_t getUniqueAddress(void)
 // ======================================================================================================
 
 #ifdef WITH_MAVLINK
-uint8_t  MAV_Seq=0;                   // sequence number for MAVlink message sent out
+uint8_t MAV_Seq = 0; // sequence number for MAVlink message sent out
 #endif
 
 // ======================================================================================================
@@ -638,54 +646,85 @@ LoRaWANnode WANdev;
 // Power control
 
 #ifdef WITH_JACEK
-void POWER_Dir    (void) { gpio_set_direction(PIN_POWER, GPIO_MODE_OUTPUT); }
-void POWER_On     (void) { gpio_set_level(PIN_POWER, 0); }      //
-void POWER_Off    (void) { gpio_set_level(PIN_POWER, 1); }
+void POWER_Dir(void)
+{
+  gpio_set_direction(PIN_POWER, GPIO_MODE_OUTPUT);
+}
+void POWER_On(void) { gpio_set_level(PIN_POWER, 0); } //
+void POWER_Off(void) { gpio_set_level(PIN_POWER, 1); }
 void POWER_LDO_Dir(void) { gpio_set_direction(PIN_POWER_LDO, GPIO_MODE_OUTPUT); }
-void POWER_LDO_On (void) { gpio_set_level(PIN_POWER_LDO, 1); }  //
+void POWER_LDO_On(void) { gpio_set_level(PIN_POWER_LDO, 1); } //
 void POWER_LDO_Off(void) { gpio_set_level(PIN_POWER_LDO, 0); }
 #endif
 
 #ifdef WITH_M5_JACEK
-void GPS_ANT_Dir (void)              { gpio_set_direction(PIN_GPS_ANT, GPIO_MODE_OUTPUT); }
-void GPS_ANT_Sel (uint8_t Antenna=1) { gpio_set_level(PIN_GPS_ANT, Antenna); } // 1=internal, 0=external
+void GPS_ANT_Dir(void)
+{
+  gpio_set_direction(PIN_GPS_ANT, GPIO_MODE_OUTPUT);
+}
+void GPS_ANT_Sel(uint8_t Antenna = 1) { gpio_set_level(PIN_GPS_ANT, Antenna); } // 1=internal, 0=external
 #endif
 
 #ifdef PIN_POWER_GOOD
-bool Power_isGood(void) { return gpio_get_level(PIN_POWER_GOOD); }
+bool Power_isGood(void)
+{
+  return gpio_get_level(PIN_POWER_GOOD);
+}
 #endif
 
 //--------------------------------------------------------------------------------------------------------
 // Status LED on the PCB
 
 #ifdef PIN_LED_PCB
-void LED_PCB_Dir  (void) { gpio_set_direction(PIN_LED_PCB, GPIO_MODE_OUTPUT); }
+void LED_PCB_Dir(void)
+{
+  gpio_set_direction(PIN_LED_PCB, GPIO_MODE_OUTPUT);
+}
 #ifdef PIN_LED_PCB_INV
-void LED_PCB_On   (void) { gpio_set_level(PIN_LED_PCB, 0); }
-void LED_PCB_Off  (void) { gpio_set_level(PIN_LED_PCB, 1); }
+void LED_PCB_On(void)
+{
+  gpio_set_level(PIN_LED_PCB, 0);
+}
+void LED_PCB_Off(void) { gpio_set_level(PIN_LED_PCB, 1); }
 #else
-void LED_PCB_On   (void) { gpio_set_level(PIN_LED_PCB, 1); }
-void LED_PCB_Off  (void) { gpio_set_level(PIN_LED_PCB, 0); }
+void LED_PCB_On(void)
+{
+  gpio_set_level(PIN_LED_PCB, 1);
+}
+void LED_PCB_Off(void) { gpio_set_level(PIN_LED_PCB, 0); }
 #endif
-#else                                            // if LED on the PCB is absent, just make dummy calls
-void LED_PCB_Dir  (void) { }
-#ifdef WITH_AXP                                  // but with the T-Beam v1.0 and AXP chip we have an LED to control
-void LED_PCB_On   (void) { AXP.setLED_ON(); }
-void LED_PCB_Off  (void) { AXP.setLED_OFF(); }
+#else           // if LED on the PCB is absent, just make dummy calls
+void LED_PCB_Dir(void)
+{
+}
+#ifdef WITH_AXP // but with the T-Beam v1.0 and AXP chip we have an LED to control
+void LED_PCB_On(void)
+{
+  AXP.setLED_ON();
+}
+void LED_PCB_Off(void) { AXP.setLED_OFF(); }
 #else
-void LED_PCB_On   (void) { }
-void LED_PCB_Off  (void) { }
+void LED_PCB_On(void)
+{
+}
+void LED_PCB_Off(void) {}
 #endif
 #endif
 
 #ifdef WITH_LED_TX
-void LED_TX_Dir  (void) { gpio_set_direction(PIN_LED_TX, GPIO_MODE_OUTPUT); }
-void LED_TX_On   (void) { gpio_set_level(PIN_LED_TX, 0); }
-void LED_TX_Off  (void) { gpio_set_level(PIN_LED_TX, 1); }
+void LED_TX_Dir(void)
+{
+  gpio_set_direction(PIN_LED_TX, GPIO_MODE_OUTPUT);
+}
+void LED_TX_On(void) { gpio_set_level(PIN_LED_TX, 0); }
+void LED_TX_Off(void) { gpio_set_level(PIN_LED_TX, 1); }
 #endif
 
 #ifdef PIN_BUTTON
-void Button_Dir      (void) { gpio_set_direction(PIN_BUTTON, GPIO_MODE_INPUT); }
+void Button_Dir(void)
+{
+  gpio_set_direction(PIN_BUTTON, GPIO_MODE_INPUT);
+}
 bool Button_isPressed(void) { return !gpio_get_level(PIN_BUTTON); }
 #endif
 
@@ -696,16 +735,16 @@ bool Button_isPressed(void) { return !gpio_get_level(PIN_BUTTON); }
 SemaphoreHandle_t CONS_Mutex;
 
 void CONS_UART_Init(void)
-{ setvbuf(stdin, NULL, _IONBF, 0); // Disable buffering on stdin
+{
+  setvbuf(stdin, NULL, _IONBF, 0); // Disable buffering on stdin
   esp_vfs_dev_uart_set_rx_line_endings(ESP_LINE_ENDINGS_CR);
   esp_vfs_dev_uart_set_tx_line_endings(ESP_LINE_ENDINGS_CRLF);
   const uart_config_t UARTconfig =
-  { .baud_rate = DEFAULT_CONbaud,
-    .data_bits = UART_DATA_8_BITS,
-    .parity = UART_PARITY_DISABLE,
-    .stop_bits = UART_STOP_BITS_1,
-    .use_ref_tick = true
-  };
+      {.baud_rate = DEFAULT_CONbaud,
+       .data_bits = UART_DATA_8_BITS,
+       .parity = UART_PARITY_DISABLE,
+       .stop_bits = UART_STOP_BITS_1,
+       .use_ref_tick = true};
   uart_param_config(CONS_UART, &UARTconfig);
   uart_driver_install(CONS_UART, 1024, 0, 0, NULL, 0);
   esp_vfs_dev_uart_use_driver(CONS_UART);
@@ -723,8 +762,9 @@ bool CONS_InpReady(void)
 // int  CONS_UART_Read       (uint8_t &Byte) { return uart_read_bytes  (CONS_UART, &Byte, 1, 0); }  // non-blocking
 // void CONS_UART_Write      (char     Byte) {        uart_write_bytes (CONS_UART, &Byte, 1);    }  // blocking ?
 
-void CONS_UART_Write (char     Byte)
-{ uart_write_bytes (CONS_UART, &Byte, 1);
+void CONS_UART_Write(char Byte)
+{
+  uart_write_bytes(CONS_UART, &Byte, 1);
   // putchar(Byte);
 #if defined(WITH_BT_SPP) || defined(WITH_BLE_SPP)
   BT_SPP_Write(Byte);
@@ -735,31 +775,45 @@ void CONS_UART_Write (char     Byte)
 #ifdef WITH_STRATUX
   Stratux_Write(Byte);
 #endif
-}                                            // it appears the NL is translated into CR+NL
+} // it appears the NL is translated into CR+NL
 
-int  CONS_UART_Read  (uint8_t &Byte)
-{ int Ret=uart_read_bytes  (CONS_UART, &Byte, 1, 0); if(Ret==1) return 1;
-  // int Ret=getchar(); if(Ret>=0) { Byte=Ret; return 1; }
+int CONS_UART_Read(uint8_t &Byte)
+{
+  int Ret = uart_read_bytes(CONS_UART, &Byte, 1, 0);
+  if (Ret == 1)
+    return 1;
+    // int Ret=getchar(); if(Ret>=0) { Byte=Ret; return 1; }
 #if defined(WITH_BT_SPP) || defined(WITH_BLE_SPP)
-  Ret=BT_SPP_Read(Byte); if(Ret>0) { return 1; }
+  Ret = BT_SPP_Read(Byte);
+  if (Ret > 0)
+  {
+    return 1;
+  }
 #endif
 #ifdef WITH_STRATUX
-  Ret=Stratux_Read(Byte); if(Ret>0) { return 1; }
+  Ret = Stratux_Read(Byte);
+  if (Ret > 0)
+  {
+    return 1;
+  }
 #endif
   return Ret;
 }
 // int  CONS_UART_Free  (void)           { return UART2_Free(); }
 // int  CONS_UART_Full  (void)           { return UART2_Full(); }
 
-void  CONS_UART_SetBaudrate(int BaudRate)  { uart_set_baudrate(CONS_UART, BaudRate); }
+void CONS_UART_SetBaudrate(int BaudRate) { uart_set_baudrate(CONS_UART, BaudRate); }
 
 //--------------------------------------------------------------------------------------------------------
 // ADS-B UART
 
 #ifdef AERO_UART
-int   AERO_UART_Read       (uint8_t &Byte) { return uart_read_bytes  (AERO_UART, &Byte, 1, 0); }  // should be buffered and non-blocking
-void  AERO_UART_Write      (char     Byte) {        uart_write_bytes (AERO_UART, &Byte, 1);    }  // should be buffered and blocking
-void  AERO_UART_SetBaudrate(int BaudRate)  {        uart_set_baudrate(AERO_UART, BaudRate);    }
+int AERO_UART_Read(uint8_t &Byte)
+{
+  return uart_read_bytes(AERO_UART, &Byte, 1, 0);
+} // should be buffered and non-blocking
+void AERO_UART_Write(char Byte) { uart_write_bytes(AERO_UART, &Byte, 1); } // should be buffered and blocking
+void AERO_UART_SetBaudrate(int BaudRate) { uart_set_baudrate(AERO_UART, BaudRate); }
 #endif
 
 //--------------------------------------------------------------------------------------------------------
@@ -767,115 +821,154 @@ void  AERO_UART_SetBaudrate(int BaudRate)  {        uart_set_baudrate(AERO_UART,
 
 #ifdef GPS_UART
 // int   GPS_UART_Full       (void)          { size_t Full=0; uart_get_buffered_data_len(GPS_UART, &Full); return Full; }
-int   GPS_UART_Read       (uint8_t &Byte) { return uart_read_bytes  (GPS_UART, &Byte, 1, 0); }  // should be buffered and non-blocking
-void  GPS_UART_Write      (char     Byte) {        uart_write_bytes (GPS_UART, &Byte, 1);    }  // should be buffered and blocking
-void  GPS_UART_Flush      (int MaxWait  ) {        uart_wait_tx_done(GPS_UART, MaxWait);     }
-void  GPS_UART_SetBaudrate(int BaudRate ) {        uart_set_baudrate(GPS_UART, BaudRate);    }
+int GPS_UART_Read(uint8_t &Byte) { return uart_read_bytes(GPS_UART, &Byte, 1, 0); } // should be buffered and non-blocking
+void GPS_UART_Write(char Byte) { uart_write_bytes(GPS_UART, &Byte, 1); }            // should be buffered and blocking
+void GPS_UART_Flush(int MaxWait) { uart_wait_tx_done(GPS_UART, MaxWait); }
+void GPS_UART_SetBaudrate(int BaudRate) { uart_set_baudrate(GPS_UART, BaudRate); }
 #endif
 
 #ifdef WITH_GPS_ENABLE
-void GPS_DISABLE(void) { gpio_set_level(PIN_GPS_ENA, 0); }
-void GPS_ENABLE (void) { gpio_set_level(PIN_GPS_ENA, 1); }
+void GPS_DISABLE(void)
+{
+  gpio_set_level(PIN_GPS_ENA, 0);
+}
+void GPS_ENABLE(void) { gpio_set_level(PIN_GPS_ENA, 1); }
 #endif
 
 #ifdef PIN_GPS_PPS
-bool GPS_PPS_isOn(void) { return gpio_get_level(PIN_GPS_PPS); }
+bool GPS_PPS_isOn(void)
+{
+  return gpio_get_level(PIN_GPS_PPS);
+}
 #endif
 
 //--------------------------------------------------------------------------------------------------------
 // RF chip
 
-#ifdef PIN_RFM_RST      // if reset pin declared for the RF chip
-void RFM_RESET_SetInput  (void)         { gpio_set_direction(PIN_RFM_RST, GPIO_MODE_INPUT); }
-void RFM_RESET_SetOutput (void)         { gpio_set_direction(PIN_RFM_RST, GPIO_MODE_OUTPUT); }
-void RFM_RESET_SetLevel  (uint8_t High) { gpio_set_level(PIN_RFM_RST, High&1); }
+#ifdef PIN_RFM_RST // if reset pin declared for the RF chip
+void RFM_RESET_SetInput(void)
+{
+  gpio_set_direction(PIN_RFM_RST, GPIO_MODE_INPUT);
+}
+void RFM_RESET_SetOutput(void) { gpio_set_direction(PIN_RFM_RST, GPIO_MODE_OUTPUT); }
+void RFM_RESET_SetLevel(uint8_t High) { gpio_set_level(PIN_RFM_RST, High & 1); }
 
 #if defined(WITH_RFM95) || defined(WITH_SX1272) || defined(WITH_SX1262) // for RFM95 reset is low-active
-void RFM_RESET(uint8_t On) { if(On&1) { RFM_RESET_SetOutput(); RFM_RESET_SetLevel(0); } else { RFM_RESET_SetOutput(); RFM_RESET_SetLevel(1); } }
+void RFM_RESET(uint8_t On)
+{
+  if (On & 1)
+  {
+    RFM_RESET_SetOutput();
+    RFM_RESET_SetLevel(0);
+  }
+  else
+  {
+    RFM_RESET_SetOutput();
+    RFM_RESET_SetLevel(1);
+  }
+}
 #endif
 
-#ifdef WITH_RFM69       // for RFM69 reset is high-active
-void RFM_RESET(uint8_t On) { RFM_RESET_SetLevel(On); }
+#ifdef WITH_RFM69 // for RFM69 reset is high-active
+void RFM_RESET(uint8_t On)
+{
+  RFM_RESET_SetLevel(On);
+}
 #endif
 
-#else                   // if no reset pin declared for the RF chip, then make an empty call
-inline void RFM_RESET_SetOutput (void) { }
-void RFM_RESET(uint8_t On) { }
+#else  // if no reset pin declared for the RF chip, then make an empty call
+inline void RFM_RESET_SetOutput(void)
+{
+}
+void RFM_RESET(uint8_t On) {}
 #endif // PIN_RFM_RST
 
-void RFM_IRQ_SetInput(void) { gpio_set_direction(PIN_RFM_IRQ, GPIO_MODE_INPUT); }
-bool RFM_IRQ_isOn(void)      { return gpio_get_level(PIN_RFM_IRQ); }
+void RFM_IRQ_SetInput(void)
+{
+  gpio_set_direction(PIN_RFM_IRQ, GPIO_MODE_INPUT);
+}
+bool RFM_IRQ_isOn(void) { return gpio_get_level(PIN_RFM_IRQ); }
 #ifdef WITH_SX1262
-void RFM_Busy_SetInput(void) { gpio_set_direction(PIN_RFM_BUSY, GPIO_MODE_INPUT); }
-bool RFM_Busy_isOn(void)      { return gpio_get_level(PIN_RFM_BUSY); }
+void RFM_Busy_SetInput(void)
+{
+  gpio_set_direction(PIN_RFM_BUSY, GPIO_MODE_INPUT);
+}
+bool RFM_Busy_isOn(void) { return gpio_get_level(PIN_RFM_BUSY); }
 #endif
-void RFM_Delay(int ms) { vTaskDelay(ms); }
+void RFM_Delay(int ms)
+{
+  vTaskDelay(ms);
+}
 
 static spi_device_handle_t RFM_SPI;
 
 void RFM_TransferBlock(uint8_t *Data, uint8_t Len)
-{ spi_transaction_t Trans;
+{
+  spi_transaction_t Trans;
   memset(&Trans, 0, sizeof(Trans));
   Trans.tx_buffer = Data;
   Trans.rx_buffer = Data;
-  Trans.length = 8*Len;
+  Trans.length = 8 * Len;
   // esp_err_t ret = spi_device_polling_transmit(RFM_SPI, &Trans); }
-  esp_err_t ret = spi_device_transmit(RFM_SPI, &Trans); }
+  esp_err_t ret = spi_device_transmit(RFM_SPI, &Trans);
+}
 
 //--------------------------------------------------------------------------------------------------------
 
 #ifdef WITH_TFT_LCD
 
 static void TFT_LCD_Init(void)
-{ TFT_PinsInit();
+{
+  TFT_PinsInit();
 
   spi_lobo_device_handle_t spi;
 
   spi_lobo_bus_config_t buscfg =
-  { .mosi_io_num=PIN_NUM_MOSI,              // set SPI MOSI pin
+      {.mosi_io_num = PIN_NUM_MOSI, // set SPI MOSI pin
 #ifdef PIN_NUM_MISO
-    .miso_io_num = PIN_NUM_MISO,            // set SPI MISO pin
+       .miso_io_num = PIN_NUM_MISO, // set SPI MISO pin
 #else
-    .miso_io_num = -1,
+        .miso_io_num = -1,
 #endif
-    .sclk_io_num = PIN_NUM_CLK,             // set SPI CLK pin
-    .quadwp_io_num = -1,
-    .quadhd_io_num = -1,
-    .max_transfer_sz = 6*1024 };
+       .sclk_io_num = PIN_NUM_CLK, // set SPI CLK pin
+       .quadwp_io_num = -1,
+       .quadhd_io_num = -1,
+       .max_transfer_sz = 6 * 1024};
 
   spi_lobo_device_interface_config_t devcfg =
-  { .command_bits = 0,
-    .address_bits = 0,
-    .dummy_bits = 0,
+      {
+          .command_bits = 0,
+          .address_bits = 0,
+          .dummy_bits = 0,
 #ifdef PIN_NUM_CS
-    .mode = 0,
+          .mode = 0,
 #else
-    .mode = 3,
+          .mode = 3,
 #endif
-    .duty_cycle_pos = 0,
-    .cs_ena_pretrans = 0,
-    .cs_ena_posttrans = 0,
-    .clock_speed_hz = 8000000,              // Initial clock out at 8 MHz
-    .spics_io_num = -1,                     // we will use external CS pin
+          .duty_cycle_pos = 0,
+          .cs_ena_pretrans = 0,
+          .cs_ena_posttrans = 0,
+          .clock_speed_hz = 8000000, // Initial clock out at 8 MHz
+          .spics_io_num = -1,        // we will use external CS pin
 #ifdef PIN_NUM_CS
-    .spics_ext_io_num = PIN_NUM_CS,         // external CS pin
+          .spics_ext_io_num = PIN_NUM_CS, // external CS pin
 #else
-    .spics_ext_io_num = -1,
+          .spics_ext_io_num = -1,
 #endif
-    .flags=LB_SPI_DEVICE_HALFDUPLEX,        // ALWAYS SET  to HALF DUPLEX MODE!! for display spi
-    .pre_cb = 0,
-    .post_cb = 0,
-    .selected = 0,
-  };
+          .flags = LB_SPI_DEVICE_HALFDUPLEX, // ALWAYS SET  to HALF DUPLEX MODE!! for display spi
+          .pre_cb = 0,
+          .post_cb = 0,
+          .selected = 0,
+      };
 
   max_rdclock = 4000000;
   vTaskDelay(100);
 
 #ifdef WITH_M5_JACEK
-  esp_err_t ret=spi_lobo_bus_add_device(TFT_VSPI_HOST, &buscfg, &devcfg, &spi);
+  esp_err_t ret = spi_lobo_bus_add_device(TFT_VSPI_HOST, &buscfg, &devcfg, &spi);
 #endif
 #ifdef WITH_TBEAM
-  esp_err_t ret=spi_lobo_bus_add_device(TFT_VSPI_HOST, &buscfg, &devcfg, &spi);
+  esp_err_t ret = spi_lobo_bus_add_device(TFT_VSPI_HOST, &buscfg, &devcfg, &spi);
 #endif
   // assert(ret==ESP_OK);
   // printf("SPI: display device added to spi bus (%d)\r\n", SPI_BUS);
@@ -913,7 +1006,6 @@ static void TFT_LCD_Init(void)
   TFT_drawRect(20, 20, 200, 200, TFT_CYAN);
 
   TFT_print("OGN-Tracker", CENTER, CENTER);
-
 }
 
 #endif // WITH_TFT_LCD
@@ -924,89 +1016,136 @@ static void TFT_LCD_Init(void)
 #ifdef WITH_BEEPER
 
 static ledc_timer_config_t LEDC_Timer =
-  {
-    speed_mode      : LEDC_HIGH_SPEED_MODE,   // timer mode
-    duty_resolution : LEDC_TIMER_8_BIT,       // resolution of PWM duty: 0..255
-//   { duty_resolution : LEDC_TIMER_8_BIT, }     // resolution of PWM duty: 0..255
-    timer_num       : LEDC_TIMER_0,           // timer index
-    freq_hz         : 880                     // frequency of PWM signal
-  } ;
+    {
+      speed_mode : LEDC_HIGH_SPEED_MODE,  // timer mode
+      duty_resolution : LEDC_TIMER_8_BIT, // resolution of PWM duty: 0..255
+                                          //   { duty_resolution : LEDC_TIMER_8_BIT, }     // resolution of PWM duty: 0..255
+      timer_num : LEDC_TIMER_0,           // timer index
+      freq_hz : 880                       // frequency of PWM signal
+    };
 
 static ledc_channel_config_t LEDC_Channel =
-  {
-    gpio_num   : PIN_BEEPER,
-    speed_mode : LEDC_HIGH_SPEED_MODE,
-    channel    : LEDC_CHANNEL_0,
-    intr_type  : LEDC_INTR_DISABLE,
-    timer_sel  : LEDC_TIMER_0,
-    duty       : 0,
-    hpoint     : 0
-  } ;
+    {
+      gpio_num : PIN_BEEPER,
+      speed_mode : LEDC_HIGH_SPEED_MODE,
+      channel : LEDC_CHANNEL_0,
+      intr_type : LEDC_INTR_DISABLE,
+      timer_sel : LEDC_TIMER_0,
+      duty : 0,
+      hpoint : 0
+    };
 
 esp_err_t Beep_Init(void)
-{ ledc_timer_config(&LEDC_Timer);            // Set configuration of timer0 for high speed channels
+{
+  ledc_timer_config(&LEDC_Timer); // Set configuration of timer0 for high speed channels
   ledc_channel_config(&LEDC_Channel);
-  return ESP_OK; }
+  return ESP_OK;
+}
 
 void Beep(uint16_t Freq, uint8_t Duty, uint8_t DoubleAmpl) // [Hz, 1/256] play sound with given frequency and duty (=volume)
-{ ledc_set_freq(LEDC_Timer.speed_mode, LEDC_Timer.timer_num, Freq);
+{
+  ledc_set_freq(LEDC_Timer.speed_mode, LEDC_Timer.timer_num, Freq);
   ledc_set_duty(LEDC_Channel.speed_mode, LEDC_Channel.channel, Duty);
-  ledc_update_duty(LEDC_Channel.speed_mode, LEDC_Channel.channel); }
+  ledc_update_duty(LEDC_Channel.speed_mode, LEDC_Channel.channel);
+}
 
 // Frequencies for notes of the highest octave: C,     C#,    D,     D#,    E,     F,     F#,    G,     G#,    A,     A#,    B
 // Freq[i] = 32*523.25*2**(i/12)            i = 0,     1,     2,     3,     4,     5,     6,     7,     8,     9,     A,     B
-static const uint16_t NoteFreq[12] =      { 16744, 17740, 18795, 19912, 21096, 22351, 23680, 25088, 26579, 28160, 29834, 31608 } ;
+static const uint16_t NoteFreq[12] = {16744, 17740, 18795, 19912, 21096, 22351, 23680, 25088, 26579, 28160, 29834, 31608};
 
 void Beep_Note(uint8_t Note) // Note = VVOONNNN: VV = Volume, OO=Octave, NNNN=Note
-{ uint8_t Volume =  Note>>6;                             // [0..3]
-  uint8_t Octave = (Note>>4)&0x03;                       // [0..3]
-  Note &= 0x0F; if(Note>=12) { Note-=12; Octave+=1; }    // [0..11] [0..4]
-  uint8_t Duty = 0; uint8_t DoubleAmpl=0;
-  if(Volume) { Duty=0x10; Duty<<=Volume; }               // Duty = 0x00, 0x20, 0x40, 0x80
-  if(Volume>2) { DoubleAmpl=1; }                         // DoubleAmpl = 0, 0, 1, 1
+{
+  uint8_t Volume = Note >> 6;          // [0..3]
+  uint8_t Octave = (Note >> 4) & 0x03; // [0..3]
+  Note &= 0x0F;
+  if (Note >= 12)
+  {
+    Note -= 12;
+    Octave += 1;
+  } // [0..11] [0..4]
+  uint8_t Duty = 0;
+  uint8_t DoubleAmpl = 0;
+  if (Volume)
+  {
+    Duty = 0x10;
+    Duty <<= Volume;
+  } // Duty = 0x00, 0x20, 0x40, 0x80
+  if (Volume > 2)
+  {
+    DoubleAmpl = 1;
+  } // DoubleAmpl = 0, 0, 1, 1
   uint16_t Freq = NoteFreq[Note];
-  if(Octave) { Freq += 1<<(Octave-1); Freq >>= (4-Octave); }
-  Beep(Freq, Duty, DoubleAmpl); }
+  if (Octave)
+  {
+    Freq += 1 << (Octave - 1);
+    Freq >>= (4 - Octave);
+  }
+  Beep(Freq, Duty, DoubleAmpl);
+}
 
-uint8_t  Vario_Note=0x00; // 0x40;
-uint16_t Vario_Period=800;
-uint16_t Vario_Fill=50;
+uint8_t Vario_Note = 0x00; // 0x40;
+uint16_t Vario_Period = 800;
+uint16_t Vario_Fill = 50;
 
-static volatile uint16_t Vario_Time=0;
+static volatile uint16_t Vario_Time = 0;
 
-static volatile uint8_t Play_Note=0;             // Note being played
-static volatile uint8_t Play_Counter=0;          // [ms] time counter
+static volatile uint8_t Play_Note = 0;    // Note being played
+static volatile uint8_t Play_Counter = 0; // [ms] time counter
 
-static FIFO<uint16_t, 8> Play_FIFO;              // queue of notes to play
+static FIFO<uint16_t, 8> Play_FIFO; // queue of notes to play
 
-void Play(uint8_t Note, uint8_t Len)             // [Note] [ms] put a new not to play in the queue
-{ uint16_t Word = Note; Word<<=8; Word|=Len; Play_FIFO.Write(Word); }
+void Play(uint8_t Note, uint8_t Len) // [Note] [ms] put a new not to play in the queue
+{
+  uint16_t Word = Note;
+  Word <<= 8;
+  Word |= Len;
+  Play_FIFO.Write(Word);
+}
 
 uint8_t Play_Busy(void) { return Play_Counter; } // is a note being played right now ?
 
-void Play_TimerCheck(uint8_t Ticks)              // every ms serve the note playing
-{ uint8_t Counter=Play_Counter;
-  if(Counter)                                    // if counter non-zero
-  { if(Counter>Ticks) Counter-=Ticks;            // decrement it
-                 else Counter=0;
-    if(!Counter) Beep_Note(Play_Note=0x00);      // if reached zero, stop playing the note
+void Play_TimerCheck(uint8_t Ticks) // every ms serve the note playing
+{
+  uint8_t Counter = Play_Counter;
+  if (Counter) // if counter non-zero
+  {
+    if (Counter > Ticks)
+      Counter -= Ticks; // decrement it
+    else
+      Counter = 0;
+    if (!Counter)
+      Beep_Note(Play_Note = 0x00); // if reached zero, stop playing the note
   }
-  if(!Counter)                                   // if counter reached zero
-  { if(!Play_FIFO.isEmpty())                     // check for notes in the queue
-    { uint16_t Word=0; Play_FIFO.Read(Word);     // get the next note
-      Beep_Note(Play_Note=Word>>8); Counter=Word&0xFF; }   // start playing it, load counter with the note duration
+  if (!Counter) // if counter reached zero
+  {
+    if (!Play_FIFO.isEmpty()) // check for notes in the queue
+    {
+      uint16_t Word = 0;
+      Play_FIFO.Read(Word); // get the next note
+      Beep_Note(Play_Note = Word >> 8);
+      Counter = Word & 0xFF;
+    } // start playing it, load counter with the note duration
   }
-  Play_Counter=Counter;
+  Play_Counter = Counter;
 
-  uint16_t Time=Vario_Time;
-  Time++; if(Time>=Vario_Period) Time=0;
+  uint16_t Time = Vario_Time;
+  Time++;
+  if (Time >= Vario_Period)
+    Time = 0;
   Vario_Time = Time;
 
-  if(Counter==0)                            // when no notes are being played, make the vario sound
-  { if(Time<=Vario_Fill)
-    { if(Play_Note!=Vario_Note) Beep_Note(Play_Note=Vario_Note); }
+  if (Counter == 0) // when no notes are being played, make the vario sound
+  {
+    if (Time <= Vario_Fill)
+    {
+      if (Play_Note != Vario_Note)
+        Beep_Note(Play_Note = Vario_Note);
+    }
     else
-    { if(Play_Note!=0) Beep_Note(Play_Note=0x00); }
+    {
+      if (Play_Note != 0)
+        Beep_Note(Play_Note = 0x00);
+    }
   }
 }
 
@@ -1030,77 +1169,130 @@ void Play_TimerCheck(uint8_t Ticks)              // every ms serve the note play
 // const int Sound_737_Whoop_Whoop_size = Sound_737_Whoop_Whoop_end-Sound_737_Whoop_Whoop_u8;
 
 // const uint32_t Sound_SampleRate = 16000;
-const  int     Sound_BuffSize   =   256;
+const int Sound_BuffSize = 256;
 
 esp_err_t Sound_Init(void)
 {
   i2s_config_t i2s_config = {
-        .mode                 = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN),
-        .sample_rate          = Sound_SampleRate,
-        .bits_per_sample      = I2S_BITS_PER_SAMPLE_16BIT,
-        .channel_format       = I2S_CHANNEL_FMT_ONLY_RIGHT, // I2S_CHANNEL_FMT_ALL_RIGHT or I2S_CHANNEL_FMT_ONLY_RIGHT ?
-        .communication_format = I2S_COMM_FORMAT_I2S_MSB,
-        .intr_alloc_flags     = 0,
-        .dma_buf_count        = 4,
-        .dma_buf_len          = Sound_BuffSize,
-        .use_apll             = 1,
-        .tx_desc_auto_clear   = 1,
-        .fixed_mclk           = 0 };
-  i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);         // install and start i2s driver
+      .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN),
+      .sample_rate = Sound_SampleRate,
+      .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+      .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT, // I2S_CHANNEL_FMT_ALL_RIGHT or I2S_CHANNEL_FMT_ONLY_RIGHT ?
+      .communication_format = I2S_COMM_FORMAT_I2S_MSB,
+      .intr_alloc_flags = 0,
+      .dma_buf_count = 4,
+      .dma_buf_len = Sound_BuffSize,
+      .use_apll = 1,
+      .tx_desc_auto_clear = 1,
+      .fixed_mclk = 0};
+  i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL); // install and start i2s driver
   // i2s_set_pin(I2S_NUM_0, 0);
-  i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN);                  // init DAC pad
+  i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN); // init DAC pad
   // i2s_set_sample_rates(I2S_NUM_0, Sound_SampleRate);
   // i2s_set_clk(I2S_NUM_0, Sound_SampleRate, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
-  return ESP_OK; }
+  return ESP_OK;
+}
 
 static uint16_t Sound_Buffer[Sound_BuffSize];
 
 int Sound_Play(const uint16_t *Data, int Len)
-{ size_t Written=0;
-  i2s_write(I2S_NUM_0, Data, Len<<1, &Written, portMAX_DELAY);
-  return Written>>1; }
+{
+  size_t Written = 0;
+  i2s_write(I2S_NUM_0, Data, Len << 1, &Written, portMAX_DELAY);
+  return Written >> 1;
+}
 
 void Sound_PlayU8(const uint8_t *Data, uint16_t Len)
-{ int BuffIdx=0;
-  for( ; Len--; )
-  { if(BuffIdx>=Sound_BuffSize) { Sound_Play(Sound_Buffer, Sound_BuffSize); BuffIdx=0; }
-    uint16_t DAC = (*Data++); DAC<<=8;
-    Sound_Buffer[BuffIdx++] = DAC; }
-  if(BuffIdx) { Sound_Play(Sound_Buffer, BuffIdx); BuffIdx=0; }
+{
+  int BuffIdx = 0;
+  for (; Len--;)
+  {
+    if (BuffIdx >= Sound_BuffSize)
+    {
+      Sound_Play(Sound_Buffer, Sound_BuffSize);
+      BuffIdx = 0;
+    }
+    uint16_t DAC = (*Data++);
+    DAC <<= 8;
+    Sound_Buffer[BuffIdx++] = DAC;
+  }
+  if (BuffIdx)
+  {
+    Sound_Play(Sound_Buffer, BuffIdx);
+    BuffIdx = 0;
+  }
 }
 
 void Sound_PlayS8(const int8_t *Data, uint16_t Len, uint8_t Vol)
-{ if(Vol>8) Vol=8;
-  int BuffIdx=0;
-  for( ; Len--; )
-  { if(BuffIdx>=Sound_BuffSize) { Sound_Play(Sound_Buffer, Sound_BuffSize); BuffIdx=0; }
-    int16_t DAC = (*Data++); if(DAC&0x80) DAC|=0xFF00; DAC<<=Vol; DAC+=0x8000;
-    Sound_Buffer[BuffIdx++] = DAC; }
-  if(BuffIdx) { Sound_Play(Sound_Buffer, BuffIdx); BuffIdx=0; }
+{
+  if (Vol > 8)
+    Vol = 8;
+  int BuffIdx = 0;
+  for (; Len--;)
+  {
+    if (BuffIdx >= Sound_BuffSize)
+    {
+      Sound_Play(Sound_Buffer, Sound_BuffSize);
+      BuffIdx = 0;
+    }
+    int16_t DAC = (*Data++);
+    if (DAC & 0x80)
+      DAC |= 0xFF00;
+    DAC <<= Vol;
+    DAC += 0x8000;
+    Sound_Buffer[BuffIdx++] = DAC;
+  }
+  if (BuffIdx)
+  {
+    Sound_Play(Sound_Buffer, BuffIdx);
+    BuffIdx = 0;
+  }
 }
 
 void Sound_PlaySilence(uint16_t Len)
-{ int BuffIdx=0;
-  for( ; Len--; )
-  { if(BuffIdx>=Sound_BuffSize) { Sound_Play(Sound_Buffer, Sound_BuffSize); BuffIdx=0; }
-    Sound_Buffer[BuffIdx++] = 0x8000; }
-  if(BuffIdx) { Sound_Play(Sound_Buffer, BuffIdx); BuffIdx=0; }
+{
+  int BuffIdx = 0;
+  for (; Len--;)
+  {
+    if (BuffIdx >= Sound_BuffSize)
+    {
+      Sound_Play(Sound_Buffer, Sound_BuffSize);
+      BuffIdx = 0;
+    }
+    Sound_Buffer[BuffIdx++] = 0x8000;
+  }
+  if (BuffIdx)
+  {
+    Sound_Play(Sound_Buffer, BuffIdx);
+    BuffIdx = 0;
+  }
 }
 
-static uint16_t Sound_Phase=0;
+static uint16_t Sound_Phase = 0;
 
 void Sound_Beep(int16_t Freq, uint16_t Len, int16_t Ampl)
-{ int BuffIdx=0;
-  for( ; Len--; )
-  { if(BuffIdx>=Sound_BuffSize) { Sound_Play(Sound_Buffer, Sound_BuffSize); BuffIdx=0; } // if buffer full then play it
-    int16_t Sig = IntSine(Sound_Phase)>>16;           // 16-bit sine
+{
+  int BuffIdx = 0;
+  for (; Len--;)
+  {
+    if (BuffIdx >= Sound_BuffSize)
+    {
+      Sound_Play(Sound_Buffer, Sound_BuffSize);
+      BuffIdx = 0;
+    }                                         // if buffer full then play it
+    int16_t Sig = IntSine(Sound_Phase) >> 16; // 16-bit sine
     // int16_t Sig = Isin(Sound_Phase);               // 13-bit, +/-4096 range sine
-    Sound_Phase += Freq;                           // increment the Phase
+    Sound_Phase += Freq; // increment the Phase
     // Sig = ((int32_t)Sig*Ampl+0x1000)>>13;          // multiply by requested Amplitude
-    Sig>>=1;
-    uint16_t DAC = 0x8000+Sig; // DAC = (DAC&0xFF00) | (DAC>>8);
-    Sound_Buffer[BuffIdx++] = DAC; }
-  if(BuffIdx) { Sound_Play(Sound_Buffer, BuffIdx); BuffIdx=0; }
+    Sig >>= 1;
+    uint16_t DAC = 0x8000 + Sig; // DAC = (DAC&0xFF00) | (DAC>>8);
+    Sound_Buffer[BuffIdx++] = DAC;
+  }
+  if (BuffIdx)
+  {
+    Sound_Play(Sound_Buffer, BuffIdx);
+    BuffIdx = 0;
+  }
 }
 
 #endif
@@ -1111,13 +1303,17 @@ void Sound_Beep(int16_t Freq, uint16_t Len, int16_t Ampl)
 #ifdef WITH_OLED
 
 #ifdef PIN_OLED_RST
-void OLED_RESET(bool Level) { gpio_set_level(PIN_OLED_RST, Level); }
+void OLED_RESET(bool Level)
+{
+  gpio_set_level(PIN_OLED_RST, Level);
+}
 #endif
 
 esp_err_t OLED_Init(uint8_t DispIdx)
-{ i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+{
+  i2c_cmd_handle_t cmd = i2c_cmd_link_create();
   i2c_master_start(cmd);
-  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR+DispIdx)<<1) | I2C_MASTER_WRITE, true);
+  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR + DispIdx) << 1) | I2C_MASTER_WRITE, true);
   i2c_master_write_byte(cmd, OLED_CONTROL_BYTE_CMD_STREAM, true);
   i2c_master_write_byte(cmd, OLED_CMD_SET_CHARGE_PUMP, true);
   i2c_master_write_byte(cmd, 0x14, true);
@@ -1127,78 +1323,102 @@ esp_err_t OLED_Init(uint8_t DispIdx)
   i2c_master_stop(cmd);
   esp_err_t espRc = i2c_master_cmd_begin(I2C_BUS, cmd, 10);
   i2c_cmd_link_delete(cmd);
-  return espRc; }
+  return espRc;
+}
 
 esp_err_t OLED_DisplayON(uint8_t ON, uint8_t DispIdx)
-{ i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+{
+  i2c_cmd_handle_t cmd = i2c_cmd_link_create();
   i2c_master_start(cmd);
-  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR+DispIdx)<<1) | I2C_MASTER_WRITE, true);
+  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR + DispIdx) << 1) | I2C_MASTER_WRITE, true);
   i2c_master_write_byte(cmd, OLED_CONTROL_BYTE_CMD_STREAM, true);
-  i2c_master_write_byte(cmd, OLED_CMD_DISPLAY_OFF+ON, true);
+  i2c_master_write_byte(cmd, OLED_CMD_DISPLAY_OFF + ON, true);
   i2c_master_stop(cmd);
   esp_err_t espRc = i2c_master_cmd_begin(I2C_BUS, cmd, 10);
   i2c_cmd_link_delete(cmd);
-  return espRc; }
+  return espRc;
+}
 
 esp_err_t OLED_DisplayINV(uint8_t INV, uint8_t DispIdx)
-{ i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+{
+  i2c_cmd_handle_t cmd = i2c_cmd_link_create();
   i2c_master_start(cmd);
-  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR+DispIdx)<<1) | I2C_MASTER_WRITE, true);
+  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR + DispIdx) << 1) | I2C_MASTER_WRITE, true);
   i2c_master_write_byte(cmd, OLED_CONTROL_BYTE_CMD_STREAM, true);
-  i2c_master_write_byte(cmd, OLED_CMD_DISPLAY_NORMAL+INV, true);
+  i2c_master_write_byte(cmd, OLED_CMD_DISPLAY_NORMAL + INV, true);
   i2c_master_stop(cmd);
   esp_err_t espRc = i2c_master_cmd_begin(I2C_BUS, cmd, 10);
   i2c_cmd_link_delete(cmd);
-  return espRc; }
+  return espRc;
+}
 
 esp_err_t OLED_SetContrast(uint8_t Contrast, uint8_t DispIdx)
-{ i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+{
+  i2c_cmd_handle_t cmd = i2c_cmd_link_create();
   i2c_master_start(cmd);
-  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR+DispIdx)<<1) | I2C_MASTER_WRITE, true);
+  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR + DispIdx) << 1) | I2C_MASTER_WRITE, true);
   i2c_master_write_byte(cmd, OLED_CONTROL_BYTE_CMD_STREAM, true);
   i2c_master_write_byte(cmd, OLED_CMD_SET_CONTRAST, true);
   i2c_master_write_byte(cmd, Contrast, true);
   i2c_master_stop(cmd);
   esp_err_t espRc = i2c_master_cmd_begin(I2C_BUS, cmd, 10);
   i2c_cmd_link_delete(cmd);
-  return espRc; }
+  return espRc;
+}
 
 esp_err_t OLED_PutLine(uint8_t Line, const char *Text, uint8_t DispIdx)
-{ if(Line>=8) return ESP_OK;
+{
+  if (Line >= 8)
+    return ESP_OK;
   i2c_cmd_handle_t cmd = i2c_cmd_link_create();
   i2c_master_start(cmd);
-  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR+DispIdx)<<1) | I2C_MASTER_WRITE, true);
+  i2c_master_write_byte(cmd, ((OLED_I2C_ADDR + DispIdx) << 1) | I2C_MASTER_WRITE, true);
   i2c_master_write_byte(cmd, OLED_CONTROL_BYTE_CMD_STREAM, true);
-  i2c_master_write_byte(cmd, 0x00, true);           // 0x0L => column address: Lower nibble
-  i2c_master_write_byte(cmd, 0x10, true);           // 0x1H => column address: Higher nibble
-  i2c_master_write_byte(cmd, 0xB0 | Line, true);    // 0xBP => Page address
+  i2c_master_write_byte(cmd, 0x00, true);        // 0x0L => column address: Lower nibble
+  i2c_master_write_byte(cmd, 0x10, true);        // 0x1H => column address: Higher nibble
+  i2c_master_write_byte(cmd, 0xB0 | Line, true); // 0xBP => Page address
   i2c_master_stop(cmd);
   esp_err_t espRc = i2c_master_cmd_begin(I2C_BUS, cmd, 10);
   i2c_cmd_link_delete(cmd);
-  if(espRc!=ESP_OK) return espRc;
+  if (espRc != ESP_OK)
+    return espRc;
 
-  for(uint8_t Idx=0; Idx<16; Idx++)
-  { char Char=0;
-    if(Text)
-    { Char=Text[Idx];
-      if(Char==0) Text=0;
-             else Char&=0x7F; }
+  for (uint8_t Idx = 0; Idx < 16; Idx++)
+  {
+    char Char = 0;
+    if (Text)
+    {
+      Char = Text[Idx];
+      if (Char == 0)
+        Text = 0;
+      else
+        Char &= 0x7F;
+    }
     cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, ((OLED_I2C_ADDR+DispIdx)<<1) | I2C_MASTER_WRITE, true);
+    i2c_master_write_byte(cmd, ((OLED_I2C_ADDR + DispIdx) << 1) | I2C_MASTER_WRITE, true);
     i2c_master_write_byte(cmd, OLED_CONTROL_BYTE_DATA_STREAM, true);
     i2c_master_write(cmd, font8x8_basic_tr[(uint8_t)Char], 8, true);
     i2c_master_stop(cmd);
     espRc = i2c_master_cmd_begin(I2C_BUS, cmd, 10);
     i2c_cmd_link_delete(cmd);
-    if(espRc!=ESP_OK) break; }
-  return espRc; }
+    if (espRc != ESP_OK)
+      break;
+  }
+  return espRc;
+}
 
 esp_err_t OLED_Clear(uint8_t DispIdx)
-{ esp_err_t espRc;
-  for(uint8_t Line=0; Line<8; Line++)
-  { espRc=OLED_PutLine(Line, 0, DispIdx); if(espRc!=ESP_OK) break; }
-  return espRc; }
+{
+  esp_err_t espRc;
+  for (uint8_t Line = 0; Line < 8; Line++)
+  {
+    espRc = OLED_PutLine(Line, 0, DispIdx);
+    if (espRc != ESP_OK)
+      break;
+  }
+  return espRc;
+}
 #endif
 
 #ifdef WITH_U8G2_OLED
@@ -1216,43 +1436,52 @@ static uint8_t u8g2_esp32_i2c_byte_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int
   Format_UnsDec(CONS_UART_Write, (uint16_t)arg_int);
   Format_String(CONS_UART_Write, ") ");
 #endif
-  switch(msg)
-  { case U8X8_MSG_BYTE_SET_DC:
-      break;
-    case U8X8_MSG_BYTE_INIT:
-      break;
-    case U8X8_MSG_BYTE_START_TRANSFER:
-      { U8G2_Cmd=i2c_cmd_link_create();
-        uint8_t Addr = u8x8_GetI2CAddress(u8x8);
+  switch (msg)
+  {
+  case U8X8_MSG_BYTE_SET_DC:
+    break;
+  case U8X8_MSG_BYTE_INIT:
+    break;
+  case U8X8_MSG_BYTE_START_TRANSFER:
+  {
+    U8G2_Cmd = i2c_cmd_link_create();
+    uint8_t Addr = u8x8_GetI2CAddress(u8x8);
 #ifdef DEBUG_PRINT
-        Format_Hex(CONS_UART_Write, Addr);
+    Format_Hex(CONS_UART_Write, Addr);
 #endif
-        i2c_master_start(U8G2_Cmd);
-        i2c_master_write_byte(U8G2_Cmd, (Addr<<1) | I2C_MASTER_WRITE, true);
-        break; }
-    case U8X8_MSG_BYTE_SEND:
-      // { i2c_master_write(U8G2_Cmd, (uint8_t *)arg_ptr, arg_int, true); break; }
-      { uint8_t* Data = (uint8_t *)arg_ptr;
-        for( int Idx=0; Idx<arg_int; Idx++)
-        {
+    i2c_master_start(U8G2_Cmd);
+    i2c_master_write_byte(U8G2_Cmd, (Addr << 1) | I2C_MASTER_WRITE, true);
+    break;
+  }
+  case U8X8_MSG_BYTE_SEND:
+    // { i2c_master_write(U8G2_Cmd, (uint8_t *)arg_ptr, arg_int, true); break; }
+    {
+      uint8_t *Data = (uint8_t *)arg_ptr;
+      for (int Idx = 0; Idx < arg_int; Idx++)
+      {
 #ifdef DEBUG_PRINT
-          Format_Hex(CONS_UART_Write, Data[Idx]);
+        Format_Hex(CONS_UART_Write, Data[Idx]);
 #endif
-          i2c_master_write_byte(U8G2_Cmd, Data[Idx], true); }
-        break; }
-    case U8X8_MSG_BYTE_END_TRANSFER:
-      { i2c_master_stop(U8G2_Cmd);
-        xSemaphoreTake(I2C_Mutex, portMAX_DELAY);
-        i2c_master_cmd_begin(I2C_BUS, U8G2_Cmd, 10);
-        xSemaphoreGive(I2C_Mutex);
-        i2c_cmd_link_delete(U8G2_Cmd);
-        break; }
+        i2c_master_write_byte(U8G2_Cmd, Data[Idx], true);
+      }
+      break;
+    }
+  case U8X8_MSG_BYTE_END_TRANSFER:
+  {
+    i2c_master_stop(U8G2_Cmd);
+    xSemaphoreTake(I2C_Mutex, portMAX_DELAY);
+    i2c_master_cmd_begin(I2C_BUS, U8G2_Cmd, 10);
+    xSemaphoreGive(I2C_Mutex);
+    i2c_cmd_link_delete(U8G2_Cmd);
+    break;
+  }
   }
 #ifdef DEBUG_PRINT
   Format_String(CONS_UART_Write, "\n");
   xSemaphoreGive(CONS_Mutex);
 #endif
-  return 0; }
+  return 0;
+}
 
 static uint8_t u8g2_esp32_gpio_and_delay_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
 {
@@ -1266,20 +1495,29 @@ static uint8_t u8g2_esp32_gpio_and_delay_cb(u8x8_t *u8x8, uint8_t msg, uint8_t a
   Format_String(CONS_UART_Write, ")\n");
   xSemaphoreGive(CONS_Mutex);
 #endif
-  switch(msg)
-  { case U8X8_MSG_GPIO_AND_DELAY_INIT: break;
-    case U8X8_MSG_GPIO_RESET:
-    {
+  switch (msg)
+  {
+  case U8X8_MSG_GPIO_AND_DELAY_INIT:
+    break;
+  case U8X8_MSG_GPIO_RESET:
+  {
 #ifdef PIN_OLED_RST
-      gpio_set_level(PIN_OLED_RST, arg_int);
+    gpio_set_level(PIN_OLED_RST, arg_int);
 #endif
-      break; }
-    case U8X8_MSG_GPIO_CS:             break;
-    case U8X8_MSG_GPIO_I2C_CLOCK:      break;
-    case U8X8_MSG_GPIO_I2C_DATA:       break;
-    case U8X8_MSG_DELAY_MILLI: vTaskDelay(arg_int); break;
+    break;
   }
-  return 0; }
+  case U8X8_MSG_GPIO_CS:
+    break;
+  case U8X8_MSG_GPIO_I2C_CLOCK:
+    break;
+  case U8X8_MSG_GPIO_I2C_DATA:
+    break;
+  case U8X8_MSG_DELAY_MILLI:
+    vTaskDelay(arg_int);
+    break;
+  }
+  return 0;
+}
 
 u8g2_t U8G2_OLED;
 
@@ -1293,7 +1531,7 @@ void U8G2_Init(void)
   u8x8_SetI2CAddress(&U8G2_OLED.u8x8, OLED_I2C_ADDR);
   u8g2_InitDisplay(&U8G2_OLED);
 #ifdef WITH_U8G2_FLIP
-  u8g2_SetDisplayRotation(&U8G2_OLED, U8G2_R2);       // flip the display
+  u8g2_SetDisplayRotation(&U8G2_OLED, U8G2_R2); // flip the display
 #endif
   u8g2_SetPowerSave(&U8G2_OLED, 0);
 
@@ -1309,7 +1547,7 @@ void U8G2_Init(void)
 
 #ifdef WITH_SD
 
-static sdmmc_host_t        SD_Host = SDSPI_HOST_DEFAULT();
+static sdmmc_host_t SD_Host = SDSPI_HOST_DEFAULT();
 // static spi_bus_config_t    SD_BusConfig = {
 //         .mosi_io_num = PIN_SD_MOSI,
 //         .miso_io_num = PIN_SD_MISO,
@@ -1322,23 +1560,29 @@ static sdmmc_host_t        SD_Host = SDSPI_HOST_DEFAULT();
 static sdspi_slot_config_t SD_SlotConfig;
 
 static esp_vfs_fat_sdmmc_mount_config_t SD_MountConfig =
-  { .format_if_mount_failed = false,
-    .max_files = 5,
-    /* .allocation_unit_size = 16 * 1024 */ };
+    {.format_if_mount_failed = false,
+     .max_files = 5,
+     /* .allocation_unit_size = 16 * 1024 */};
 
 sdmmc_card_t *SD_Card = 0;
 
-bool      SD_isMounted(void) { return SD_Card; }
-int       SD_getSectors(void) { return SD_Card->csd.capacity; }
-int       SD_getSectorSize(void) { return SD_Card->csd.sector_size; }
+bool SD_isMounted(void) { return SD_Card; }
+int SD_getSectors(void) { return SD_Card->csd.capacity; }
+int SD_getSectorSize(void) { return SD_Card->csd.sector_size; }
 
 void SD_Unmount(void)
-{ esp_vfs_fat_sdmmc_unmount(); SD_Card=0; }
+{
+  esp_vfs_fat_sdmmc_unmount();
+  SD_Card = 0;
+}
 
 esp_err_t SD_Mount(void)
-{ esp_err_t Ret = esp_vfs_fat_sdmmc_mount("/sdcard", &SD_Host, &SD_SlotConfig, &SD_MountConfig, &SD_Card); // ESP_OK => good, ESP_FAIL => failed to mound the file system, other => HW not working
-  if(Ret!=ESP_OK) SD_Unmount();
-  return Ret; } // ESP_OK => all good, ESP_FAIL => failed to mount file system, other => failed to init. the SD card
+{
+  esp_err_t Ret = esp_vfs_fat_sdmmc_mount("/sdcard", &SD_Host, &SD_SlotConfig, &SD_MountConfig, &SD_Card); // ESP_OK => good, ESP_FAIL => failed to mound the file system, other => HW not working
+  if (Ret != ESP_OK)
+    SD_Unmount();
+  return Ret;
+} // ESP_OK => all good, ESP_FAIL => failed to mount file system, other => failed to init. the SD card
 
 static esp_err_t SD_Init(void)
 {
@@ -1348,54 +1592,86 @@ static esp_err_t SD_Init(void)
   SD_SlotConfig = SDSPI_SLOT_CONFIG_DEFAULT();
   SD_SlotConfig.gpio_miso = PIN_SD_MISO;
   SD_SlotConfig.gpio_mosi = PIN_SD_MOSI;
-  SD_SlotConfig.gpio_sck  = PIN_SD_SCK;
+  SD_SlotConfig.gpio_sck = PIN_SD_SCK;
   SD_SlotConfig.gpio_cs = PIN_SD_CS;
   // SD_SlotConfig.host_id = (spi_host_device_t)SD_Host.slot;
   SD_SlotConfig.dma_channel = SD_SPI_DMA; // otherwise it conflicts with RFM SPI or LCD SPI
-  return SD_Mount(); } // ESP_OK => all good, ESP_FAIL => failed to mount file system, other => failed to init. the SD card
+  return SD_Mount();
+} // ESP_OK => all good, ESP_FAIL => failed to mount file system, other => failed to init. the SD card
 
 #endif // WITH_SD
 
 //--------------------------------------------------------------------------------------------------------
 
 volatile uint8_t LED_PCB_Counter = 0;
-void LED_PCB_Flash(uint8_t Time) { if(Time>LED_PCB_Counter) LED_PCB_Counter=Time; } // [ms]
+void LED_PCB_Flash(uint8_t Time)
+{
+  if (Time > LED_PCB_Counter)
+    LED_PCB_Counter = Time;
+} // [ms]
 
 #ifdef WITH_LED_TX
 volatile uint8_t LED_TX_Counter = 0;
-void LED_TX_Flash(uint8_t Time) { if(Time>LED_TX_Counter) LED_TX_Counter=Time; } // [ms]
+void LED_TX_Flash(uint8_t Time)
+{
+  if (Time > LED_TX_Counter)
+    LED_TX_Counter = Time;
+} // [ms]
 #endif
 
 #ifdef WITH_LED_RX
 volatile uint8_t LED_RX_Counter = 0;
-void LED_RX_Flash(uint8_t Time) { if(Time>LED_RX_Counter) LED_RX_Counter=Time; } // [ms]
+void LED_RX_Flash(uint8_t Time)
+{
+  if (Time > LED_RX_Counter)
+    LED_RX_Counter = Time;
+} // [ms]
 #endif
 
 void LED_TimerCheck(uint8_t Ticks)
-{ uint8_t Counter=LED_PCB_Counter;
-  if(Counter)
-  { if(Ticks<Counter) Counter-=Ticks;
-                 else Counter =0;
-    if(Counter) LED_PCB_On();
-           else LED_PCB_Off();
-    LED_PCB_Counter=Counter; }
+{
+  uint8_t Counter = LED_PCB_Counter;
+  if (Counter)
+  {
+    if (Ticks < Counter)
+      Counter -= Ticks;
+    else
+      Counter = 0;
+    if (Counter)
+      LED_PCB_On();
+    else
+      LED_PCB_Off();
+    LED_PCB_Counter = Counter;
+  }
 #ifdef WITH_LED_TX
-  Counter=LED_TX_Counter;
-  if(Counter)
-  { if(Ticks<Counter) Counter-=Ticks;
-                 else Counter =0;
-    if(Counter) LED_TX_On();
-           else LED_TX_Off();
-    LED_TX_Counter=Counter; }
+  Counter = LED_TX_Counter;
+  if (Counter)
+  {
+    if (Ticks < Counter)
+      Counter -= Ticks;
+    else
+      Counter = 0;
+    if (Counter)
+      LED_TX_On();
+    else
+      LED_TX_Off();
+    LED_TX_Counter = Counter;
+  }
 #endif
 #ifdef WITH_LED_RX
-  Counter=LED_RX_Counter;
-  if(Counter)
-  { if(Ticks<Counter) Counter-=Ticks;
-                 else Counter =0;
-    if(Counter) LED_RX_On();
-           else LED_RX_Off();
-    LED_RX_Counter=Counter; }
+  Counter = LED_RX_Counter;
+  if (Counter)
+  {
+    if (Ticks < Counter)
+      Counter -= Ticks;
+    else
+      Counter = 0;
+    if (Counter)
+      LED_RX_On();
+    else
+      LED_RX_Off();
+    LED_RX_Counter = Counter;
+  }
 #endif
 }
 
@@ -1407,7 +1683,8 @@ extern void SleepIn(void);
 extern void SleepOut(void);
 
 void Sleep(void)
-{ Format_String(CONS_UART_Write, "Sleep...\n");
+{
+  Format_String(CONS_UART_Write, "Sleep...\n");
 #ifdef WITH_LONGPRESS_SLEEP
   gpio_wakeup_enable(PIN_BUTTON, GPIO_INTR_LOW_LEVEL); // _NEGEDGE ?
 #endif
@@ -1415,16 +1692,17 @@ void Sleep(void)
   vTaskDelay(100);
   esp_light_sleep_start();
   gpio_wakeup_enable(PIN_BUTTON, GPIO_INTR_DISABLE);
-  Format_String(CONS_UART_Write, "Wake up !\n"); }
+  Format_String(CONS_UART_Write, "Wake up !\n");
+}
 
 #endif
 
-static uint32_t Button_PressTime=0;                              // [ms] counts for how long the button is kept pressed
-static uint32_t Button_ReleaseTime=0;
+static uint32_t Button_PressTime = 0; // [ms] counts for how long the button is kept pressed
+static uint32_t Button_ReleaseTime = 0;
 
-const  int8_t Button_FilterTime  = 20;                    // [ms] anti-glitch filter width
-const  int8_t Button_FilterThres = Button_FilterTime/2;
-static int8_t Button_Filter=(-Button_FilterTime);
+const int8_t Button_FilterTime = 20; // [ms] anti-glitch filter width
+const int8_t Button_FilterThres = Button_FilterTime / 2;
+static int8_t Button_Filter = (-Button_FilterTime);
 
 // void Sleep(void)
 // {
@@ -1444,63 +1722,87 @@ static int8_t Button_Filter=(-Button_FilterTime);
 //  #endif
 // }
 
-
 static uint32_t Button_keptPressed(uint8_t Ticks)
-{ uint32_t ReleaseTime=0;
-  Button_PressTime+=Ticks;                                  // count for how long the button is kept pressed
+{
+  uint32_t ReleaseTime = 0;
+  Button_PressTime += Ticks; // count for how long the button is kept pressed
   // Button_SleepRequest = Button_PressTime>=30000;           // [ms] setup SleepRequest if button pressed for >= 4sec
 #ifdef WITH_LONGPRESS_SLEEP
-   if(!SleepPending && Button_PressTime>=4000)
-   { SleepIn(); SleepPending=1; }
+  if (!SleepPending && Button_PressTime >= 4000)
+  {
+    SleepIn();
+    SleepPending = 1;
+  }
 #endif
-  if(Button_ReleaseTime)                                    // if release-time counter non-zero
-  { // Format_String(CONS_UART_Write, "Button pressed: released for ");
+  if (Button_ReleaseTime) // if release-time counter non-zero
+  {                       // Format_String(CONS_UART_Write, "Button pressed: released for ");
     // Format_UnsDec(CONS_UART_Write, Button_ReleaseTime, 4, 3);
     // Format_String(CONS_UART_Write, "sec\n");
-    ReleaseTime=Button_ReleaseTime;                         // then return the release time
-    Button_ReleaseTime=0; }
-  return ReleaseTime; }  // [ms] when button was pressed, return the release time
+    ReleaseTime = Button_ReleaseTime; // then return the release time
+    Button_ReleaseTime = 0;
+  }
+  return ReleaseTime;
+} // [ms] when button was pressed, return the release time
 
 static uint32_t Button_keptReleased(uint8_t Ticks)
-{ uint32_t PressTime=0;
-  Button_ReleaseTime+=Ticks;                                // count release time
-  if(Button_PressTime)                                      // if pressed-time non-zero
-  { // Format_String(CONS_UART_Write, "Button released: pressed for ");
+{
+  uint32_t PressTime = 0;
+  Button_ReleaseTime += Ticks; // count release time
+  if (Button_PressTime)        // if pressed-time non-zero
+  {                            // Format_String(CONS_UART_Write, "Button released: pressed for ");
     // Format_UnsDec(CONS_UART_Write, Button_PressTime, 4, 3);
     // Format_String(CONS_UART_Write, "sec\n");
     // if(Button_SleepRequest)
     // { Format_String(CONS_UART_Write, "Sleep in 2 sec\n");
     //   vTaskDelay(2000);
     //   Sleep(); }
-    PressTime=Button_PressTime;                             // return the pressed-time
+    PressTime = Button_PressTime; // return the pressed-time
 #ifdef WITH_SLEEP
-    if(SleepPending)
-    { Sleep();
+    if (SleepPending)
+    {
+      Sleep();
       SleepOut();
-      SleepPending=0; }
+      SleepPending = 0;
+    }
 #endif
-    Button_PressTime=0;
+    Button_PressTime = 0;
   }
-  return PressTime; }  // [ms] when button is released, return the press time
+  return PressTime;
+} // [ms] when button is released, return the press time
 
 int32_t Button_TimerCheck(uint8_t Ticks)
-{ int32_t PressReleaseTime=0;
+{
+  int32_t PressReleaseTime = 0;
 #ifdef PIN_BUTTON
- // CONS_UART_Write(Button_isPressed()?'^':'_');
- if(Button_isPressed())
- { Button_Filter+=Ticks; if(Button_Filter>Button_FilterTime) Button_Filter=Button_FilterTime; // increment and saturate the counter
-   if(Button_Filter>=Button_FilterThres)                             // if above the threshold
-   { uint32_t ReleaseTime=Button_keptPressed(Ticks);                 // count for how long it is being kept pressed
-     if(ReleaseTime) PressReleaseTime=(-(int32_t)ReleaseTime);; }
- }
- else
- { Button_Filter-=Ticks; if(Button_Filter<(-Button_FilterTime)) Button_Filter=(-Button_FilterTime); // decrement and saturate
-   if(Button_Filter<=(-Button_FilterThres))                          // if below the threshold
-   { uint32_t PressTime=Button_keptReleased(Ticks);                  // count for how long it is being kept released
-     if(PressTime) PressReleaseTime=PressTime; }
- }
+  // CONS_UART_Write(Button_isPressed()?'^':'_');
+  if (Button_isPressed())
+  {
+    Button_Filter += Ticks;
+    if (Button_Filter > Button_FilterTime)
+      Button_Filter = Button_FilterTime;     // increment and saturate the counter
+    if (Button_Filter >= Button_FilterThres) // if above the threshold
+    {
+      uint32_t ReleaseTime = Button_keptPressed(Ticks); // count for how long it is being kept pressed
+      if (ReleaseTime)
+        PressReleaseTime = (-(int32_t)ReleaseTime);
+      ;
+    }
+  }
+  else
+  {
+    Button_Filter -= Ticks;
+    if (Button_Filter < (-Button_FilterTime))
+      Button_Filter = (-Button_FilterTime);     // decrement and saturate
+    if (Button_Filter <= (-Button_FilterThres)) // if below the threshold
+    {
+      uint32_t PressTime = Button_keptReleased(Ticks); // count for how long it is being kept released
+      if (PressTime)
+        PressReleaseTime = PressTime;
+    }
+  }
 #endif
-  return PressReleaseTime; } // [ms] return press (positive) or release (negative) button times
+  return PressReleaseTime;
+} // [ms] return press (positive) or release (negative) button times
 
 /*
 extern "C"
@@ -1530,16 +1832,16 @@ BQ24295 BQ;
 // ADC
 
 static esp_adc_cal_characteristics_t *ADC_characs =
-        (esp_adc_cal_characteristics_t *)calloc(1, sizeof(esp_adc_cal_characteristics_t));
+    (esp_adc_cal_characteristics_t *)calloc(1, sizeof(esp_adc_cal_characteristics_t));
 #ifdef WITH_TBEAM
 static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO35_CHANNEL;
 static adc1_channel_t ADC_Chan_Knob = ADC1_GPIO34_CHANNEL;
 #else
-  #ifdef WITH_HELTEC_V3
-  static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO1_CHANNEL;
-  #else
-  static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO36_CHANNEL;
-  #endif
+#ifdef WITH_HELTEC_V3
+static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO1_CHANNEL;
+#else
+static adc1_channel_t ADC_Chan_Batt = ADC1_GPIO36_CHANNEL;
+#endif
 #endif
 static const adc_atten_t ADC_atten = ADC_ATTEN_DB_11;
 static const adc_unit_t ADC_unit = ADC_UNIT_1;
@@ -1551,30 +1853,41 @@ static int ADC_Init(void)
   adc1_config_width((adc_bits_width_t)3);
   adc1_config_channel_atten(ADC_Chan_Batt, ADC_atten);
   esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_unit, ADC_atten, (adc_bits_width_t)3, ADC_Vref, ADC_characs); // calibrate ADC1
-  return 0; }
+  return 0;
+}
 
 #ifdef WITH_AXP
 uint16_t BatterySense(int Samples)
-{ return AXP.readBatteryVoltage(); } // [mV]
+{
+  return AXP.readBatteryVoltage();
+} // [mV]
 #else
 uint16_t BatterySense(int Samples)
-{ uint32_t RawVoltage=0;
-  for( int Idx=0; Idx<Samples; Idx++)
-  { RawVoltage += adc1_get_raw(ADC_Chan_Batt); }
-  RawVoltage = (RawVoltage+Samples/2)/Samples;
-  uint16_t Volt = (uint16_t)esp_adc_cal_raw_to_voltage(RawVoltage, ADC_characs)*2;
+{
+  uint32_t RawVoltage = 0;
+  for (int Idx = 0; Idx < Samples; Idx++)
+  {
+    RawVoltage += adc1_get_raw(ADC_Chan_Batt);
+  }
+  RawVoltage = (RawVoltage + Samples / 2) / Samples;
+  uint16_t Volt = (uint16_t)esp_adc_cal_raw_to_voltage(RawVoltage, ADC_characs) * 2;
   // const uint16_t Bias = 80;  // apparently, there is 80mV bias in the battery voltage measurement
   // if(Volt>=Bias) Volt-=Bias;
-  return Volt; } // [mV]
+  return Volt;
+} // [mV]
 #endif
 
 #ifdef WITH_TBEAM
 uint16_t KnobSense(int Samples)
-{ uint16_t RawVoltage=0;
-  for( int Idx=0; Idx<Samples; Idx++)
-  { RawVoltage += adc1_get_raw(ADC_Chan_Knob); }
-  RawVoltage = (RawVoltage+Samples/2)/Samples;
-  return RawVoltage; }
+{
+  uint16_t RawVoltage = 0;
+  for (int Idx = 0; Idx < Samples; Idx++)
+  {
+    RawVoltage += adc1_get_raw(ADC_Chan_Knob);
+  }
+  RawVoltage = (RawVoltage + Samples / 2) / Samples;
+  return RawVoltage;
+}
 #endif
 
 //--------------------------------------------------------------------------------------------------------
@@ -1583,7 +1896,7 @@ void IO_Configuration(void)
 {
 
 #ifdef PIN_LED_PCB
-  LED_PCB_Dir();                    // PCB LED
+  LED_PCB_Dir(); // PCB LED
   LED_PCB_Off();
 #endif
 #ifdef WITH_LED_TX
@@ -1592,11 +1905,11 @@ void IO_Configuration(void)
 #endif
 
 #ifdef PIN_BUTTON
-  Button_Dir();                     // Push-button
+  Button_Dir(); // Push-button
 #endif
 
 #ifdef WITH_JACEK
-  POWER_LDO_Dir();                  // speific power control
+  POWER_LDO_Dir(); // speific power control
   POWER_Dir();
   POWER_LDO_On();
   POWER_On();
@@ -1604,7 +1917,7 @@ void IO_Configuration(void)
 
 #ifdef WITH_M5_JACEK
   GPS_ANT_Dir();
-  GPS_ANT_Sel(0);                   // 0 = external entenna
+  GPS_ANT_Sel(0); // 0 = external entenna
 #endif
 
 #ifdef PIN_PERIPH_RST
@@ -1630,33 +1943,31 @@ void IO_Configuration(void)
 #endif
 
 #ifdef GPS_UART
-  uart_config_t GPS_UART_Config =                       // GPS UART
-  { baud_rate : 4800,
-    data_bits : UART_DATA_8_BITS,
-    parity    : UART_PARITY_DISABLE,
-    stop_bits : UART_STOP_BITS_1,
-    flow_ctrl : UART_HW_FLOWCTRL_DISABLE,
-    rx_flow_ctrl_thresh: 0,
-    use_ref_tick: 0
-  };
-  uart_param_config  (GPS_UART, &GPS_UART_Config);
-  uart_set_pin       (GPS_UART, PIN_GPS_TXD, PIN_GPS_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+  uart_config_t GPS_UART_Config = // GPS UART
+      {baud_rate : 4800,
+       data_bits : UART_DATA_8_BITS,
+       parity : UART_PARITY_DISABLE,
+       stop_bits : UART_STOP_BITS_1,
+       flow_ctrl : UART_HW_FLOWCTRL_DISABLE,
+       rx_flow_ctrl_thresh : 0,
+       use_ref_tick : 0};
+  uart_param_config(GPS_UART, &GPS_UART_Config);
+  uart_set_pin(GPS_UART, PIN_GPS_TXD, PIN_GPS_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
   uart_driver_install(GPS_UART, 512, 512, 0, 0, 0);
   uart_set_rx_full_threshold(GPS_UART, 24);
 #endif
 
 #ifdef AERO_UART
-  uart_config_t AERO_UART_Config =                      // AERO UART
-  { baud_rate : 115200,
-    data_bits : UART_DATA_8_BITS,
-    parity    : UART_PARITY_DISABLE,
-    stop_bits : UART_STOP_BITS_1,
-    flow_ctrl : UART_HW_FLOWCTRL_DISABLE,
-    rx_flow_ctrl_thresh: 0,
-    use_ref_tick: 0
-  };
-  uart_param_config  (AERO_UART, &AERO_UART_Config);
-  uart_set_pin       (AERO_UART, PIN_AERO_TXD, PIN_AERO_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+  uart_config_t AERO_UART_Config = // AERO UART
+      {baud_rate : 115200,
+       data_bits : UART_DATA_8_BITS,
+       parity : UART_PARITY_DISABLE,
+       stop_bits : UART_STOP_BITS_1,
+       flow_ctrl : UART_HW_FLOWCTRL_DISABLE,
+       rx_flow_ctrl_thresh : 0,
+       use_ref_tick : 0};
+  uart_param_config(AERO_UART, &AERO_UART_Config);
+  uart_set_pin(AERO_UART, PIN_AERO_TXD, PIN_AERO_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
   uart_driver_install(AERO_UART, 256, 256, 0, 0, 0);
 #endif
 
@@ -1667,26 +1978,26 @@ void IO_Configuration(void)
 #endif
 
 #if defined(PIN_I2C_SCL) && defined(PIN_I2C_SDA)
-  i2c_config_t I2C_Config =                            // I2C for OLED and pressue sensor
-  { mode          : I2C_MODE_MASTER,
-    sda_io_num    : PIN_I2C_SDA,
-#if ESP_IDF_VERSION_MINOR<1
+  i2c_config_t I2C_Config = // I2C for OLED and pressue sensor
+  { mode : I2C_MODE_MASTER,
+    sda_io_num : PIN_I2C_SDA,
+#if ESP_IDF_VERSION_MINOR < 1
     sda_pullup_en : GPIO_PULLUP_ENABLE,
-    scl_io_num    : PIN_I2C_SCL,
-#else                                                  // order of the elements has changed in 4.1
-    scl_io_num    : PIN_I2C_SCL,
+    scl_io_num : PIN_I2C_SCL,
+#else // order of the elements has changed in 4.1
+    scl_io_num : PIN_I2C_SCL,
     sda_pullup_en : GPIO_PULLUP_ENABLE,
 #endif
     scl_pullup_en : GPIO_PULLUP_ENABLE
-  } ;
-  I2C_Config.master.clk_speed =  I2C_SPEED;
-  i2c_param_config  (I2C_BUS, &I2C_Config);
+  };
+  I2C_Config.master.clk_speed = I2C_SPEED;
+  i2c_param_config(I2C_BUS, &I2C_Config);
   i2c_driver_install(I2C_BUS, I2C_Config.mode, 0, 0, 0);
 #endif
 
 #ifdef WITH_BQ
   gpio_set_direction(PIN_POWER_GOOD, GPIO_MODE_INPUT);
-  BQ.Bus=(uint8_t)I2C_BUS;
+  BQ.Bus = (uint8_t)I2C_BUS;
   BQ.checkID();
   // BQ.writeSource(0x05);     // Reg #00
   // BQ.writePowerON(0x2F);    // Reg #01, disable charging
@@ -1694,13 +2005,13 @@ void IO_Configuration(void)
   BQ.writePreCharge(0x00);  // Reg #03
   BQ.writeChargeVolt(0x9A); // Reg #04
   // BQ.writePowerON(0x3F);    // Reg #01, enable charging
-  BQ.writeTimerCtrl(0x8C);  // Reg #05, disable the watchdog, so it always stays in host-mode, not default-mode
+  BQ.writeTimerCtrl(0x8C); // Reg #05, disable the watchdog, so it always stays in host-mode, not default-mode
   // BQ.writeTimerCtrl(0x9C);  // REG #05, enable the watchdog
 #endif
 
 #ifdef WITH_AXP
   gpio_set_direction(PIN_AXP_IRQ, GPIO_MODE_INPUT);
-  AXP.Bus=(uint8_t)I2C_BUS;
+  AXP.Bus = (uint8_t)I2C_BUS;
 #ifdef DEBUG_PRINT
   xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
   Format_String(CONS_UART_Write, "AXP192: ");
@@ -1712,17 +2023,17 @@ void IO_Configuration(void)
   xSemaphoreGive(CONS_Mutex);
 #endif
   AXP.checkID();
-  AXP.setPOK(0xDC);                      // power-on = 11 = 1sec, long-press = 01 = 1.5sec, power-off = enable, PWROK delay = 64ms, power-off = 00 = 4sec
+  AXP.setPOK(0xDC); // power-on = 11 = 1sec, long-press = 01 = 1.5sec, power-off = enable, PWROK delay = 64ms, power-off = 00 = 4sec
   uint8_t PwrStatus = AXP.readStatus();
   AXP.setLED_ON();
-  AXP.setPowerOutput(AXP.OUT_DCDC1, 1);  // 3.3V on the pin header for LCD and BME280
+  AXP.setPowerOutput(AXP.OUT_DCDC1, 1); // 3.3V on the pin header for LCD and BME280
   AXP.setDCDC1(3300);
   // vTaskDelay(100);
-  AXP.setPowerOutput(AXP.OUT_LDO2,  1);  // RFM power
+  AXP.setPowerOutput(AXP.OUT_LDO2, 1); // RFM power
   // vTaskDelay(100);
-  AXP.setPowerOutput(AXP.OUT_LDO3,  1);  // GPS power
+  AXP.setPowerOutput(AXP.OUT_LDO3, 1); // GPS power
   // vTaskDelay(100);
-  AXP.enableBatMon();                    // enable battery charge/discharge current counters
+  AXP.enableBatMon(); // enable battery charge/discharge current counters
   AXP.enableADC(AXP.ADC_BAT_VOLT | AXP.ADC_BAT_CURR | AXP.ADC_VBUS_VOLT | AXP.ADC_VBUS_CURR);
   // AXP.SetPowerOutput(AXP.OUT_DCDC2); // not used on T-Beam
   // AXP.SetPowerOutput(AXP.OUT_DCDC3); // DCDC3 is a feedback from VDD3V3 ?
@@ -1760,39 +2071,39 @@ void IO_Configuration(void)
   RFM_RESET_SetOutput();
   RFM_RESET(0);
 
-  spi_bus_config_t BusCfg =                               // RF/LCD chip SPI
-  { mosi_io_num     : PIN_RFM_MOSI,
-    miso_io_num     : PIN_RFM_MISO,
-    sclk_io_num     : PIN_RFM_SCK,
-    quadwp_io_num   : -1,
-    quadhd_io_num   : -1,
-#ifdef WITH_ILI9341                                       // ILI9341 is connected to same SPI as RFM and it needs larger buffer
-    max_transfer_sz : LCD_BUFF_SIZE*2+8,
+  spi_bus_config_t BusCfg = // RF/LCD chip SPI
+      {
+        mosi_io_num : PIN_RFM_MOSI,
+        miso_io_num : PIN_RFM_MISO,
+        sclk_io_num : PIN_RFM_SCK,
+        quadwp_io_num : -1,
+        quadhd_io_num : -1,
+#ifdef WITH_ILI9341 // ILI9341 is connected to same SPI as RFM and it needs larger buffer
+        max_transfer_sz : LCD_BUFF_SIZE * 2 + 8,
 #else
-    max_transfer_sz : 64,
+        max_transfer_sz : 64,
 #endif
-    flags           : SPICOMMON_BUSFLAG_MASTER | SPICOMMON_BUSFLAG_SCLK | SPICOMMON_BUSFLAG_MISO | SPICOMMON_BUSFLAG_MOSI,
-    intr_flags      : 0 // ESP_INTR_FLAG_SHARED  ESP_INTR_FLAG_INTRDISABLED
-  };
+        flags : SPICOMMON_BUSFLAG_MASTER | SPICOMMON_BUSFLAG_SCLK | SPICOMMON_BUSFLAG_MISO | SPICOMMON_BUSFLAG_MOSI,
+        intr_flags : 0 // ESP_INTR_FLAG_SHARED  ESP_INTR_FLAG_INTRDISABLED
+      };
 
   spi_device_interface_config_t DevCfg =
-  { command_bits     : 0,
-    address_bits     : 0,
-    dummy_bits       : 0,
-    mode             : 0,
-    duty_cycle_pos   : 0,
-    cs_ena_pretrans  : 0,
-    cs_ena_posttrans : 0,
-    clock_speed_hz   : RFM_SPI_SPEED,
-    input_delay_ns   : 0,
-    spics_io_num     : PIN_RFM_SS,
-    flags            : 0,
-    queue_size       : 1,
-    pre_cb           : 0,
-    post_cb          : 0
-  };
-  esp_err_t ret=spi_bus_initialize(RFM_SPI_HOST, &BusCfg,  RFM_SPI_DMA); // RFM/LCD SPI bus
-            ret=spi_bus_add_device(RFM_SPI_HOST, &DevCfg, &RFM_SPI);     // RFM SPI device
+      {command_bits : 0,
+       address_bits : 0,
+       dummy_bits : 0,
+       mode : 0,
+       duty_cycle_pos : 0,
+       cs_ena_pretrans : 0,
+       cs_ena_posttrans : 0,
+       clock_speed_hz : RFM_SPI_SPEED,
+       input_delay_ns : 0,
+       spics_io_num : PIN_RFM_SS,
+       flags : 0,
+       queue_size : 1,
+       pre_cb : 0,
+       post_cb : 0};
+  esp_err_t ret = spi_bus_initialize(RFM_SPI_HOST, &BusCfg, RFM_SPI_DMA); // RFM/LCD SPI bus
+  ret = spi_bus_add_device(RFM_SPI_HOST, &DevCfg, &RFM_SPI);              // RFM SPI device
 
 #ifdef WITH_TFT_LCD
   TFT_LCD_Init();
@@ -1800,54 +2111,55 @@ void IO_Configuration(void)
 
 #ifdef WITH_ST7789
 
-  spi_bus_config_t BusConfig =    // SPI bus setup
-  {
-    .mosi_io_num = LCD_PIN_MOSI,
-    .miso_io_num = LCD_PIN_MISO,
-    .sclk_io_num = LCD_PIN_CLK,
-    .quadwp_io_num = GPIO_NUM_NC,
-    .quadhd_io_num = GPIO_NUM_NC,
-    .max_transfer_sz = LCD_BUFF_SIZE*2+8,
-    .flags = 0,
-    .intr_flags = 0
-  };
+  spi_bus_config_t BusConfig = // SPI bus setup
+      {
+          .mosi_io_num = LCD_PIN_MOSI,
+          .miso_io_num = LCD_PIN_MISO,
+          .sclk_io_num = LCD_PIN_CLK,
+          .quadwp_io_num = GPIO_NUM_NC,
+          .quadhd_io_num = GPIO_NUM_NC,
+          .max_transfer_sz = LCD_BUFF_SIZE * 2 + 8,
+          .flags = 0,
+          .intr_flags = 0};
 
-  ret = spi_bus_initialize(LCD_SPI_HOST, &BusConfig, LCD_SPI_DMA);  // Initialize the SPI bus
+  ret = spi_bus_initialize(LCD_SPI_HOST, &BusConfig, LCD_SPI_DMA); // Initialize the SPI bus
 
-  LCD_WIDTH=240; LCD_HEIGHT=240;
-  LCD_TYPE=0;
+  LCD_WIDTH = 240;
+  LCD_HEIGHT = 240;
+  LCD_TYPE = 0;
 #ifdef WITH_TBEAM_V10
   LCD_PIN_RST = GPIO_NUM_33;
-  LCD_PIN_DC  = GPIO_NUM_2;
+  LCD_PIN_DC = GPIO_NUM_2;
   LCD_PIN_BCKL = GPIO_NUM_15; // on one baord it is 32
 #endif
   LCD_Init(LCD_SPI_HOST, LCD_SPI_MODE, LCD_SPI_SPEED);
   LCD_Start();
 #endif
 
-#ifdef WITH_ILI9341             // M5stack or HELTEC configuration
-#define LCD_SPI_SPEED 26000000  // [Hz]
-#define LCD_SPI_MODE         0  //
+#ifdef WITH_ILI9341            // M5stack or HELTEC configuration
+#define LCD_SPI_SPEED 26000000 // [Hz]
+#define LCD_SPI_MODE 0         //
 #ifdef WITH_HELTEC_V2
-  LCD_PIN_CS   = GPIO_NUM_23;
-  LCD_PIN_DC   = GPIO_NUM_17;
-  LCD_PIN_RST  = GPIO_NUM_NC;
+  LCD_PIN_CS = GPIO_NUM_23;
+  LCD_PIN_DC = GPIO_NUM_17;
+  LCD_PIN_RST = GPIO_NUM_NC;
   LCD_PIN_BCKL = GPIO_NUM_12;
 #endif
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10)
-  LCD_PIN_CS   = GPIO_NUM_32;   // CS: low active
-  LCD_PIN_DC   = GPIO_NUM_2;    // D/C: Command = 0, Data = 1
-  LCD_PIN_RST  = GPIO_NUM_33;   // Reset: low active
-  LCD_PIN_BCKL = GPIO_NUM_15;   // Back-light: HIGH active
+  LCD_PIN_CS = GPIO_NUM_32;   // CS: low active
+  LCD_PIN_DC = GPIO_NUM_2;    // D/C: Command = 0, Data = 1
+  LCD_PIN_RST = GPIO_NUM_33;  // Reset: low active
+  LCD_PIN_BCKL = GPIO_NUM_15; // Back-light: HIGH active
 #endif
 #ifdef WITH_M5_JACEK
-  LCD_PIN_CS   = GPIO_NUM_14;   //
-  LCD_PIN_DC   = GPIO_NUM_27;   // D/C: Command = 0, Data = 1
-  LCD_PIN_RST  = GPIO_NUM_33;   //
-  LCD_PIN_BCKL = GPIO_NUM_32;   // Back-light: HIGH active
+  LCD_PIN_CS = GPIO_NUM_14;   //
+  LCD_PIN_DC = GPIO_NUM_27;   // D/C: Command = 0, Data = 1
+  LCD_PIN_RST = GPIO_NUM_33;  //
+  LCD_PIN_BCKL = GPIO_NUM_32; // Back-light: HIGH active
 #endif
-  LCD_WIDTH=320; LCD_HEIGHT=240;
-  LCD_TYPE = 1;                 // 1 = ILI9341
+  LCD_WIDTH = 320;
+  LCD_HEIGHT = 240;
+  LCD_TYPE = 1; // 1 = ILI9341
   LCD_Init(RFM_SPI_HOST, LCD_SPI_MODE, LCD_SPI_SPEED);
   LCD_Start();
 #endif
@@ -1872,61 +2184,72 @@ void IO_Configuration(void)
   ADC_Init();
 
   // esp_register_freertos_tick_hook(&vApplicationTickHook);
-
 }
 
 // ======================================================================================================
 
-extern "C"
-void vTaskTICK(void* pvParameters)
-{ TickType_t LastTick = xTaskGetTickCount();
+extern "C" void vTaskTICK(void *pvParameters)
+{
+  TickType_t LastTick = xTaskGetTickCount();
 
-  for( ; ; )
-  { vTaskDelay(1);
+  for (;;)
+  {
+    vTaskDelay(1);
     TickType_t Tick = xTaskGetTickCount();
-    TickType_t NewTicks = Tick-LastTick;
+    TickType_t NewTicks = Tick - LastTick;
     LastTick = Tick;
 
     LED_TimerCheck(NewTicks);
 
 #ifdef WITH_BEEPER
-    Play_TimerCheck(NewTicks);                        // update the LED flashes
+    Play_TimerCheck(NewTicks); // update the LED flashes
 #endif
 
-    int32_t PressRelease=Button_TimerCheck();         // 0 = no change
+    int32_t PressRelease = Button_TimerCheck(); // 0 = no change
 #ifdef DEBUG_PRINT
-    if(PressRelease!=0)
-    { xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
+    if (PressRelease != 0)
+    {
+      xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
       Format_String(CONS_UART_Write, "Button: ");
       Format_SignDec(CONS_UART_Write, PressRelease);
       Format_String(CONS_UART_Write, "ms\n");
-      xSemaphoreGive(CONS_Mutex); }
-#endif
-    if(PressRelease>0)
-    { if(PressRelease<=700)                                            // short button push: switch pages
-      { KeyBuffer.Write(0x01); }
-      else if(PressRelease<=3000)                                      // longer button push: some page action
-      { KeyBuffer.Write(0x41); }
-      else                                                             // very long push
-      { }
+      xSemaphoreGive(CONS_Mutex);
     }
-
+#endif
+    if (PressRelease > 0)
+    {
+      if (PressRelease <= 700) // short button push: switch pages
+      {
+        KeyBuffer.Write(0x01);
+      }
+      else if (PressRelease <= 3000) // longer button push: some page action
+      {
+        KeyBuffer.Write(0x41);
+      }
+      else // very long push
+      {
+      }
+    }
   }
 }
 
 // ======================================================================================================
 
 int NVS_Init(void)
-{ esp_err_t Err = nvs_flash_init();
+{
+  esp_err_t Err = nvs_flash_init();
   if (Err == ESP_ERR_NVS_NO_FREE_PAGES)
-  { nvs_flash_erase();
-    Err = nvs_flash_init(); }
+  {
+    nvs_flash_erase();
+    Err = nvs_flash_init();
+  }
 
   // if(Parameters.ReadFromNVS()!=ESP_OK)
   // { Parameters.setDefault(getUniqueID());
   //   Parameters.WriteToNVS(); }
 
-  return Err; }
+  return Err;
+}
 
 // ======================================================================================================
 
@@ -1935,38 +2258,48 @@ int NVS_Init(void)
 #ifdef WITH_SPIFFS_FAT // FAT replaces SPIFFS, hopefully no performace and reliability issues
 
 int SPIFFS_Register(const char *Path, const char *Label, size_t MaxOpenFiles)
-{ esp_vfs_fat_mount_config_t FSconf;
+{
+  esp_vfs_fat_mount_config_t FSconf;
   FSconf.max_files = MaxOpenFiles;
   FSconf.format_if_mount_failed = true;
   FSconf.allocation_unit_size = 4096;
   static wl_handle_t Handle = WL_INVALID_HANDLE;
-  return esp_vfs_fat_spiflash_mount(Path, Label, &FSconf, &Handle); }
+  return esp_vfs_fat_spiflash_mount(Path, Label, &FSconf, &Handle);
+}
 
 int SPIFFS_Info(size_t &Total, size_t &Used, const char *Label)
-{ FATFS *FS=0;
-  Total=0; Used=0;
+{
+  FATFS *FS = 0;
+  Total = 0;
+  Used = 0;
   size_t FreeClusters;
   int Ret = f_getfree("0:", &FreeClusters, &FS);
   // if(Ret=!FR_OK) return Ret;
-  if(FS==0) return 0;
-  size_t TotalSectors = (FS->n_fatent-2) * FS->csize;
+  if (FS == 0)
+    return 0;
+  size_t TotalSectors = (FS->n_fatent - 2) * FS->csize;
   size_t FreeSectors = FreeClusters * FS->csize;
   Total = TotalSectors * FS->ssize;
-  Used  = (TotalSectors-FreeSectors) * FS->ssize;
-  return 0; }
+  Used = (TotalSectors - FreeSectors) * FS->ssize;
+  return 0;
+}
 
 #else // SPIFFS: gives troubles when more than few files are open
 
 int SPIFFS_Register(const char *Path, const char *Label, size_t MaxOpenFiles)
-{ esp_vfs_spiffs_conf_t FSconf =
-  { base_path: Path,
-    partition_label: Label,
-    max_files: MaxOpenFiles,
-    format_if_mount_failed: true };
-  return esp_vfs_spiffs_register(&FSconf); }
+{
+  esp_vfs_spiffs_conf_t FSconf =
+      {base_path : Path,
+       partition_label : Label,
+       max_files : MaxOpenFiles,
+       format_if_mount_failed : true};
+  return esp_vfs_spiffs_register(&FSconf);
+}
 
 int SPIFFS_Info(size_t &Total, size_t &Used, const char *Label)
-{ return esp_spiffs_info(Label, &Total, &Used); }
+{
+  return esp_spiffs_info(Label, &Total, &Used);
+}
 
 #endif
 #endif
@@ -1976,35 +2309,40 @@ int SPIFFS_Info(size_t &Total, size_t &Used, const char *Label)
 SemaphoreHandle_t I2C_Mutex;
 
 uint8_t I2C_Read(uint8_t Bus, uint8_t Addr, uint8_t Reg, uint8_t *Data, uint8_t Len, uint8_t Wait)
-{ i2c_cmd_handle_t Cmd = i2c_cmd_link_create();
+{
+  i2c_cmd_handle_t Cmd = i2c_cmd_link_create();
   i2c_master_start(Cmd);
-  i2c_master_write_byte(Cmd, (Addr<<1) | I2C_MASTER_WRITE, I2C_MASTER_ACK);
+  i2c_master_write_byte(Cmd, (Addr << 1) | I2C_MASTER_WRITE, I2C_MASTER_ACK);
   i2c_master_write_byte(Cmd, Reg, I2C_MASTER_ACK);
   i2c_master_start(Cmd);
-  i2c_master_write_byte(Cmd, (Addr<<1) | I2C_MASTER_READ, I2C_MASTER_ACK);
+  i2c_master_write_byte(Cmd, (Addr << 1) | I2C_MASTER_READ, I2C_MASTER_ACK);
   i2c_master_read(Cmd, Data, Len, I2C_MASTER_LAST_NACK);
   i2c_master_stop(Cmd);
   xSemaphoreTake(I2C_Mutex, portMAX_DELAY);
   esp_err_t Ret = i2c_master_cmd_begin((i2c_port_t)Bus, Cmd, Wait);
   xSemaphoreGive(I2C_Mutex);
   i2c_cmd_link_delete(Cmd);
-  return Ret; }
+  return Ret;
+}
 
 uint8_t I2C_Write(uint8_t Bus, uint8_t Addr, uint8_t Reg, uint8_t *Data, uint8_t Len, uint8_t Wait)
-{ i2c_cmd_handle_t Cmd = i2c_cmd_link_create();
+{
+  i2c_cmd_handle_t Cmd = i2c_cmd_link_create();
   i2c_master_start(Cmd);
-  i2c_master_write_byte(Cmd, (Addr<<1) | I2C_MASTER_WRITE , I2C_MASTER_ACK);
-  i2c_master_write_byte(Cmd, Reg , I2C_MASTER_ACK);
+  i2c_master_write_byte(Cmd, (Addr << 1) | I2C_MASTER_WRITE, I2C_MASTER_ACK);
+  i2c_master_write_byte(Cmd, Reg, I2C_MASTER_ACK);
   i2c_master_write(Cmd, Data, Len, I2C_MASTER_NACK);
   i2c_master_stop(Cmd);
   xSemaphoreTake(I2C_Mutex, portMAX_DELAY);
   esp_err_t Ret = i2c_master_cmd_begin((i2c_port_t)Bus, Cmd, Wait);
   xSemaphoreGive(I2C_Mutex);
   i2c_cmd_link_delete(Cmd);
-  return Ret; }
+  return Ret;
+}
 
 uint8_t I2C_Restart(uint8_t Bus)
-{ return 0; }
+{
+  return 0;
+}
 
 // ======================================================================================================
-

@@ -79,12 +79,13 @@ class MAV_SYS_STATUS // 1
    uint16_t load;                             // [0.1%]
    uint16_t battery_voltage;                  // [mV]
     int16_t battery_current;                  // [10mA]
+    uint8_t battery_remaining;                 // [%]
    uint16_t error_comm;
    uint16_t error_comm1;
    uint16_t error_comm2;
    uint16_t error_comm3;
    uint16_t error_comm4;
-   uint8_t battery_remaining;                 // [%]
+   
    void Print(void) const
    { printf("SYS_STATUS: %3.1f%% %5.3fV %+5.2fA\n", 0.1*load, 1e-3*battery_voltage, 0.01*battery_current); }
 } ;

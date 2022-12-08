@@ -2,9 +2,9 @@
 
 #include "hal.h"
 
-#include "tcpip_adapter.h"
+#include "esp_netif.h"
 #include "esp_wifi.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_http_server.h"
 
 #include "format.h"
