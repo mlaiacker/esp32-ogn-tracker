@@ -26,5 +26,4 @@ idf_component_register(SRCS "stratux.cpp" "aprs.cpp" "main.cpp"
                             "bt.cpp"
 						EMBED_FILES "OGN_logo_240x240.jpg"
                        INCLUDE_DIRS "."
-					   INCLUDE_DIRS "mavlink"
 					   INCLUDE_DIRS "../components")
