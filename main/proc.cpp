@@ -506,9 +506,13 @@ static void ProcessRxPacket(OGN_RxPacket<OGN_Packet> *RxPacket, uint8_t RxPacket
     }
 #endif
 #ifdef WITH_MAVLINK
-    MAV_ADSB_VEHICLE MAV_RxReport;
+    mavlink_adsb_vehicle_t MAV_RxReport;
+    mavlink_message_t msg_tx;
     RxPacket->Packet.Encode(&MAV_RxReport);
-    MAV_RxMsg::Send(sizeof(MAV_RxReport), MAV_Seq++, MAV_SysID, MAV_COMP_ID_ADSB, MAV_ID_ADSB_VEHICLE, (const uint8_t *)&MAV_RxReport, GPS_UART_Write);
+    //mavlink_msg_adsb_vehicle_send_struct(0, &MAV_RxReport);
+    uint16_t len = mavlink_msg_adsb_vehicle_encode_chan(MAV_SysID, MAV_COMP_ID_ADSB, 0, &msg_tx, &MAV_RxReport);
+    
+    //MAV_RxMsg::Send(sizeof(MAV_RxReport), MAV_Seq++, MAV_SysID, MAV_COMP_ID_ADSB, MAV_ID_ADSB_VEHICLE, (const uint8_t *)&MAV_RxReport, GPS_UART_Write);
     // xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
     // MAV_RxMsg::Send(sizeof(MAV_RxReport), MAV_Seq++, MAV_SysID, MAV_COMP_ID_ADSB, MAV_ID_ADSB_VEHICLE, (const uint8_t *)&MAV_RxReport, CONS_UART_Write);
     // xSemaphoreGive(CONS_Mutex);

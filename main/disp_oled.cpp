@@ -165,6 +165,9 @@ void OLED_DrawLogo(u8g2_t *OLED, GPS_Position *GPS) // draw logo and hardware op
 #ifdef WITH_GPS_SRF
   u8g2_DrawStr(OLED, 0, 28, "SRF GPS");
 #endif
+#ifdef WITH_MAVLINK
+  u8g2_DrawStr(OLED, 0, 28, "MAVLINK");
+#endif
 
 #ifdef WITH_RFM95
   u8g2_DrawStr(OLED, 0, 40, "RFM95");
@@ -625,6 +628,7 @@ void OLED_DrawBaro(u8g2_t *OLED, GPS_Position *GPS)
   u8g2_DrawStr(OLED, 0, 48, Line);
 }
 
+#ifndef WITH_MAVLINK
 static int8_t BattCapacity(uint16_t mVolt) // deduce battery capacity from its voltage
 {
   if (mVolt >= 4100)
@@ -635,6 +639,7 @@ static int8_t BattCapacity(uint16_t mVolt) // deduce battery capacity from its v
     return 0; // if below 3.6V then empty
   return (mVolt - 3600 + 2) / 5;
 } // otherwise a linear function from 3.6V to 4.1V
+#endif
 
 void OLED_DrawBattery(u8g2_t *OLED, GPS_Position *GPS) // draw battery status page
 {
@@ -813,21 +818,25 @@ void OLED_DrawStatusBar(u8g2_t *OLED, GPS_Position *GPS) // status bar on top of
 #endif
   // u8g2_SetFont(OLED, u8g2_font_5x7_tr);
   // u8g2_SetFont(OLED, u8g2_font_5x8_tr);
-  static uint8_t Sec = 0;
+  static uint8_t gps_sat_display = 0;
   u8g2_SetFont(OLED, u8g2_font_6x12_tr);
   // strcpy(Line, "[   %] --sat --:--");
-  strcpy(Line, "--sat --:--Z");
+  strcpy(Line, "??sat ??:??Z");
   if (GPS && GPS->isTimeValid())
   {
     Format_UnsDec(Line + 6, (uint16_t)GPS->Hour, 2, 0);
     Line[8] = ':';
     Format_UnsDec(Line + 9, (uint16_t)GPS->Min, 2, 0);
   }
-  else
-    Format_String(Line + 6, "--:--");
+  else{
+    Format_UnsDec(Line+6, GPS_PosIdx, 2);
+    uint32_t t = TimeSync_Time();
+    Format_UnsDec(Line+9, (t)%60, 2);
+    //Format_String(Line + 6, "--:--");
+  }
   if (GPS)
   {
-    if (Sec)
+    if (gps_sat_display)
     {
       Format_UnsDec(Line, (uint16_t)GPS->Satellites, 2);
       memcpy(Line + 2, "sat", 3);
@@ -837,13 +846,16 @@ void OLED_DrawStatusBar(u8g2_t *OLED, GPS_Position *GPS) // status bar on top of
       Format_UnsDec(Line, (uint16_t)(GPS_SatSNR + 2) / 4, 2);
       memcpy(Line + 2, "dB ", 3);
     }
+  } else {
+    //Format_String(Line, "--sat");
+    Format_UnsDec(Line, MAVLINK_sats, 2); 
+    Format_UnsDec(Line+3, MAVLINK_msgs%100, 2); 
+    
   }
-  else
-    Format_String(Line, "--sat");
   u8g2_DrawStr(OLED, 52, 10, Line);
-  Sec++;
-  if (Sec >= 3)
-    Sec = 0;
+  gps_sat_display++;
+  if (gps_sat_display >= 3)
+    gps_sat_display = 0;
 }
 
 void OLED_DrawSystem(u8g2_t *OLED, GPS_Position *GPS)

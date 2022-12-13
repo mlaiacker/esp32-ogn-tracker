@@ -58,6 +58,8 @@ int16_t GPS_AverageSpeed(void);             // [0.1m/s] calc. average speed base
 extern uint16_t MAVLINK_BattVolt;   // [mV]
 extern uint16_t MAVLINK_BattCurr;   // [10mA]
 extern uint8_t  MAVLINK_BattCap;    // [%]
+extern uint8_t MAVLINK_sats;  // for debug
+extern uint32_t MAVLINK_msgs;  // total messages received
 #endif
 
 extern EventGroupHandle_t GPS_Event;
