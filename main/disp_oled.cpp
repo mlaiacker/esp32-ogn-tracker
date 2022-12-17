@@ -5,9 +5,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-// #include "esp_system.h"
-// #include "esp_sleep.h"
-
 #include "hal.h"
 
 #include "sens.h"
@@ -32,18 +29,12 @@
 #endif
 
 #include "gps.h"
-// #include "ubx.h"
-// #include "timesync.h"
 #include "format.h"
 
 #include "config.h"
 
 #define QUOTE(name) #name
 #define STR(macro) QUOTE(macro)
-
-#ifndef VERSION
-#define VERSION 0.0.0
-#endif
 
 static char Line[128];
 
@@ -989,7 +980,7 @@ void OLED_DrawID(u8g2_t *OLED, GPS_Position *GPS)
 #endif
   }
   u8g2_SetFont(OLED, u8g2_font_5x8_tr);
-  u8g2_DrawStr(OLED, 96, 62, "v" STR(VERSION));
+  u8g2_DrawStr(OLED, 96, 62, GIT_TAG);
 }
 
 void OLED_DrawAltitudeAndSpeed(u8g2_t *OLED, GPS_Position *GPS)
