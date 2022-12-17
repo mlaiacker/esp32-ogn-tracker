@@ -31,6 +31,7 @@
   extern FreqPlan  RF_FreqPlan;               // frequency hopping pattern calculator
   extern  int32_t    TX_Credit;               // [ms] counts transmitter time to avoid using more than 1%
   extern uint16_t RX_OGN_Count64;             // counts received packets for the last 64 seconds
+  extern uint16_t TX_OGN_Count;
   extern uint32_t RX_Random;                  // Random number from LSB of RSSI readouts
 
          void XorShift32(uint32_t &Seed);     // simple random number generator

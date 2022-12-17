@@ -282,6 +282,11 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 #define PIN_RFM_MISO GPIO_NUM_11 // SPI MISO
 #define PIN_RFM_MOSI GPIO_NUM_10 // SPI MOSI
 #define PIN_RFM_BUSY GPIO_NUM_13 // for the Heltec V3 with SX1262
+
+#define RFM_SPI_HOST SPI3_HOST // or H or VSPI_HOST ?
+#define RFM_SPI_DMA SPI_DMA_CH_AUTO           // DMA channel
+#define RFM_SPI_SPEED 4000000  // [Hz] 2MHz SPI clock rate for RF chip
+
 #endif                           // HELTEC TTGO
 
 #if defined(WITH_TBEAM) || defined(WITH_TBEAM_V10) || defined(WITH_LORA32)
@@ -326,9 +331,11 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 // #define PIN_RFM_RST  GPIO_NUM_4   // RFM RESET
 #endif
 
-#define RFM_SPI_HOST SPI2_HOST // or H or VSPI_HOST ?
+#ifndef RFM_SPI_HOST
+#define RFM_SPI_HOST SPI3_HOST // or H or VSPI_HOST ?
 #define RFM_SPI_DMA 1          // DMA channel
 #define RFM_SPI_SPEED 4000000  // [Hz] 2MHz SPI clock rate for RF chip
+#endif
 
 #ifdef WITH_ST7789
 #ifdef WITH_TBEAM                // old T-Beam
@@ -624,10 +631,6 @@ uint32_t getUniqueAddress(void)
 */
 // ======================================================================================================
 
-#ifdef WITH_MAVLINK
-uint8_t MAV_Seq = 0; // sequence number for MAVlink message sent out
-#endif
-
 // ======================================================================================================
 
 // system_get_time()  - return s 32-bit time in microseconds since the system start
@@ -823,6 +826,7 @@ void AERO_UART_SetBaudrate(int BaudRate) { uart_set_baudrate(AERO_UART, BaudRate
 // int   GPS_UART_Full       (void)          { size_t Full=0; uart_get_buffered_data_len(GPS_UART, &Full); return Full; }
 int GPS_UART_Read(uint8_t &Byte) { return uart_read_bytes(GPS_UART, &Byte, 1, 0); } // should be buffered and non-blocking
 void GPS_UART_Write(char Byte) { uart_write_bytes(GPS_UART, &Byte, 1); }            // should be buffered and blocking
+void GPS_UART_Write(void *buf, size_t len) { uart_write_bytes(GPS_UART, buf, len); }            // should be buffered and blocking
 void GPS_UART_Flush(int MaxWait) { uart_wait_tx_done(GPS_UART, MaxWait); }
 void GPS_UART_SetBaudrate(int BaudRate) { uart_set_baudrate(GPS_UART, BaudRate); }
 #endif

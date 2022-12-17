@@ -7,12 +7,6 @@
 #include "ctrl.h"
 #include "nmea.h"
 #include "ubx.h"
-#ifdef WITH_MAVLINK
-//#include "mavlink.h"
-#include "mavlink/mavlink_helpers.h"
-#include "mavlink/common/mavlink.h"
-#include "atmosphere.h"
-#endif
 #ifdef WITH_SDLOG
 #include "sdlog.h"
 #endif
@@ -24,10 +18,13 @@
 
 // #define DEBUG_PRINT
 
-// #ifdef DEBUG_PRINT
 static char Line[128];
-static void CONS_HexDump(char Byte) { Format_Hex(CONS_UART_Write, (uint8_t)Byte); }
-// #endif
+#ifdef DEBUG_PRINT
+static void CONS_HexDump(char Byte)
+{
+  Format_Hex(CONS_UART_Write, (uint8_t)Byte);
+}
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -38,9 +35,18 @@ static NMEA_RxMsg NMEA; // NMEA sentences catcher
 static UBX_RxMsg UBX; // UBX messages catcher
 #endif
 #ifdef WITH_MAVLINK
-//static MAV_RxMsg ; // MAVlink message catcher
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include "mavlink/mavlink_helpers.h"
+#include "mavlink/common/mavlink.h"
+#include "atmosphere.h"
+// for message RX
 mavlink_status_t mav_status_rx;
 mavlink_message_t mav_msg_rx;
+uint8_t  MAV_SysID = 255;             // System-ID for MAVlink messages we send out
+uint8_t  MAV_Seq = 0;                   // sequence number for MAVlink message sent out
 #endif
 
 uint16_t GPS_PosPeriod = 0; // [mss] time between succecive GPS readouts
@@ -93,7 +99,7 @@ const int GPS_BurstTimeout = 100; // [ms]
 
 // uint32_t GPS_getBaudRate (void) { return BaudRate[BaudRateIdx]; }
 // uint32_t GPS_nextBaudRate(void) { BaudRateIdx++; if(BaudRateIdx>=BaudRates) BaudRateIdx=0; return GPS_getBaudRate(); }
-static uint32_t GPS_BaudRate = 4800;   // [bps] current baudrate on the GPS port
+static uint32_t GPS_BaudRate = 57600; // [bps] current baudrate on the GPS port
 
 static uint32_t GPS_nextBaudRate(void) // produce next (possible) GPS baudrate (for autobaud)
 {
@@ -115,7 +121,7 @@ const uint32_t GPS_TargetBaudRate = 115200; // [bps]
 uint16_t MAVLINK_BattVolt = 0; // [mV]
 uint16_t MAVLINK_BattCurr = 0; // [10mA]
 uint8_t MAVLINK_BattCap = 0;   // [%]
-uint8_t MAVLINK_sats = 0;
+mavlink_statustext_t MAVLINK_last_text;
 uint32_t MAVLINK_msgs = 0;
 #endif
 
@@ -155,6 +161,7 @@ void FlightProcess(void)
       // CONS_UART_Write('0'+Parameters.AddrType);
       // Format_String(CONS_UART_Write, "\n");
       xSemaphoreGive(CONS_Mutex);
+      MAV_text("%s",Line);
     }
     RndID_TimeToChange--;
   }
@@ -1095,18 +1102,31 @@ static uint64_t MAV_getUnixTime(mavlink_message_t msg) // [ms] extract time from
 {
   int32_t TimeCorr_ms = (int32_t)Parameters.TimeCorr * 1000; // [ms] apparently ArduPilot needs some time correction, as it "manually" converts from GPS to UTC time
   uint8_t MsgID = msg.msgid;
-  if (MsgID == MAVLINK_MSG_ID_SYSTEM_TIME){
+  uint64_t UnixTime_ms = 0;
+  if (MsgID == MAVLINK_MSG_ID_SYSTEM_TIME)
+  {
     mavlink_system_time_t system_time;
     mavlink_msg_system_time_decode(&msg, &system_time);
-    return  system_time.time_unix_usec / 1000 + TimeCorr_ms;
-  } else if (MsgID == MAVLINK_MSG_ID_GLOBAL_POSITION_INT){
+    return system_time.time_unix_usec / 1000 + TimeCorr_ms;
+  }
+  else if (MsgID == MAVLINK_MSG_ID_GLOBAL_POSITION_INT)
+  {
     return mavlink_msg_global_position_int_get_time_boot_ms(&msg) + MAV_TimeOfs_ms;
   }
-  if (MsgID == MAVLINK_MSG_ID_SCALED_PRESSURE)
+  else if (MsgID == MAVLINK_MSG_ID_ATTITUDE)
+  {
+    return mavlink_msg_attitude_get_time_boot_ms(&msg) + MAV_TimeOfs_ms;
+  }
+  else if (MsgID == MAVLINK_MSG_ID_ALTITUDE)
+  {
+    UnixTime_ms = mavlink_msg_altitude_get_time_usec(&msg) / 1000;
+  }
+  else if (MsgID == MAVLINK_MSG_ID_SCALED_PRESSURE)
+  {
     return mavlink_msg_scaled_pressure_get_time_boot_ms(&msg) + MAV_TimeOfs_ms;
-  uint64_t UnixTime_ms = 0;
-  // if(MsgID==MAV_ID_RAW_IMU)     UnixTime_ms = ((const MAV_RAW_IMU     *)MAV.getPayload())->time_usec/1000;
-  if (MsgID == MAVLINK_MSG_ID_GPS_RAW_INT){
+  }
+  else if (MsgID == MAVLINK_MSG_ID_GPS_RAW_INT)
+  {
     UnixTime_ms = mavlink_msg_gps_raw_int_get_time_usec(&msg) / 1000;
   }
   if (UnixTime_ms == 0)
@@ -1126,7 +1146,7 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
   GPS_Status.BaudConfig = (GPS_getBaudRate() == GPS_TargetBaudRate);
   uint8_t MsgID = msg.msgid;
   uint64_t UnixTime_ms = MAV_getUnixTime(msg); // get the time from the MAVlink message
-  
+
   if ((MsgID != MAVLINK_MSG_ID_SYSTEM_TIME) && UnixTime_ms)
   {
     if (GPS_Pos[GPS_PosIdx].hasTime)
@@ -1149,10 +1169,10 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
   if (MsgID == MAVLINK_MSG_ID_HEARTBEAT)
   {
 #ifdef DEBUG_PRINT
-    //const MAV_HEARTBEAT *Heartbeat = (const MAV_HEARTBEAT *)MAV.getPayload();
+    // const MAV_HEARTBEAT *Heartbeat = (const MAV_HEARTBEAT *)MAV.getPayload();
     xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
     Format_String(CONS_UART_Write, "MAV_HEARTBEAT: ");
-    //Format_Hex(CONS_UART_Write, Heartbeat->system_status);
+    // Format_Hex(CONS_UART_Write, Heartbeat->system_status);
     Format_String(CONS_UART_Write, "\n");
     xSemaphoreGive(CONS_Mutex);
 #endif
@@ -1160,10 +1180,10 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
   else if (MsgID == MAVLINK_MSG_ID_SYSTEM_TIME)
   {
     MAVLINK_msgs++;
-    UnixTime_ms = mavlink_msg_system_time_get_time_unix_usec(&msg)/1000;
-    uint32_t UnixTime = UnixTime_ms / 1000;                      // [ s] Unix Time
-    uint32_t UnixFrac = UnixTime_ms - (uint64_t)UnixTime * 1000; // [ms] Second fraction of the Unix time
-    MAV_TimeOfs_ms = UnixTime_ms - (uint64_t)mavlink_msg_system_time_get_time_boot_ms(&msg);        // [ms] difference between the Unix Time and the Ardupilot time-since-boot
+    UnixTime_ms = mavlink_msg_system_time_get_time_unix_usec(&msg) / 1000;
+    uint32_t UnixTime = UnixTime_ms / 1000;                                                  // [ s] Unix Time
+    uint32_t UnixFrac = UnixTime_ms - (uint64_t)UnixTime * 1000;                             // [ms] Second fraction of the Unix time
+    MAV_TimeOfs_ms = UnixTime_ms - (uint64_t)mavlink_msg_system_time_get_time_boot_ms(&msg); // [ms] difference between the Unix Time and the Ardupilot time-since-boot
     TimeSync_SoftPPS(TickCount - UnixFrac, UnixTime, Parameters.PPSdelay);
 #ifdef DEBUG_PRINT
     xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
@@ -1176,8 +1196,12 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
     Format_String(CONS_UART_Write, "\n");
     xSemaphoreGive(CONS_Mutex);
 #endif
-  }  else if (MsgID == MAVLINK_MSG_ID_GLOBAL_POSITION_INT) // position based on GPS and inertial sensors
+  }
+  else if (MsgID == MAVLINK_MSG_ID_GLOBAL_POSITION_INT) // position based on GPS and inertial sensors
   {
+    if(MAV_SysID==255 || MAV_SysID == 0) {
+      MAV_SysID = msg.sysid; // use the sysid of autopilot
+    }
     mavlink_global_position_int_t Pos;
     mavlink_msg_global_position_int_decode(&msg, &Pos);
     GPS_Pos[GPS_PosIdx].Read(&Pos, UnixTime_ms); // read position/altitude/speed/etc. into GPS_Position structure
@@ -1193,11 +1217,14 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
     Format_String(CONS_UART_Write, Line);
     xSemaphoreGive(CONS_Mutex);
 #endif
-  } else if (MsgID == MAVLINK_MSG_ID_GPS_RAW_INT) // position form the GPS
+  }
+  else if (MsgID == MAVLINK_MSG_ID_GPS_RAW_INT) // position form the GPS
   {
+    if(MAV_SysID==255 || MAV_SysID == 0) {
+      MAV_SysID = msg.sysid; // use the sysid of autopilot
+    }
     mavlink_gps_raw_int_t RawGPS;
     mavlink_msg_gps_raw_int_decode(&msg, &RawGPS);
-    MAVLINK_sats = RawGPS.satellites_visible;
     GPS_Pos[GPS_PosIdx].Read(&RawGPS, UnixTime_ms); // read position/altitude/speed/etc. into GPS_Position structure
 #ifdef DEBUG_PRINT
     GPS_Pos[GPS_PosIdx].PrintLine(Line);
@@ -1216,7 +1243,8 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
     Format_String(CONS_UART_Write, Line);
     xSemaphoreGive(CONS_Mutex);
 #endif
-  }  else if (MsgID == MAVLINK_MSG_ID_SCALED_PRESSURE)
+  }
+  else if (MsgID == MAVLINK_MSG_ID_SCALED_PRESSURE)
   {
     mavlink_scaled_pressure_t Press;
     mavlink_msg_scaled_pressure_decode(&msg, &Press);
@@ -1233,7 +1261,8 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
     Format_String(CONS_UART_Write, Line);
     xSemaphoreGive(CONS_Mutex);
 #endif
-  }  else if (MsgID == MAVLINK_MSG_ID_SYS_STATUS)
+  }
+  else if (MsgID == MAVLINK_MSG_ID_SYS_STATUS)
   {
     mavlink_sys_status_t Status;
     mavlink_msg_sys_status_decode(&msg, &Status);
@@ -1249,8 +1278,10 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
     Format_String(CONS_UART_Write, "A\n");
     xSemaphoreGive(CONS_Mutex);
 #endif
-    // } else if(MsgID==MAV_ID_STATUSTEXT)
-    // {
+  }
+  else if (MsgID == MAVLINK_MSG_ID_STATUSTEXT)
+    mavlink_msg_statustext_decode(&msg, &MAVLINK_last_text);
+  {
   }
 #ifdef DEBUG_PRINT
   else
@@ -1263,7 +1294,30 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
   }
 #endif
 }
-#endif
+// use global variables to reduce stack needed
+  mavlink_statustext_t mav_text;
+  uint8_t mav_text_buf[MAVLINK_MAX_PACKET_LEN];
+  mavlink_message_t mav_text_msg_tx;
+
+void MAV_text(const char *fmt, ...)
+{
+  if (!fmt)
+  {
+    return;
+  }
+  mav_text.severity = 6; // 6 = info
+  mav_text.id = 0;
+  mav_text.chunk_seq = 0;
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf((char *)mav_text.text, sizeof(mav_text.text), fmt, ap);
+  va_end(ap);
+
+  uint16_t len = mavlink_msg_statustext_encode_chan(MAV_SysID, MAV_COMP_ID_ADSB, 0, &mav_text_msg_tx, &mav_text);
+  len = mavlink_msg_to_send_buffer(mav_text_buf, &mav_text_msg_tx);
+  GPS_UART_Write(mav_text_buf, len);
+}
+#endif // MAVLINK
 
 // ----------------------------------------------------------------------------
 
@@ -1299,7 +1353,7 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
 #ifdef __cplusplus
 extern "C"
 #endif
-void vTaskGPS(void *pvParameters)
+void  vTaskGPS(void *pvParameters)
 {
   GPS_Event = xEventGroupCreate();
   GPS_Status.Flags = 0;
@@ -1308,11 +1362,15 @@ void vTaskGPS(void *pvParameters)
   Burst_Tick = 0;
 
   vTaskDelay(5); // put some initial delay for lighter startup load
-
+  GPS_UART_SetBaudrate(GPS_BaudRate);
   xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
   Format_String(CONS_UART_Write, "TaskGPS:");
   Format_String(CONS_UART_Write, "\n");
   xSemaphoreGive(CONS_Mutex);
+
+#ifdef WITH_MAVLINK
+  MAV_text("TaskGPS started");
+#endif  
 
   GPS_Burst.Flags = 0;
   bool PPS = 0;
@@ -1333,19 +1391,6 @@ void vTaskGPS(void *pvParameters)
     TickType_t NewTick = xTaskGetTickCount();
     TickType_t Delta = NewTick - RefTick;
     RefTick = NewTick;
-/*
-#ifdef DEBUG_PRINT
-    if(Delta>1)
-    { xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
-      Format_UnsDec(CONS_UART_Write, TimeSync_Time(RefTick)%60);
-      CONS_UART_Write('.');
-      Format_UnsDec(CONS_UART_Write, TimeSync_msTime(RefTick),3);
-      Format_String(CONS_UART_Write, " -> ");
-      Format_UnsDec(CONS_UART_Write, Delta);
-      Format_String(CONS_UART_Write, "t\n");
-      xSemaphoreGive(CONS_Mutex); }
-#endif
-*/
 #ifdef WITH_GPS_PPS
     if (GPS_PPS_isOn())
     {
@@ -1382,10 +1427,10 @@ void vTaskGPS(void *pvParameters)
       UBX.ProcessByte(Byte);
 #endif
 #ifdef WITH_MAVLINK
-      if(mavlink_parse_char(0, Byte, &mav_msg_rx, &mav_status_rx))
+      if (mavlink_parse_char(0, Byte, &mav_msg_rx, &mav_status_rx))
       {
         GPS_MAV(mav_msg_rx);
-        NoValidData = 0;        
+        NoValidData = 0;
         break;
       }
 
@@ -1409,25 +1454,8 @@ void vTaskGPS(void *pvParameters)
         break;
       }
 #endif
-      // if(Bytes>=MaxBytesPerTick) break;
     }
-    /*
-    #ifdef DEBUG_PRINT
-        if(Bytes)
-        { xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
-          Format_UnsDec(CONS_UART_Write, TimeSync_Time(RefTick)%60);
-          CONS_UART_Write('.');
-          Format_UnsDec(CONS_UART_Write, TimeSync_msTime(RefTick),3);
-          Format_String(CONS_UART_Write, "..");
-          Format_UnsDec(CONS_UART_Write, TimeSync_Time()%60);
-          CONS_UART_Write('.');
-          Format_UnsDec(CONS_UART_Write, TimeSync_msTime(),3);
-          Format_String(CONS_UART_Write, " -> ");
-          Format_UnsDec(CONS_UART_Write, Bytes);
-          Format_String(CONS_UART_Write, "B\n");
-          xSemaphoreGive(CONS_Mutex); }
-    #endif
-    */
+
     if (LineIdle == 0) // if any bytes were received ?
     {
       if (!GPS_Burst.Active)
@@ -1482,6 +1510,7 @@ void vTaskGPS(void *pvParameters)
       Format_String(CONS_UART_Write, "bps\n");
       xSemaphoreGive(CONS_Mutex);
       GPS_UART_SetBaudrate(NewBaudRate);
+      MAV_text("TaskGPS: %dbps",NewBaudRate);
       NoValidData = 0;
     }
   }

@@ -397,7 +397,7 @@ void OLED_DrawRF(u8g2_t *OLED, GPS_Position *GPS) // RF
   Len += Format_String(Line + Len, "SX1272");
 #endif
   Line[Len++] = ':';
-  Len += Format_SignDec(Line + Len, (int16_t)Parameters.TxPower); // Tx power
+  Len += Format_UnsDec(Line + Len, (int16_t)Parameters.TxPower); // Tx power
   Len += Format_String(Line + Len, "dBm");
   Line[Len++] = ' ';
   Len += Format_SignDec(Line + Len, (int32_t)Parameters.RFchipFreqCorr, 2, 1); // frequency correction
@@ -413,10 +413,10 @@ void OLED_DrawRF(u8g2_t *OLED, GPS_Position *GPS) // RF
   Line[Len] = 0;
   u8g2_DrawStr(OLED, 0, 36, Line);
   Len = 0;
-  Len += Format_SignDec(Line + Len, (int16_t)TRX.chipTemp); // RF chip internal temperature (not calibrated)
-  // Line[Len++]=0xB0;
-  // Line[Len++]='C';
-  Len += Format_String(Line + Len, "\260C    RxFIFO:");
+  //Len += Format_SignDec(Line + Len, (int16_t)TRX.chipTemp); // RF chip internal temperature (not calibrated)
+  //Len += Format_String(Line + Len, "\260C");
+  Len += Format_UnsDec(Line + Len, (int16_t)TX_OGN_Count); // transmitted packages
+  Len += Format_String(Line + Len, "pkg RxFIFO:");
   Len += Format_UnsDec(Line + Len, RF_RxFIFO.Full()); // how many packets wait in the RX queue
   Line[Len] = 0;
   u8g2_DrawStr(OLED, 0, 48, Line);
@@ -847,10 +847,7 @@ void OLED_DrawStatusBar(u8g2_t *OLED, GPS_Position *GPS) // status bar on top of
       memcpy(Line + 2, "dB ", 3);
     }
   } else {
-    //Format_String(Line, "--sat");
-    Format_UnsDec(Line, MAVLINK_sats, 2); 
-    Format_UnsDec(Line+3, MAVLINK_msgs%100, 2); 
-    
+    Format_String(Line, "--sat");
   }
   u8g2_DrawStr(OLED, 52, 10, Line);
   gps_sat_display++;
@@ -899,9 +896,15 @@ void OLED_DrawSystem(u8g2_t *OLED, GPS_Position *GPS)
 #endif
   Len += Format_Hex(Line + Len, TRX.chipVer);
   Line[Len++] = ' ';
+#ifdef WITH_SX1262
+  Line[Len++] = '0';
+  Line[Len++] = 'x';
+  Len += Format_Hex(Line + Len, TRX.getStatus());
+#else
   Len += Format_SignDec(Line + Len, (int16_t)TRX.chipTemp);
   Line[Len++] = 0xB0;
   Line[Len++] = 'C';
+#endif
   Line[Len] = 0;
   u8g2_DrawStr(OLED, 0, 36, Line);
 

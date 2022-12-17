@@ -1,3 +1,5 @@
+#pragma once
+
 #define DEFAULT_AcftType       13          // [0..15] default aircraft-type: Powered Aircraft
 #define DEFAULT_GeoidSepar     40          // [m]
 #define DEFAULT_CONbaud    115200
@@ -67,8 +69,8 @@
 // #define WITH_BMX055                        // BMX055 magnetic and IMU sensor
 
 //#define WITH_LORAWAN                       // LoRaWAN connectivity
-//#define WITH_FANET                         // FANET transmission and reception
-//#define WITH_PAW			   // Add PAW transmission
+#define WITH_FANET                         // FANET transmission and reception
+#define WITH_PAW			   // Add PAW transmission
 
 //#define WITH_PFLAA                         // PFLAU and PFLAA for compatibility with XCsoar and LK8000
 // #define WITH_POGNT

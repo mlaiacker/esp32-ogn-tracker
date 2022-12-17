@@ -48,6 +48,7 @@ static LowPass2<uint32_t, 4, 2, 4> RX_RSSI; // low pass filter to average the RX
 
 static Delay<uint8_t, 64> RX_OGN_CountDelay;
 uint16_t RX_OGN_Count64 = 0; // counts received packets for the last 64 seconds
+uint16_t TX_OGN_Count = 0; // counts send packets
 
 uint32_t RX_Random = 0x12345678; // Random number from LSB of RSSI readouts
 
@@ -230,6 +231,7 @@ static uint8_t Transmit(uint8_t TxChan, const uint8_t *PacketByte, uint8_t Thres
   xSemaphoreGive(CONS_Mutex);
 #endif
 #endif
+  TX_OGN_Count++;
   return 1;
 }
 // make a time-slot: listen for packets and transmit given PacketByte$
@@ -366,8 +368,9 @@ static uint8_t StartRFchip(void)
 #endif
   TRX.Calibrate();
   TRX.WaitWhileBusy_ms(20);
-  if (TRX.readBusy())
+  if (TRX.readBusy()){
     Format_String(CONS_UART_Write, "StartRFchip() sx1262 BUSY after OGN_Configure() and Calibrate()\n");
+  }
 #endif
   TRX.setModeStandby(); // set RF chip mode to STANDBY
   uint8_t Version = TRX.ReadVersion();
@@ -435,6 +438,7 @@ extern "C" void vTaskRF(void *pvParameters)
     CONS_UART_Write('\r');
     CONS_UART_Write('\n');
     xSemaphoreGive(CONS_Mutex);
+    MAV_text("TaskRF: v%x",ChipVersion);
 
     if ((ChipVersion != 0x00) && (ChipVersion != 0xFF))
       break; // only break the endless loop then an RF chip is detected
@@ -454,9 +458,6 @@ extern "C" void vTaskRF(void *pvParameters)
 
   RX_RSSI.Set(2 * 112);
 
-/*  for (;;){  
-    vTaskDelay(50);  // ************* stop here **************  
-  }*/
   for (;;)
   {
 

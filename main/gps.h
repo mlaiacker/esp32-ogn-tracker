@@ -1,4 +1,4 @@
-
+#pragma once
 #include "hal.h"
 
 #include "timesync.h"
@@ -55,11 +55,17 @@ GPS_Position *GPS_getPosition(uint8_t &BestIdx, int16_t &BestRes, int8_t Sec, in
 int16_t GPS_AverageSpeed(void);             // [0.1m/s] calc. average speed based on most recent GPS positions
 
 #ifdef WITH_MAVLINK
+#include "mavlink/common/mavlink.h"
 extern uint16_t MAVLINK_BattVolt;   // [mV]
 extern uint16_t MAVLINK_BattCurr;   // [10mA]
 extern uint8_t  MAVLINK_BattCap;    // [%]
-extern uint8_t MAVLINK_sats;  // for debug
+extern mavlink_statustext_t  MAVLINK_last_text; // to display on mavlink tab on OLED
 extern uint32_t MAVLINK_msgs;  // total messages received
+void MAV_text(const char *fmt, ...); // send a mavlink text message
+extern  uint8_t  MAV_SysID;             // System-ID for MAVlink messages we send out
+extern uint8_t  MAV_Seq;                   // sequence number for MAVlink message sent out
+#else
+#define MAV_text(fmt, ...) // not implemented
 #endif
 
 extern EventGroupHandle_t GPS_Event;

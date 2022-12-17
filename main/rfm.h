@@ -9,6 +9,7 @@
 #include "ogn.h"
 #include "fanet.h"
 #include "paw.h"
+#include "gps.h"
 
 class RFM_LoRa_Config
 {
@@ -37,6 +38,7 @@ public:
   void Print(void)
   {
     printf("RFM_LoRa_Config: SYNC:0x%02X/%d, BW%d, SF%d, CR%d, IHDR:%d, Inv:%d/%d, LR:%d\n", SYNC, Preamble, BW, SF, CR, IHDR, RxInv, TxInv, LowRate);
+    MAV_text("RFM_LoRa_Config: SYNC:0x%02X/%d, BW%d, SF%d, CR%d, IHDR:%d, Inv:%d/%d, LR:%d\n", SYNC, Preamble, BW, SF, CR, IHDR, RxInv, TxInv, LowRate);
   }
 
   uint16_t getAirTime(uint8_t PktLen) // [ms] estimated time on the air for given packet length
@@ -92,6 +94,7 @@ public:
     HHMMSS[6] = 'h';
     HHMMSS[7] = 0;
     printf("%s CR%c%c%c %3.1fdB/%de %+3.1fkHz ", HHMMSS, '0' + CR, hasCRC ? 'c' : '_', badCRC ? '-' : '+', 0.25 * SNR, BitErr, 1e-2 * FreqOfs);
+    MAV_text("%s CR%c%c%c %3.1fdB/%de %+3.1fkHz ", HHMMSS, '0' + CR, hasCRC ? 'c' : '_', badCRC ? '-' : '+', 0.25 * SNR, BitErr, 1e-2 * FreqOfs);
     for (uint8_t Idx = 0; Idx < Len; Idx++)
       printf("%02X", Byte[Idx]);
     printf("\n");
@@ -112,6 +115,7 @@ public:
 public:
   void Print(void (*CONS_UART_Write)(char), uint8_t WithData = 0) const
   { // uint8_t ManchErr = Count1s(RxPktErr, 26);
+    MAV_text("RxPktData: %ich %idbm", Channel, (-5 * (int16_t)RSSI));
     Format_String(CONS_UART_Write, "RxPktData: ");
     Format_HHMMSS(CONS_UART_Write, Time);
     CONS_UART_Write('+');
@@ -1021,11 +1025,13 @@ public:
     uint8_t Config[3] = {0, 0, 0};
     Cmd_Write(CMD_SETSLEEP, Config, 3);
   }
+
   void setModeStandby(uint8_t Mode = 0)
   {
     uint8_t Config[1] = {Mode};
     Cmd_Write(CMD_SETSTANDBY, Config, 1);
   }
+
   void setModeTX(uint32_t Timeout = 0)
   {
     uint8_t T[3];
@@ -1463,7 +1469,8 @@ public:
 #ifdef WITH_SX1262
   uint8_t ReadVersion(void)
   {
-    return 0x12;
+	  chipVer = 0x12;
+	  return chipVer;
   }
   uint8_t ReadRSSI(void)
   {

@@ -51,11 +51,6 @@ extern uint8_t PowerMode;                 // 0=sleep/minimal power, 1=comprimize
 
 extern uint8_t BARO_I2C;
 
-#ifdef WITH_MAVLINK
-const  uint8_t  MAV_SysID = 1;             // System-ID for MAVlink messages we send out
-extern uint8_t  MAV_Seq;                   // sequence number for MAVlink message sent out
-#endif
-
 // ============================================================================================================
 
 extern SemaphoreHandle_t CONS_Mutex;       // console port Mutex
@@ -81,6 +76,7 @@ void CONS_UART_SetBaudrate(int BaudRate);
 
 int   GPS_UART_Read       (uint8_t &Byte); // non-blocking
 void  GPS_UART_Write      (char     Byte); // blocking
+void  GPS_UART_Write       (void *buf, size_t len);
 void  GPS_UART_Flush      (int MaxWait  ); // wait for data to be pushed out
 void  GPS_UART_SetBaudrate(int BaudRate);
 
@@ -185,7 +181,7 @@ void LED_TimerCheck(uint8_t Ticks=1);
 bool Button_isPressed(void);
 // extern bool Button_SleepRequest;
 int32_t Button_TimerCheck(uint8_t Ticks=1);
-
+ 
 void IO_Configuration(void);             // Configure I/O
 
 int  NVS_Init(void);                     // initialize non-volatile-storage in the Flash

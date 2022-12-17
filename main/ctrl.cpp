@@ -361,6 +361,7 @@ void SleepIn(void)
   xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
   Format_String(CONS_UART_Write, "Sleep-in\n");
   xSemaphoreGive(CONS_Mutex);
+  MAV_text("Sleep-in");
 
 #ifdef WITH_GPS_UBX
 #ifdef WITH_GPA_ENA
@@ -433,6 +434,7 @@ void SleepOut(void)
   xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
   Format_String(CONS_UART_Write, "Sleep-out\n");
   xSemaphoreGive(CONS_Mutex);
+  MAV_text("Sleep-out");
 }
 
 #ifdef WITH_SLEEP

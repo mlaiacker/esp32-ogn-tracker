@@ -6,6 +6,7 @@
 
 #include "format.h"
 #include "fifo.h"
+#include "gps.h"
 
 #ifdef WITH_BT_SPP                            // classic BT
 
@@ -463,6 +464,7 @@ static void esp_ble_gatts_cb(esp_gatts_cb_event_t Event, esp_gatt_if_t gatts_if,
   Format_UnsDec(CONS_UART_Write, (uint32_t)gatts_if);
   Format_String(CONS_UART_Write, "\n");
   xSemaphoreGive(CONS_Mutex);
+  MAV_text("BLE_GATTS: Event %i.%i", (uint32_t)Event, (uint32_t)gatts_if);
 }
 
 static void esp_ble_gap_cb(esp_gap_ble_cb_event_t Event, esp_ble_gap_cb_param_t *Param)
@@ -493,6 +495,7 @@ static void esp_ble_gap_cb(esp_gap_ble_cb_event_t Event, esp_ble_gap_cb_param_t 
   Format_UnsDec(CONS_UART_Write, (uint32_t)Event);
   Format_String(CONS_UART_Write, "\n");
   xSemaphoreGive(CONS_Mutex);
+  MAV_text("BLE_GAP: Event %i",(uint32_t)Event);
 }
 
 int BT_SPP_Read (uint8_t &Byte)   // read a character from the BT serial port (buffer)
