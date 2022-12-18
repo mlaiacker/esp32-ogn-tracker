@@ -1,6 +1,13 @@
-tar cvzf esp32-ogn-tracker-bin.tgz flash_USB0.sh flash_ACM0.sh esptool.py flash_COM?.bat esptool.py \
-build/partitions.bin build/bootloader/bootloader.bin build/esp32-ogn-tracker.bin \
+
+cd utils
+make serial_dump
+make read_log
+cd ..
+RELEASE=heltec-v3-ogn-tracker-bin
+tar cvzf $RELEASE.tgz flash_ACM0.sh esptool.py flash_COM?.bat esptool.py \
+build/partition_table/partition-table.bin build/bootloader/bootloader.bin build/esp32-ogn-tracker.bin \
 utils/read_log utils/serial_dump main/config.h
-zip -u esp32-ogn-tracker-bin.zip flash_USB0.sh flash_ACM0.sh esptool.py flash_COM?.bat esptool.py \
-build/partitions.bin build/bootloader/bootloader.bin build/esp32-ogn-tracker.bin \
+
+zip -u $RELEASE.zip flash_ACM0.sh esptool.py flash_COM?.bat esptool.py \
+build/partition_table/partition-table.bin build/bootloader/bootloader.bin build/esp32-ogn-tracker.bin \
 utils/read_log utils/serial_dump main/config.h

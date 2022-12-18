@@ -1,3 +1,6 @@
 [submodule "main/mavlink"]
 	path = main/mavlink
 	url = https://github.com/mavlink/c_library_v2.git
+[submodule "components/u8g2"]
+	path = components/u8g2
+	url = https://github.com/olikraus/u8g2.git
