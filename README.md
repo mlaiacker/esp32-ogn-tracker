@@ -2,6 +2,8 @@
 
 OGN Tracker implementation on ESP32 devices.
 
+![HELTEC LORA V3 mavlink](/images/heltec_v3.jpg)
+
 This now only works for the Heltec V3 boards.
 
 The [original](https://github.com/pjalocha/esp32-ogn-tracker) works with HELTEC and TTGO boards with sx1276 RF chip for 868/915MHz
