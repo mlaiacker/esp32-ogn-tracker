@@ -399,10 +399,9 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 #endif
 
 #if defined(WITH_HELTEC_V3)
-                       // VK2828U   GN-801   MAVlink
-#define PIN_GPS_TXD GPIO_NUM_4 // green     green    green
-#define PIN_GPS_RXD GPIO_NUM_5 // blue      yellow   yellow
-#define PIN_GPS_PPS GPIO_NUM_6 // white     blue
+#define PIN_GPS_TXD GPIO_NUM_4
+#define PIN_GPS_RXD GPIO_NUM_5
+#define PIN_GPS_PPS GPIO_NUM_6
 #endif
 
 // Note: I had a problem with GPS ENABLE on GPIO13, thus I tied the enable wire to 3.3V for the time being.
