@@ -2,14 +2,13 @@
 #define __HAL_H__
 
 #include <stdint.h>
+#include "config.h"                        // user options
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "freertos/event_groups.h"
-
-#include "fifo.h"
 
 // ============================================================================================================
 
@@ -25,14 +24,13 @@
 #define USE_BLOCK_SPI                      // use block SPI interface for RF chip
 #define I2C_SPEED 1000000                  // [Hz] bit rate on the I2C (nominally up to 400000)
 
-#include "config.h"                        // user options
-
 #ifdef WITH_BT_SPP
 #include "bt.h"
 #endif
 
 // ============================================================================================================
 
+#include "fifo.h"
 extern FIFO<uint8_t, 8> KeyBuffer;
 
 // ============================================================================================================
