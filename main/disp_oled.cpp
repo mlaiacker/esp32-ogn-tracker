@@ -31,12 +31,10 @@
 #include "gps.h"
 #include "format.h"
 
-#include "config.h"
-
 #define QUOTE(name) #name
 #define STR(macro) QUOTE(macro)
 
-static char Line[128];
+static char disp_str[128];
 
 // ========================================================================================================================
 
@@ -46,11 +44,11 @@ static char Line[128];
 
 int OLED_DisplayStatus(uint32_t Time, uint8_t LineIdx)
 {
-  Format_String(Line, "OGN Tx/Rx      ");
-  Format_HHMMSS(Line + 10, Time);
-  OLED_PutLine(LineIdx++, Line);
-  Parameters.Print(Line);
-  OLED_PutLine(LineIdx++, Line);
+  Format_String(disp_str, "OGN Tx/Rx      ");
+  Format_HHMMSS(disp_str + 10, Time);
+  OLED_PutLine(LineIdx++, disp_str);
+  Parameters.Print(disp_str);
+  OLED_PutLine(LineIdx++, disp_str);
   return 0;
 }
 
@@ -58,25 +56,25 @@ int OLED_DisplayPosition(GPS_Position *GPS = 0, uint8_t LineIdx = 2)
 {
   if (GPS && GPS->isValid())
   {
-    Line[0] = ' ';
-    Format_SignDec(Line + 1, GPS->Latitude / 60, 6, 4);
-    Line[9] = ' ';
-    Format_UnsDec(Line + 10, GPS->Altitude / 10, 5, 0);
-    Line[15] = 'm';
-    OLED_PutLine(LineIdx, Line);
-    Format_SignDec(Line, GPS->Longitude / 60, 7, 4);
-    Format_SignDec(Line + 10, GPS->ClimbRate, 4, 1);
-    OLED_PutLine(LineIdx + 1, Line);
-    Format_UnsDec(Line, GPS->Speed, 4, 1);
-    Format_String(Line + 5, "m/s  ");
-    Format_UnsDec(Line + 10, GPS->Heading, 4, 1);
-    Line[15] = '^';
-    OLED_PutLine(LineIdx + 2, Line);
-    Format_String(Line, "0D/00sat DOP00.0");
-    Line[0] += GPS->FixMode;
-    Format_UnsDec(Line + 3, GPS->Satellites, 2);
-    Format_UnsDec(Line + 12, (uint16_t)GPS->HDOP, 3, 1);
-    OLED_PutLine(LineIdx + 3, Line);
+    disp_str[0] = ' ';
+    Format_SignDec(disp_str + 1, GPS->Latitude / 60, 6, 4);
+    disp_str[9] = ' ';
+    Format_UnsDec(disp_str + 10, GPS->Altitude / 10, 5, 0);
+    disp_str[15] = 'm';
+    OLED_PutLine(LineIdx, disp_str);
+    Format_SignDec(disp_str, GPS->Longitude / 60, 7, 4);
+    Format_SignDec(disp_str + 10, GPS->ClimbRate, 4, 1);
+    OLED_PutLine(LineIdx + 1, disp_str);
+    Format_UnsDec(disp_str, GPS->Speed, 4, 1);
+    Format_String(disp_str + 5, "m/s  ");
+    Format_UnsDec(disp_str + 10, GPS->Heading, 4, 1);
+    disp_str[15] = '^';
+    OLED_PutLine(LineIdx + 2, disp_str);
+    Format_String(disp_str, "0D/00sat DOP00.0");
+    disp_str[0] += GPS->FixMode;
+    Format_UnsDec(disp_str + 3, GPS->Satellites, 2);
+    Format_UnsDec(disp_str + 12, (uint16_t)GPS->HDOP, 3, 1);
+    OLED_PutLine(LineIdx + 3, disp_str);
   }
   else
   {
@@ -87,33 +85,33 @@ int OLED_DisplayPosition(GPS_Position *GPS = 0, uint8_t LineIdx = 2)
   }
   if (GPS && GPS->isDateValid())
   {
-    Format_UnsDec(Line, (uint16_t)GPS->Day, 2, 0);
-    Line[2] = '.';
-    Format_UnsDec(Line + 3, (uint16_t)GPS->Month, 2, 0);
-    Line[5] = '.';
-    Format_UnsDec(Line + 6, (uint16_t)GPS->Year, 2, 0);
-    Line[8] = ' ';
-    Line[9] = ' ';
+    Format_UnsDec(disp_str, (uint16_t)GPS->Day, 2, 0);
+    disp_str[2] = '.';
+    Format_UnsDec(disp_str + 3, (uint16_t)GPS->Month, 2, 0);
+    disp_str[5] = '.';
+    Format_UnsDec(disp_str + 6, (uint16_t)GPS->Year, 2, 0);
+    disp_str[8] = ' ';
+    disp_str[9] = ' ';
   }
   else
-    Format_String(Line, "          ");
+    Format_String(disp_str, "          ");
   if (GPS && GPS->isTimeValid())
   {
-    Format_UnsDec(Line + 10, (uint16_t)GPS->Hour, 2, 0);
-    Format_UnsDec(Line + 12, (uint16_t)GPS->Min, 2, 0);
-    Format_UnsDec(Line + 14, (uint16_t)GPS->Sec, 2, 0);
+    Format_UnsDec(disp_str + 10, (uint16_t)GPS->Hour, 2, 0);
+    Format_UnsDec(disp_str + 12, (uint16_t)GPS->Min, 2, 0);
+    Format_UnsDec(disp_str + 14, (uint16_t)GPS->Sec, 2, 0);
   }
   else
-    Line[10] = 0;
-  OLED_PutLine(LineIdx + 4, Line);
-  Line[0] = 0;
+    disp_str[10] = 0;
+  OLED_PutLine(LineIdx + 4, disp_str);
+  disp_str[0] = 0;
   if (GPS && GPS->hasBaro)
   {
-    Format_String(Line, "0000.0hPa 00000m");
-    Format_UnsDec(Line, GPS->Pressure / 40, 5, 1);
-    Format_UnsDec(Line + 10, GPS->StdAltitude / 10, 5, 0);
+    Format_String(disp_str, "0000.0hPa 00000m");
+    Format_UnsDec(disp_str, GPS->Pressure / 40, 5, 1);
+    Format_UnsDec(disp_str + 10, GPS->StdAltitude / 10, 5, 0);
   }
-  OLED_PutLine(LineIdx + 5, Line);
+  OLED_PutLine(LineIdx + 5, disp_str);
   return 0;
 }
 #endif
@@ -191,89 +189,89 @@ void OLED_DrawLogo(u8g2_t *OLED, GPS_Position *GPS) // draw logo and hardware op
 #endif
 }
 
-void OLED_PutLine(u8g2_t *OLED, uint8_t LineIdx, const char *Line)
+void OLED_PutLine(u8g2_t *OLED, uint8_t LineIdx, const char *disp_str)
 {
-  if (Line == 0)
+  if (disp_str == 0)
     return;
 #ifdef DEBUG_PRINT
   xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
   Format_String(CONS_UART_Write, "OLED_PutLine( ,");
   Format_UnsDec(CONS_UART_Write, (uint16_t)LineIdx);
   CONS_UART_Write(',');
-  Format_String(CONS_UART_Write, Line);
+  Format_String(CONS_UART_Write, disp_str);
   Format_String(CONS_UART_Write, ")\n");
   xSemaphoreGive(CONS_Mutex);
 #endif
   // u8g2_SetFont(OLED, u8g2_font_5x8_tr);
   u8g2_SetFont(OLED, u8g2_font_amstrad_cpc_extended_8r);
-  u8g2_DrawStr(OLED, 0, (LineIdx + 1) * 8, Line);
+  u8g2_DrawStr(OLED, 0, (LineIdx + 1) * 8, disp_str);
 }
 
 void OLED_DrawStatus(u8g2_t *OLED, uint32_t Time, uint8_t LineIdx = 0)
 {
-  Format_String(Line, "OGN Tx/Rx      ");
-  Format_HHMMSS(Line + 10, Time);
-  Line[16] = 0;
-  OLED_PutLine(OLED, LineIdx++, Line);
-  Parameters.Print(Line);
-  Line[16] = 0;
-  OLED_PutLine(OLED, LineIdx++, Line);
+  Format_String(disp_str, "OGN Tx/Rx      ");
+  Format_HHMMSS(disp_str + 10, Time);
+  disp_str[16] = 0;
+  OLED_PutLine(OLED, LineIdx++, disp_str);
+  Parameters.Print(disp_str);
+  disp_str[16] = 0;
+  OLED_PutLine(OLED, LineIdx++, disp_str);
 }
 
 void OLED_DrawPosition(u8g2_t *OLED, GPS_Position *GPS = 0, uint8_t LineIdx = 2)
 {
   if (GPS && GPS->isValid())
   {
-    Line[0] = ' ';
-    Format_SignDec(Line + 1, GPS->Latitude / 60, 6, 4);
-    Line[9] = ' ';
-    Format_UnsDec(Line + 10, GPS->Altitude / 10, 5, 0);
-    Line[15] = 'm';
-    OLED_PutLine(OLED, LineIdx, Line);
-    Format_SignDec(Line, GPS->Longitude / 60, 7, 4);
-    Format_SignDec(Line + 10, GPS->ClimbRate, 4, 1);
-    OLED_PutLine(OLED, LineIdx + 1, Line);
-    Format_UnsDec(Line, GPS->Speed, 4, 1);
-    Format_String(Line + 5, "m/s  ");
-    Format_UnsDec(Line + 10, GPS->Heading, 4, 1);
-    Line[15] = '^';
-    OLED_PutLine(OLED, LineIdx + 2, Line);
-    Format_String(Line, "0D/00sat DOP00.0");
-    Line[0] += GPS->FixMode;
-    Format_UnsDec(Line + 3, GPS->Satellites, 2);
-    Format_UnsDec(Line + 12, (uint16_t)GPS->HDOP, 3, 1);
-    OLED_PutLine(OLED, LineIdx + 3, Line);
+    disp_str[0] = ' ';
+    Format_SignDec(disp_str + 1, GPS->Latitude / 60, 6, 4);
+    disp_str[9] = ' ';
+    Format_UnsDec(disp_str + 10, GPS->Altitude / 10, 5, 0);
+    disp_str[15] = 'm';
+    OLED_PutLine(OLED, LineIdx, disp_str);
+    Format_SignDec(disp_str, GPS->Longitude / 60, 7, 4);
+    Format_SignDec(disp_str + 10, GPS->ClimbRate, 4, 1);
+    OLED_PutLine(OLED, LineIdx + 1, disp_str);
+    Format_UnsDec(disp_str, GPS->Speed, 4, 1);
+    Format_String(disp_str + 5, "m/s  ");
+    Format_UnsDec(disp_str + 10, GPS->Heading, 4, 1);
+    disp_str[15] = '^';
+    OLED_PutLine(OLED, LineIdx + 2, disp_str);
+    Format_String(disp_str, "0D/00sat DOP00.0");
+    disp_str[0] += GPS->FixMode;
+    Format_UnsDec(disp_str + 3, GPS->Satellites, 2);
+    Format_UnsDec(disp_str + 12, (uint16_t)GPS->HDOP, 3, 1);
+    OLED_PutLine(OLED, LineIdx + 3, disp_str);
   }
   // else { OLED_PutLine(OLED, LineIdx, 0); OLED_PutLine(OLED, LineIdx+1, 0); OLED_PutLine(LineIdx+2, 0); OLED_PutLine(LineIdx+3, 0); }
   if (GPS && GPS->isDateValid())
   {
-    Format_UnsDec(Line, (uint16_t)GPS->Day, 2, 0);
-    Line[2] = '.';
-    Format_UnsDec(Line + 3, (uint16_t)GPS->Month, 2, 0);
-    Line[5] = '.';
-    Format_UnsDec(Line + 6, (uint16_t)GPS->Year, 2, 0);
-    Line[8] = ' ';
-    Line[9] = ' ';
+    Format_UnsDec(disp_str, (uint16_t)GPS->Day, 2, 0);
+    disp_str[2] = '.';
+    Format_UnsDec(disp_str + 3, (uint16_t)GPS->Month, 2, 0);
+    disp_str[5] = '.';
+    Format_UnsDec(disp_str + 6, (uint16_t)GPS->Year, 2, 0);
+    disp_str[8] = ' ';
+    disp_str[9] = ' ';
   }
   else
-    Format_String(Line, "          ");
+    Format_String(disp_str, "          ");
   if (GPS && GPS->isTimeValid())
   {
-    Format_UnsDec(Line + 10, (uint16_t)GPS->Hour, 2, 0);
-    Format_UnsDec(Line + 12, (uint16_t)GPS->Min, 2, 0);
-    Format_UnsDec(Line + 14, (uint16_t)GPS->Sec, 2, 0);
+    Format_UnsDec(disp_str + 10, (uint16_t)GPS->Hour, 2, 0);
+    Format_UnsDec(disp_str + 12, (uint16_t)GPS->Min, 2, 0);
+    Format_UnsDec(disp_str + 14, (uint16_t)GPS->Sec, 2, 0);
   }
   else
-    Line[10] = 0;
-  OLED_PutLine(OLED, LineIdx + 4, Line);
-  Line[0] = 0;
+    disp_str[10] = 0;
+  OLED_PutLine(OLED, LineIdx + 4, disp_str);
+  disp_str[0] = 0;
   if (GPS && GPS->hasBaro)
   {
-    Format_String(Line, "0000.0hPa 00000m");
-    Format_UnsDec(Line, GPS->Pressure / 40, 5, 1);
-    Format_UnsDec(Line + 10, GPS->StdAltitude / 10, 5, 0);
+    Format_String(disp_str, "0000.0hPa 00000m");
+    Format_UnsDec(disp_str, GPS->Pressure / 40, 5, 1);
+    Format_UnsDec(disp_str + 10, GPS->StdAltitude / 10, 5, 0);
   }
-  OLED_PutLine(OLED, LineIdx + 5, Line);
+  OLED_PutLine(OLED, LineIdx + 5, disp_str);
 }
 
 void OLED_DrawGPS(u8g2_t *OLED, GPS_Position *GPS) // GPS time, position, altitude
@@ -284,88 +282,88 @@ void OLED_DrawGPS(u8g2_t *OLED, GPS_Position *GPS) // GPS time, position, altitu
   u8g2_SetFont(OLED, u8g2_font_7x13_tf); // 5 lines, 12 pixels/line
   uint8_t Len = 0;
   /*
-    Len+=Format_String(Line+Len, "GPS ");
+    Len+=Format_String(disp_str+Len, "GPS ");
     if(GPS && GPS->isValid())
-    { Line[Len++]='0'+GPS->FixMode; Line[Len++]='D'; Line[Len++]='/';
-      Len+=Format_UnsDec(Line+Len, GPS->Satellites, 1);
-      Len+=Format_String(Line+Len, "sat DOP");
-      Len+=Format_UnsDec(Line+Len, (uint16_t)GPS->HDOP, 2, 1); }
+    { disp_str[Len++]='0'+GPS->FixMode; disp_str[Len++]='D'; disp_str[Len++]='/';
+      Len+=Format_UnsDec(disp_str+Len, GPS->Satellites, 1);
+      Len+=Format_String(disp_str+Len, "sat DOP");
+      Len+=Format_UnsDec(disp_str+Len, (uint16_t)GPS->HDOP, 2, 1); }
     else
-    { Len+=Format_String(Line+Len, "(no lock)"); }
-    Line[Len]=0;
-    u8g2_DrawStr(OLED, 0, 12, Line);
+    { Len+=Format_String(disp_str+Len, "(no lock)"); }
+    disp_str[Len]=0;
+    u8g2_DrawStr(OLED, 0, 12, disp_str);
   */
   if (GPS && GPS->isDateValid())
   {
-    Format_UnsDec(Line, (uint16_t)GPS->Day, 2, 0);
-    Line[2] = '.';
-    Format_UnsDec(Line + 3, (uint16_t)GPS->Month, 2, 0);
-    Line[5] = '.';
-    Format_UnsDec(Line + 6, (uint16_t)GPS->Year, 2, 0);
-    Line[8] = ' ';
+    Format_UnsDec(disp_str, (uint16_t)GPS->Day, 2, 0);
+    disp_str[2] = '.';
+    Format_UnsDec(disp_str + 3, (uint16_t)GPS->Month, 2, 0);
+    disp_str[5] = '.';
+    Format_UnsDec(disp_str + 6, (uint16_t)GPS->Year, 2, 0);
+    disp_str[8] = ' ';
   }
   else
-    Format_String(Line, "  .  .   ");
+    Format_String(disp_str, "  .  .   ");
   if (GPS && GPS->isTimeValid())
   {
-    Format_UnsDec(Line + 9, (uint16_t)GPS->Hour, 2, 0);
-    Line[11] = ':';
-    Format_UnsDec(Line + 12, (uint16_t)GPS->Min, 2, 0);
-    Line[14] = ':';
-    Format_UnsDec(Line + 15, (uint16_t)GPS->Sec, 2, 0);
+    Format_UnsDec(disp_str + 9, (uint16_t)GPS->Hour, 2, 0);
+    disp_str[11] = ':';
+    Format_UnsDec(disp_str + 12, (uint16_t)GPS->Min, 2, 0);
+    disp_str[14] = ':';
+    Format_UnsDec(disp_str + 15, (uint16_t)GPS->Sec, 2, 0);
   }
   else
-    Format_String(Line + 9, "  :  :  ");
-  Line[17] = 0;
-  u8g2_DrawStr(OLED, 0, 24, Line);
+    Format_String(disp_str + 9, "  :  :  ");
+  disp_str[17] = 0;
+  u8g2_DrawStr(OLED, 0, 24, disp_str);
 
   Len = 0;
-  Len += Format_String(Line + Len, "Lat:  ");
+  Len += Format_String(disp_str + Len, "Lat:  ");
   if (GPS && GPS->isValid())
   {
-    Len += Format_SignDec(Line + Len, GPS->Latitude / 6, 7, 5);
-    Line[Len++] = 0xB0;
+    Len += Format_SignDec(disp_str + Len, GPS->Latitude / 6, 7, 5);
+    disp_str[Len++] = 0xB0;
   }
   else
-    Len += Format_String(Line + Len, "---.-----");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 36, Line);
+    Len += Format_String(disp_str + Len, "---.-----");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 36, disp_str);
   Len = 0;
-  Len += Format_String(Line + Len, "Lon: ");
+  Len += Format_String(disp_str + Len, "Lon: ");
   if (GPS && GPS->isValid())
   {
-    Len += Format_SignDec(Line + Len, GPS->Longitude / 6, 8, 5);
-    Line[Len++] = 0xB0;
+    Len += Format_SignDec(disp_str + Len, GPS->Longitude / 6, 8, 5);
+    disp_str[Len++] = 0xB0;
   }
   else
-    Len += Format_String(Line + Len, "----.-----");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 48, Line);
+    Len += Format_String(disp_str + Len, "----.-----");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 48, disp_str);
   Len = 0;
-  Len += Format_String(Line + Len, "Alt: ");
+  Len += Format_String(disp_str + Len, "Alt: ");
   if (GPS && GPS->isValid())
   {
     int32_t Alt = GPS->Altitude;
     if (Alt >= 0)
-      Line[Len++] = ' ';
+      disp_str[Len++] = ' ';
     if (isAltitudeUnitMeter) // display altitude in meters
     {
-      Len += Format_SignDec(Line + Len, Alt, 1, 1, 1); // [0.1m]
-      Line[Len++] = 'm';
+      Len += Format_SignDec(disp_str + Len, Alt, 1, 1, 1); // [0.1m]
+      disp_str[Len++] = 'm';
     }
     else if (isAltitudeUnitFeet) // display altitude in feet
     {
       Alt = (Alt * 336 + 512) >> 10;                   // [0.1m] => [feet]
-      Len += Format_SignDec(Line + Len, Alt, 1, 0, 1); // [feet]
-      Line[Len++] = 'f';
-      Line[Len++] = 't';
+      Len += Format_SignDec(disp_str + Len, Alt, 1, 0, 1); // [feet]
+      disp_str[Len++] = 'f';
+      disp_str[Len++] = 't';
     }
-    // for( ; Len<14; ) Line[Len++]=' ';                          // tail of spaces to cover older printouts
+    // for( ; Len<14; ) disp_str[Len++]=' ';                          // tail of spaces to cover older printouts
   }
   else
-    Len += Format_String(Line + Len, "-----.-  ");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 60, Line);
+    Len += Format_String(disp_str + Len, "-----.-  ");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 60, disp_str);
 }
 
 void OLED_DrawRF(u8g2_t *OLED, GPS_Position *GPS) // RF
@@ -373,65 +371,65 @@ void OLED_DrawRF(u8g2_t *OLED, GPS_Position *GPS) // RF
   u8g2_SetFont(OLED, u8g2_font_7x13_tf); // 5 lines. 12 pixels/line
   uint8_t Len = 0;
 #ifdef WITH_RFM69
-  Len += Format_String(Line + Len, "RFM69"); // Type of RF chip used
+  Len += Format_String(disp_str + Len, "RFM69"); // Type of RF chip used
   if (Parameters.RFchipTypeHW)
-    Line[Len++] = 'H';
-  Line[Len++] = 'W';
+    disp_str[Len++] = 'H';
+  disp_str[Len++] = 'W';
 #endif
 #ifdef WITH_RFM95
-  Len += Format_String(Line + Len, "RFM95");
+  Len += Format_String(disp_str + Len, "RFM95");
 #endif
 #ifdef WITH_SX1262
-  Len += Format_String(Line + Len, "SX1262");
+  Len += Format_String(disp_str + Len, "SX1262");
 #endif
 #ifdef WITH_SX1272
-  Len += Format_String(Line + Len, "SX1272");
+  Len += Format_String(disp_str + Len, "SX1272");
 #endif
-  Line[Len++] = ':';
-  Len += Format_UnsDec(Line + Len, (int16_t)Parameters.TxPower); // Tx power
-  Len += Format_String(Line + Len, "dBm");
-  Line[Len++] = ' ';
-  Len += Format_SignDec(Line + Len, (int32_t)Parameters.RFchipFreqCorr, 2, 1); // frequency correction
-  Len += Format_String(Line + Len, "ppm");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 24, Line);
+  disp_str[Len++] = ':';
+  Len += Format_UnsDec(disp_str + Len, (int16_t)Parameters.TxPower); // Tx power
+  Len += Format_String(disp_str + Len, "dBm");
+  disp_str[Len++] = ' ';
+  Len += Format_SignDec(disp_str + Len, (int32_t)Parameters.RFchipFreqCorr, 2, 1); // frequency correction
+  Len += Format_String(disp_str + Len, "ppm");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 24, disp_str);
   Len = 0;
-  Len += Format_String(Line + Len, "Rx:");                    //
-  Len += Format_SignDec(Line + Len, -5 * TRX.averRSSI, 2, 1); // noise level seen by the receiver
-  Len += Format_String(Line + Len, "dBm ");
-  Len += Format_UnsDec(Line + Len, RX_OGN_Count64); // received packet/min
-  Len += Format_String(Line + Len, "/min");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 36, Line);
+  Len += Format_String(disp_str + Len, "Rx:");                    //
+  Len += Format_SignDec(disp_str + Len, -5 * TRX.averRSSI, 2, 1); // noise level seen by the receiver
+  Len += Format_String(disp_str + Len, "dBm ");
+  Len += Format_UnsDec(disp_str + Len, RX_OGN_Count64); // received packet/min
+  Len += Format_String(disp_str + Len, "/min");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 36, disp_str);
   Len = 0;
-  //Len += Format_SignDec(Line + Len, (int16_t)TRX.chipTemp); // RF chip internal temperature (not calibrated)
-  //Len += Format_String(Line + Len, "\260C");
-  Len += Format_UnsDec(Line + Len, (int16_t)TX_OGN_Count); // transmitted packages
-  Len += Format_String(Line + Len, "pkg RxFIFO:");
-  Len += Format_UnsDec(Line + Len, RF_RxFIFO.Full()); // how many packets wait in the RX queue
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 48, Line);
+  //Len += Format_SignDec(disp_str + Len, (int16_t)TRX.chipTemp); // RF chip internal temperature (not calibrated)
+  //Len += Format_String(disp_str + Len, "\260C");
+  Len += Format_UnsDec(disp_str + Len, (int16_t)TX_OGN_Count); // transmitted packages
+  Len += Format_String(disp_str + Len, "pkg RxFIFO:");
+  Len += Format_UnsDec(disp_str + Len, RF_RxFIFO.Full()); // how many packets wait in the RX queue
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 48, disp_str);
   // u8g2_DrawStr(OLED, 0, 48, RF_FreqPlan.getPlanName());
   Len = 0;
-  Len += Format_String(Line + Len, RF_FreqPlan.getPlanName()); // name of the frequency plan
-  Line[Len++] = ' ';
-  Len += Format_UnsDec(Line + Len, (uint16_t)(RF_FreqPlan.getCenterFreq() / 100000), 3, 1); // center frequency
-  Len += Format_String(Line + Len, "MHz");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 60, Line);
+  Len += Format_String(disp_str + Len, RF_FreqPlan.getPlanName()); // name of the frequency plan
+  disp_str[Len++] = ' ';
+  Len += Format_UnsDec(disp_str + Len, (uint16_t)(RF_FreqPlan.getCenterFreq() / 100000), 3, 1); // center frequency
+  Len += Format_String(disp_str + Len, "MHz");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 60, disp_str);
 }
 
 void OLED_DrawRelay(u8g2_t *OLED, GPS_Position *GPS)
 {
   u8g2_SetFont(OLED, u8g2_font_amstrad_cpc_extended_8r);
-  uint8_t Len = Format_String(Line, "Relay:");
+  uint8_t Len = Format_String(disp_str, "Relay:");
   if (GPS && GPS->Sec >= 0)
   {
-    Len += Format_UnsDec(Line + Len, (uint16_t)(GPS->Sec), 2);
-    Line[Len++] = 's';
+    Len += Format_UnsDec(disp_str + Len, (uint16_t)(GPS->Sec), 2);
+    disp_str[Len++] = 's';
   }
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 24, Line);
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 24, disp_str);
   uint8_t LineIdx = 1;
   for (uint8_t Idx = 0; Idx < RelayQueueSize; Idx++)
   {
@@ -439,16 +437,16 @@ void OLED_DrawRelay(u8g2_t *OLED, GPS_Position *GPS)
     if (Packet->Rank == 0)
       continue;
     uint8_t Len = 0;
-    Line[Len++] = '0' + Packet->Packet.Header.AddrType;
-    Line[Len++] = ':';
-    Len += Format_Hex(Line + Len, Packet->Packet.Header.Address, 6);
-    Line[Len++] = ' ';
-    Len += Format_Hex(Line + Len, Packet->Rank);
-    Line[Len++] = ' ';
-    Line[Len++] = ':';
-    Len += Format_UnsDec(Line + Len, Packet->Packet.Position.Time, 2);
-    Line[Len] = 0;
-    u8g2_DrawStr(OLED, 0, (LineIdx + 3) * 8, Line);
+    disp_str[Len++] = '0' + Packet->Packet.Header.AddrType;
+    disp_str[Len++] = ':';
+    Len += Format_Hex(disp_str + Len, Packet->Packet.Header.Address, 6);
+    disp_str[Len++] = ' ';
+    Len += Format_Hex(disp_str + Len, Packet->Rank);
+    disp_str[Len++] = ' ';
+    disp_str[Len++] = ':';
+    Len += Format_UnsDec(disp_str + Len, Packet->Packet.Position.Time, 2);
+    disp_str[Len] = 0;
+    u8g2_DrawStr(OLED, 0, (LineIdx + 3) * 8, disp_str);
     LineIdx++;
     if (LineIdx >= 8)
       break;
@@ -459,19 +457,19 @@ void OLED_DrawRelay(u8g2_t *OLED, GPS_Position *GPS)
 void OLED_DrawLookout(u8g2_t *OLED, GPS_Position *GPS)
 {
   u8g2_SetFont(OLED, u8g2_font_amstrad_cpc_extended_8r);
-  uint8_t Len = Format_String(Line, "=> ");
+  uint8_t Len = Format_String(disp_str, "=> ");
   if (Look.WarnLevel)
   {
     const LookOut_Target *Tgt = Look.Target + Look.WorstTgtIdx;
-    Len += Format_Hex(Line + Len, Tgt->ID, 7);
-    Line[Len++] = '/';
-    Line[Len++] = '0' + Tgt->WarnLevel;
-    Line[Len++] = ' ';
-    Len += Format_UnsDec(Line + Len, Tgt->TimeMargin >> 1);
-    Line[Len++] = 's';
+    Len += Format_Hex(disp_str + Len, Tgt->ID, 7);
+    disp_str[Len++] = '/';
+    disp_str[Len++] = '0' + Tgt->WarnLevel;
+    disp_str[Len++] = ' ';
+    Len += Format_UnsDec(disp_str + Len, Tgt->TimeMargin >> 1);
+    disp_str[Len++] = 's';
   }
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 24, Line);
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 24, disp_str);
   uint8_t LineIdx = 1;
   for (uint8_t Idx = 0; Idx < Look.MaxTargets; Idx++)
   {
@@ -479,23 +477,23 @@ void OLED_DrawLookout(u8g2_t *OLED, GPS_Position *GPS)
     if (!Tgt->Alloc)
       continue;
     uint8_t Len = 0;
-    Len += Format_Hex(Line + Len, Tgt->ID, 7);
-    Line[Len++] = ' ';
+    Len += Format_Hex(disp_str + Len, Tgt->ID, 7);
+    disp_str[Len++] = ' ';
     if (Tgt->DistMargin)
     {
-      Len += Format_UnsDec(Line + Len, Tgt->HorDist >> 1);
-      Line[Len++] = 'm';
+      Len += Format_UnsDec(disp_str + Len, Tgt->HorDist >> 1);
+      disp_str[Len++] = 'm';
     }
     else
     {
-      Len += Format_UnsDec(Line + Len, Tgt->TimeMargin >> 1);
-      Line[Len++] = 's';
-      Line[Len++] = ' ';
-      Len += Format_UnsDec(Line + Len, Tgt->MissDist >> 1);
-      Line[Len++] = 'm';
+      Len += Format_UnsDec(disp_str + Len, Tgt->TimeMargin >> 1);
+      disp_str[Len++] = 's';
+      disp_str[Len++] = ' ';
+      Len += Format_UnsDec(disp_str + Len, Tgt->MissDist >> 1);
+      disp_str[Len++] = 'm';
     }
-    Line[Len] = 0;
-    u8g2_DrawStr(OLED, 0, (LineIdx + 3) * 8, Line);
+    disp_str[Len] = 0;
+    u8g2_DrawStr(OLED, 0, (LineIdx + 3) * 8, disp_str);
     LineIdx++;
     if (LineIdx >= 8)
       break;
@@ -509,29 +507,29 @@ void OLED_DrawTrafWarn(u8g2_t *OLED, GPS_Position *GPS)
     return;
   const LookOut_Target *Tgt = Look.Target + Look.WorstTgtIdx;
   uint8_t Len = 0;
-  Len += Format_Hex(Line + Len, Tgt->ID, 7); // ID of the target
-  Line[Len++] = '/';
-  Line[Len++] = '0' + Tgt->WarnLevel; // warning level
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 30, Line);
+  Len += Format_Hex(disp_str + Len, Tgt->ID, 7); // ID of the target
+  disp_str[Len++] = '/';
+  disp_str[Len++] = '0' + Tgt->WarnLevel; // warning level
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 30, disp_str);
   Len = 0;
-  Len += Format_UnsDec(Line + Len, Tgt->TimeMargin * 5, 2, 1); // time-to-impact
-  Line[Len++] = 's';
-  Line[Len++] = ' ';
-  Len += Format_UnsDec(Line + Len, Tgt->MissDist * 5, 2, 1); // miss-distance
-  Line[Len++] = 'm';
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 45, Line);
+  Len += Format_UnsDec(disp_str + Len, Tgt->TimeMargin * 5, 2, 1); // time-to-impact
+  disp_str[Len++] = 's';
+  disp_str[Len++] = ' ';
+  Len += Format_UnsDec(disp_str + Len, Tgt->MissDist * 5, 2, 1); // miss-distance
+  disp_str[Len++] = 'm';
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 45, disp_str);
   Len = 0;
-  Len += Format_UnsDec(Line + Len, Tgt->getRelHorSpeed() * 5, 2, 1); // horizontal speed
-  Line[Len++] = 'm';
-  Line[Len++] = '/';
-  Line[Len++] = 's';
-  Line[Len++] = ' ';
-  Len += Format_UnsDec(Line + Len, Tgt->HorDist * 5, 2, 1); // horizontal distance
-  Line[Len++] = 'm';
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 60, Line);
+  Len += Format_UnsDec(disp_str + Len, Tgt->getRelHorSpeed() * 5, 2, 1); // horizontal speed
+  disp_str[Len++] = 'm';
+  disp_str[Len++] = '/';
+  disp_str[Len++] = 's';
+  disp_str[Len++] = ' ';
+  Len += Format_UnsDec(disp_str + Len, Tgt->HorDist * 5, 2, 1); // horizontal distance
+  disp_str[Len++] = 'm';
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 60, disp_str);
 }
 #endif // WITH_LOOKOUT
 
@@ -546,80 +544,79 @@ void OLED_DrawBaro(u8g2_t *OLED, GPS_Position *GPS)
   u8g2_SetFont(OLED, u8g2_font_7x13_tf); // 5 lines, 12 pixels/line
   uint8_t Len = 0;
 #ifdef WITH_BMP180
-  Len += Format_String(Line + Len, "BMP180 ");
+  Len += Format_String(disp_str + Len, "BMP180 ");
 #endif
 #ifdef WITH_BMP280
-  Len += Format_String(Line + Len, "BMP280 ");
+  Len += Format_String(disp_str + Len, "BMP280 ");
 #endif
 #ifdef WITH_BME280
-  Len += Format_String(Line + Len, "BME280 ");
+  Len += Format_String(disp_str + Len, "BME280 ");
 #endif
 #ifdef WITH_MS5607
-  Len += Format_String(Line + Len, "MS5607 ");
+  Len += Format_String(disp_str + Len, "MS5607 ");
 #endif
 #ifdef WITH_MS5611
-  Len += Format_String(Line + Len, "MS5611 ");
+  Len += Format_String(disp_str + Len, "MS5611 ");
 #endif
   if (GPS && GPS->hasBaro)
   {
-    Len += Format_UnsDec(Line + Len, GPS->Pressure / 4, 5, 2);
-    Len += Format_String(Line + Len, "hPa ");
+    Len += Format_UnsDec(disp_str + Len, GPS->Pressure / 4, 5, 2);
+    Len += Format_String(disp_str + Len, "hPa ");
   }
   else
-    Len += Format_String(Line + Len, "----.--hPa ");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 24, Line);
+    Len += Format_String(disp_str + Len, "----.--hPa ");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 24, disp_str);
   Len = 0;
   if (GPS && GPS->hasBaro)
   {
     if (isAltitudeUnitMeter)
     {
-      Len += Format_SignDec(Line + Len, GPS->StdAltitude, 5, 1);
-      Len += Format_String(Line + Len, "m ");
+      Len += Format_SignDec(disp_str + Len, GPS->StdAltitude, 5, 1);
+      Len += Format_String(disp_str + Len, "m ");
     }
     else if (isAltitudeUnitFeet)
     {
-      Len += Format_SignDec(Line + Len, (GPS->StdAltitude * 336 + 512) >> 10, 5, 0);
-      Len += Format_String(Line + Len, "ft ");
+      Len += Format_SignDec(disp_str + Len, (GPS->StdAltitude * 336 + 512) >> 10, 5, 0);
+      Len += Format_String(disp_str + Len, "ft ");
     }
     if (isVarioUnitMPS)
     {
-      Len += Format_SignDec(Line + Len, GPS->ClimbRate, 2, 1);
-      Len += Format_String(Line + Len, "m/s ");
+      Len += Format_SignDec(disp_str + Len, GPS->ClimbRate, 2, 1);
+      Len += Format_String(disp_str + Len, "m/s ");
     }
     else if (isVarioUnitFPM)
     {
-      Len += Format_SignDec(Line + Len, (GPS->ClimbRate * 5039 + 128) >> 8, 2, 0);
-      Len += Format_String(Line + Len, "fpm ");
+      Len += Format_SignDec(disp_str + Len, (GPS->ClimbRate * 5039 + 128) >> 8, 2, 0);
+      Len += Format_String(disp_str + Len, "fpm ");
     }
   }
   else
   {
     if (isAltitudeUnitMeter)
-      Len += Format_String(Line + Len, "-----.-m");
+      Len += Format_String(disp_str + Len, "-----.-m");
     else if (isAltitudeUnitFeet)
-      Len += Format_String(Line + Len, "-----ft  ");
-    Len += Format_String(Line + Len, " --.-m/s ");
+      Len += Format_String(disp_str + Len, "-----ft  ");
+    Len += Format_String(disp_str + Len, " --.-m/s ");
   }
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 36, Line);
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 36, disp_str);
   Len = 0;
   if (GPS && GPS->hasBaro)
   {
-    Len += Format_SignDec(Line + Len, GPS->Temperature, 2, 1);
-    Line[Len++] = 0xB0;
-    Line[Len++] = 'C';
-    Line[Len++] = ' ';
-    Len += Format_SignDec(Line + Len, GPS->Humidity, 2, 1);
-    Line[Len++] = '%';
+    Len += Format_SignDec(disp_str + Len, GPS->Temperature, 2, 1);
+    disp_str[Len++] = 0xB0;
+    disp_str[Len++] = 'C';
+    disp_str[Len++] = ' ';
+    Len += Format_SignDec(disp_str + Len, GPS->Humidity, 2, 1);
+    disp_str[Len++] = '%';
   }
   else
-    Len += Format_String(Line + Len, "---.- C --.-% ");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 48, Line);
+    Len += Format_String(disp_str + Len, "---.- C --.-% ");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 48, disp_str);
 }
 
-#ifndef WITH_MAVLINK
 static int8_t BattCapacity(uint16_t mVolt) // deduce battery capacity from its voltage
 {
   if (mVolt >= 4100)
@@ -630,20 +627,21 @@ static int8_t BattCapacity(uint16_t mVolt) // deduce battery capacity from its v
     return 0; // if below 3.6V then empty
   return (mVolt - 3600 + 2) / 5;
 } // otherwise a linear function from 3.6V to 4.1V
-#endif
 
 void OLED_DrawBattery(u8g2_t *OLED, GPS_Position *GPS) // draw battery status page
 {
-#ifdef WITH_MAVLINK
-  int8_t Cap = MAVLINK_BattCap; // [%] from the drone's telemetry
-#else
-  int8_t Cap = BattCapacity(BatteryVoltage >> 8); // [%] est. battery capacity based on the voltage readout
-#endif
+	int8_t Cap = -1;
+	if(GPS_Status.MAV){ // if we have a mavlink connection
+		Cap = MAVLINK_BattCap; // [%] from the drone's telemetry
+	} else {
+		// no mavlink connection, use local battery volatage
+		Cap = BattCapacity(BatteryVoltage >> 8); // [%] est. battery capacity based on the voltage readout
+	}
   // u8g2_SetFont(OLED, u8g2_font_battery19_tn);
   // u8g2_DrawGlyph(OLED, 120, 60, '0'+(Cap+10)/20);
 
   // u8g2_SetFont(OLED, u8g2_font_6x10_tr);
-  // u8g2_DrawStr(OLED, 0, 24, Line);
+  // u8g2_DrawStr(OLED, 0, 24, disp_str);
 
   // u8g2_DrawStr(OLED, 0, 24, "Battery");
 
@@ -651,34 +649,34 @@ void OLED_DrawBattery(u8g2_t *OLED, GPS_Position *GPS) // draw battery status pa
 
   if (Cap >= 0)
   {
-    strcpy(Line, "   %");
+    strcpy(disp_str, "   %");
     if (Cap >= 100)
-      Format_UnsDec(Line, (uint8_t)Cap, 3);
+      Format_UnsDec(disp_str, (uint8_t)Cap, 3);
     else if (Cap >= 10)
-      Format_UnsDec(Line + 1, (uint8_t)Cap, 2);
+      Format_UnsDec(disp_str + 1, (uint8_t)Cap, 2);
     else
-      Line[2] = '0' + Cap;
-    u8g2_DrawStr(OLED, 16, 32, Line);     // print battery est. capacity
+      disp_str[2] = '0' + Cap;
+    u8g2_DrawStr(OLED, 16, 32, disp_str);     // print battery est. capacity
     u8g2_DrawFrame(OLED, 12, 20, 42, 14); // draw battery empty box around it
     u8g2_DrawBox(OLED, 8, 23, 4, 8);
   } // and the battery tip
 
-  strcpy(Line, " .   V");
-#ifdef WITH_MAVLINK
-  Format_UnsDec(Line, MAVLINK_BattVolt, 4, 3);
-#else
-  Format_UnsDec(Line, BatteryVoltage >> 8, 4, 3); // print the battery voltage readout
-#endif
-  u8g2_DrawStr(OLED, 0, 48, Line);
+  strcpy(disp_str, " .   V");
+  if(GPS_Status.MAV){ // we have a mavlink connection
+	  Format_UnsDec(disp_str, MAVLINK_BattVolt, 4, 3);
+  } else {
+	  Format_UnsDec(disp_str, BatteryVoltage >> 8, 4, 3); // print the battery voltage readout
+  }
+  u8g2_DrawStr(OLED, 0, 48, disp_str);
 
-#ifdef WITH_MAVLINK
-  strcpy(Line, "  .  A");
-  Format_UnsDec(Line, MAVLINK_BattCurr, 4, 2);
-#else
-  strcpy(Line, "   . mV/min ");                   // print the battery voltage rate
-  Format_SignDec(Line, (600 * BatteryVoltageRate + 128) >> 8, 3, 1);
-#endif
-  u8g2_DrawStr(OLED, 0, 60, Line);
+  if(GPS_Status.MAV){
+	  strcpy(disp_str, "  .  A");
+	  Format_UnsDec(disp_str, MAVLINK_BattCurr, 4, 2);
+  } else {
+	  strcpy(disp_str, "   . mV/min ");                   // print the battery voltage rate
+	  Format_SignDec(disp_str, (600 * BatteryVoltageRate + 128) >> 8, 3, 1);
+  }
+  u8g2_DrawStr(OLED, 0, 60, disp_str);
 
 #ifdef WITH_BQ
   uint8_t Fault = BQ.readFault();          // read fault register
@@ -693,10 +691,10 @@ void OLED_DrawBattery(u8g2_t *OLED, GPS_Position *GPS) // draw battery status pa
   u8g2_SetFont(OLED, u8g2_font_6x10_tr);
   if (Fault)
   {
-    strcpy(Line, "Fault: ");
-    Format_Hex(Line + 7, Fault);
-    Line[9] = 0;
-    u8g2_DrawStr(OLED, 60, 28, Line);
+    strcpy(disp_str, "Fault: ");
+    Format_Hex(disp_str + 7, Fault);
+    disp_str[9] = 0;
+    u8g2_DrawStr(OLED, 60, 28, disp_str);
   }
   else
     u8g2_DrawStr(OLED, 60, 28, StateName[State]);
@@ -706,10 +704,10 @@ void OLED_DrawBattery(u8g2_t *OLED, GPS_Position *GPS) // draw battery status pa
   u8g2_SetFont(OLED, u8g2_font_6x10_tr);
   for(uint8_t Reg=0; Reg<=10; Reg++)
   { uint8_t Val = BQ.readReg(Reg);
-    Format_Hex(Line+3*Reg, Val); Line[3*Reg+2]=' '; }
-  Line[33]=0;
-  u8g2_DrawStr(OLED, 0, 60, Line+15);
-  Line[15]=0; u8g2_DrawStr(OLED, 0, 50, Line);
+    Format_Hex(disp_str+3*Reg, Val); disp_str[3*Reg+2]=' '; }
+  disp_str[33]=0;
+  u8g2_DrawStr(OLED, 0, 60, disp_str+15);
+  disp_str[15]=0; u8g2_DrawStr(OLED, 0, 50, disp_str);
 */
 #endif
 
@@ -719,20 +717,21 @@ void OLED_DrawBattery(u8g2_t *OLED, GPS_Position *GPS) // draw battery status pa
   int16_t Current = InpCurr - OutCurr;
   // uint8_t Charging = Current>0;
   u8g2_SetFont(OLED, u8g2_font_6x10_tr);
-  strcpy(Line, "    mA ");
-  Format_SignDec(Line, Current, 3);
-  u8g2_DrawStr(OLED, 60, 28, Line);
+  strcpy(disp_str, "    mA ");
+  Format_SignDec(disp_str, Current, 3);
+  u8g2_DrawStr(OLED, 60, 28, disp_str);
 #endif
 }
 
 void OLED_DrawStatusBar(u8g2_t *OLED, GPS_Position *GPS) // status bar on top of the OLED
 {
   static bool Odd = 0;
-#ifdef WITH_MAVLINK
-  int8_t Cap = MAVLINK_BattCap; // [%]
-#else
-  int8_t Cap = BattCapacity(BatteryVoltage >> 8); // [%] est. battery capacity
-#endif
+  int8_t Cap = -1;
+  if(GPS_Status.MAV){
+	  Cap = MAVLINK_BattCap; // [%]
+  } else {
+	  Cap = BattCapacity(BatteryVoltage >> 8); // [%] est. battery capacity
+  }
   uint8_t BattLev = (Cap + 10) / 20; // [0..5] convert to display scale
   uint8_t Charging = 0;              // charging or not changing ?
 #ifdef WITH_BQ
@@ -811,36 +810,36 @@ void OLED_DrawStatusBar(u8g2_t *OLED, GPS_Position *GPS) // status bar on top of
   // u8g2_SetFont(OLED, u8g2_font_5x8_tr);
   static uint8_t gps_sat_display = 0;
   u8g2_SetFont(OLED, u8g2_font_6x12_tr);
-  // strcpy(Line, "[   %] --sat --:--");
-  strcpy(Line, "??sat ??:??Z");
+  // strcpy(disp_str, "[   %] --sat --:--");
+  strcpy(disp_str, "??sat ??:??Z");
   if (GPS && GPS->isTimeValid())
   {
-    Format_UnsDec(Line + 6, (uint16_t)GPS->Hour, 2, 0);
-    Line[8] = ':';
-    Format_UnsDec(Line + 9, (uint16_t)GPS->Min, 2, 0);
+    Format_UnsDec(disp_str + 6, (uint16_t)GPS->Hour, 2, 0);
+    disp_str[8] = ':';
+    Format_UnsDec(disp_str + 9, (uint16_t)GPS->Min, 2, 0);
   }
   else{
-    Format_UnsDec(Line+6, GPS_PosIdx, 2);
-    uint32_t t = TimeSync_Time();
-    Format_UnsDec(Line+9, (t)%60, 2);
-    //Format_String(Line + 6, "--:--");
+	// display time since boot in seconds
+	uint32_t t = TimeSync_Time();
+    Format_UnsDec(disp_str+6, t, 5);
+    //Format_String(disp_str + 6, "--:--");
   }
   if (GPS)
   {
     if (gps_sat_display)
     {
-      Format_UnsDec(Line, (uint16_t)GPS->Satellites, 2);
-      memcpy(Line + 2, "sat", 3);
+      Format_UnsDec(disp_str, (uint16_t)GPS->Satellites, 2);
+      memcpy(disp_str + 2, "sat", 3);
     }
     else
     {
-      Format_UnsDec(Line, (uint16_t)(GPS_SatSNR + 2) / 4, 2);
-      memcpy(Line + 2, "dB ", 3);
+      Format_UnsDec(disp_str, (uint16_t)(GPS_SatSNR + 2) / 4, 2);
+      memcpy(disp_str + 2, "dB ", 3);
     }
   } else {
-    Format_String(Line, "--sat");
+    Format_String(disp_str, "--sat");
   }
-  u8g2_DrawStr(OLED, 52, 10, Line);
+  u8g2_DrawStr(OLED, 52, 10, disp_str);
   gps_sat_display++;
   if (gps_sat_display >= 3)
     gps_sat_display = 0;
@@ -850,106 +849,100 @@ void OLED_DrawSystem(u8g2_t *OLED, GPS_Position *GPS)
 {
   u8g2_SetFont(OLED, u8g2_font_7x13_tf); // 5 lines, 12 pixels/line
   uint8_t Len = 0;
-#ifdef WITH_MAVLINK
-  Len += Format_String(Line + Len, "MAVLINK ");
-#else
-  Len += Format_String(Line + Len, "GPS ");
-#ifdef WITH_GPS_UBX
-  Len += Format_String(Line + Len, "UBX ");
-#endif
-#ifdef WITH_GPS_MTK
-  Len += Format_String(Line + Len, "MTK ");
-#endif
-#ifdef WITH_GPS_SRF
-  Len += Format_String(Line + Len, "SRF ");
-#endif
-#endif // WITH_MAVLINK
-  Len += Format_UnsDec(Line + Len, GPS_getBaudRate(), 1);
-  Len += Format_String(Line + Len, "bps");
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 24, Line);
+  if(GPS_Status.MAV){
+	  Len += Format_String(disp_str + Len, "MAVLINK ");
+  } else if(GPS_Status.UBX){
+	  Len += Format_String(disp_str + Len, "UBX ");
+  } else if(GPS_Status.NMEA){
+	  Len += Format_String(disp_str + Len, "GPS ");
+  }
+
+  Len += Format_UnsDec(disp_str + Len, GPS_getBaudRate(), 1);
+  Len += Format_String(disp_str + Len, "bps");
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 24, disp_str);
 
   Len = 0;
 #ifdef WITH_RFM69
-  Len += Format_String(Line + Len, "RFM69 v"); // Type of RF chip used
+  Len += Format_String(disp_str + Len, "RFM69 v"); // Type of RF chip used
   if (Parameters.RFchipTypeHW)
-    Line[Len++] = 'H';
-  Line[Len++] = 'W';
+    disp_str[Len++] = 'H';
+  disp_str[Len++] = 'W';
 #endif
 #ifdef WITH_RFM95
-  Len += Format_String(Line + Len, "RFM95 v");
+  Len += Format_String(disp_str + Len, "RFM95 v");
 #endif
 #ifdef WITH_SX1262
-  Len += Format_String(Line + Len, "SX1262 v");
+  Len += Format_String(disp_str + Len, "SX1262 v");
 #endif
 #ifdef WITH_SX1272
-  Len += Format_String(Line + Len, "SX1272 v");
+  Len += Format_String(disp_str + Len, "SX1272 v");
 #endif
-  Len += Format_Hex(Line + Len, TRX.chipVer);
-  Line[Len++] = ' ';
+  Len += Format_Hex(disp_str + Len, TRX.chipVer);
+  disp_str[Len++] = ' ';
 #ifdef WITH_SX1262
-  Line[Len++] = '0';
-  Line[Len++] = 'x';
-  Len += Format_Hex(Line + Len, TRX.getStatus());
+  disp_str[Len++] = '0';
+  disp_str[Len++] = 'x';
+  Len += Format_Hex(disp_str + Len, TRX.getStatus());
 #else
-  Len += Format_SignDec(Line + Len, (int16_t)TRX.chipTemp);
-  Line[Len++] = 0xB0;
-  Line[Len++] = 'C';
+  Len += Format_SignDec(disp_str + Len, (int16_t)TRX.chipTemp);
+  disp_str[Len++] = 0xB0;
+  disp_str[Len++] = 'C';
 #endif
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 36, Line);
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 36, disp_str);
 
   Len = 0;
 #ifdef WITH_BMP180
-  Len += Format_String(Line + Len, "BMP180 0x");
-  Len += Format_Hex(Line + Len, Baro.ADDR);
+  Len += Format_String(disp_str + Len, "BMP180 0x");
+  Len += Format_Hex(disp_str + Len, Baro.ADDR);
 #endif
 #ifdef WITH_BMP280
-  Len += Format_String(Line + Len, "BMP280 0x");
-  Len += Format_Hex(Line + Len, Baro.ADDR);
+  Len += Format_String(disp_str + Len, "BMP280 0x");
+  Len += Format_Hex(disp_str + Len, Baro.ADDR);
 #endif
 #ifdef WITH_BME280
-  Len += Format_String(Line + Len, "BME280 0x");
-  Len += Format_Hex(Line + Len, Baro.ADDR);
+  Len += Format_String(disp_str + Len, "BME280 0x");
+  Len += Format_Hex(disp_str + Len, Baro.ADDR);
 #endif
 #ifdef WITH_MS5607
-  Len += Format_String(Line + Len, "MS5607 0x");
-  Len += Format_Hex(Line + Len, Baro.ADDR);
+  Len += Format_String(disp_str + Len, "MS5607 0x");
+  Len += Format_Hex(disp_str + Len, Baro.ADDR);
 #endif
 #ifdef WITH_MS5611
-  Len += Format_String(Line + Len, "MS5611 0x");
-  Len += Format_Hex(Line + Len, Baro.ADDR);
+  Len += Format_String(disp_str + Len, "MS5611 0x");
+  Len += Format_Hex(disp_str + Len, Baro.ADDR);
 #endif
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 48, Line);
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 48, disp_str);
 
 #ifdef WITH_SPIFFS
   Len = 0;
-  Len += Format_String(Line + Len, "SPIFFS ");
+  Len += Format_String(disp_str + Len, "SPIFFS ");
   size_t Total, Used;
   if (SPIFFS_Info(Total, Used) == 0) // get the SPIFFS usage summary
   {
-    Len += Format_UnsDec(Line + Len, (Total - Used) / 1024);
-    Len += Format_String(Line + Len, "/");
-    Len += Format_UnsDec(Line + Len, Total / 1024);
-    Len += Format_String(Line + Len, "kB");
+    Len += Format_UnsDec(disp_str + Len, (Total - Used) / 1024);
+    Len += Format_String(disp_str + Len, "/");
+    Len += Format_UnsDec(disp_str + Len, Total / 1024);
+    Len += Format_String(disp_str + Len, "kB");
   }
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 60, Line);
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 60, disp_str);
 #endif
   /*
   #ifdef WITH_SD
     Len=0;
-    Len+=Format_String(Line+Len, "SD ");
+    Len+=Format_String(disp_str+Len, "SD ");
     if(SD_isMounted())
-    { Len+=Format_UnsDec(Line+Len, (uint32_t)SD_getSectors());
-      Line[Len++]='x';
-      Len+=Format_UnsDec(Line+Len, (uint32_t)SD_getSectorSize()*5/512, 2, 1);
-      Len+=Format_String(Line+Len, "KB"); }
+    { Len+=Format_UnsDec(disp_str+Len, (uint32_t)SD_getSectors());
+      disp_str[Len++]='x';
+      Len+=Format_UnsDec(disp_str+Len, (uint32_t)SD_getSectorSize()*5/512, 2, 1);
+      Len+=Format_String(disp_str+Len, "KB"); }
     else
-    { Len+=Format_String(Line+Len, "none"); }
-    Line[Len]=0;
-    u8g2_DrawStr(OLED, 0, 60, Line);
+    { Len+=Format_String(disp_str+Len, "none"); }
+    disp_str[Len]=0;
+    u8g2_DrawStr(OLED, 0, 60, disp_str);
   #endif
   */
 }
@@ -957,20 +950,20 @@ void OLED_DrawSystem(u8g2_t *OLED, GPS_Position *GPS)
 void OLED_DrawID(u8g2_t *OLED, GPS_Position *GPS)
 {
   u8g2_SetFont(OLED, u8g2_font_9x15_tr);
-  Parameters.Print(Line);
-  Line[10] = 0;
-  u8g2_DrawStr(OLED, 26, 28, Line);
+  Parameters.Print(disp_str);
+  disp_str[10] = 0;
+  u8g2_DrawStr(OLED, 26, 28, disp_str);
   // u8g2_SetFont(OLED, u8g2_font_10x20_tr);
   u8g2_SetFont(OLED, u8g2_font_7x13_tf);
   u8g2_DrawStr(OLED, 0, 27, "ID:");
   if (Parameters.Pilot[0] || Parameters.Reg[0])
   {
-    strcpy(Line, "Reg: ");
-    strcat(Line, Parameters.Reg);
-    u8g2_DrawStr(OLED, 0, 54, Line);
-    strcpy(Line, "Pilot: ");
-    strcat(Line, Parameters.Pilot);
-    u8g2_DrawStr(OLED, 0, 42, Line);
+    strcpy(disp_str, "Reg: ");
+    strcat(disp_str, Parameters.Reg);
+    u8g2_DrawStr(OLED, 0, 54, disp_str);
+    strcpy(disp_str, "Pilot: ");
+    strcat(disp_str, Parameters.Pilot);
+    u8g2_DrawStr(OLED, 0, 42, disp_str);
   }
   else
   {
@@ -1006,14 +999,14 @@ void OLED_DrawAltitudeAndSpeed(u8g2_t *OLED, GPS_Position *GPS)
       Alt = (Alt + 5) / 10; // [0.1m] => [m]     // or to meters
     else if (isAltitudeUnitFeet)
       Alt = (Alt * 336 + 512) >> 10; // [0.1m] => [feet]  // convert to feet
-    Len = Format_SignDec(Line, Alt, 1, 0, 1);
+    Len = Format_SignDec(disp_str, Alt, 1, 0, 1);
   } // print altitude into the string
   else
-    Len = Format_String(Line, "----"); // if altitude not available then print place holders
-  Line[Len] = 0;
+    Len = Format_String(disp_str, "----"); // if altitude not available then print place holders
+  disp_str[Len] = 0;
   u8g2_SetFont(OLED, u8g2_font_fub20_tr);                // relatively big font
-  uint8_t Altitude_width = u8g2_GetStrWidth(OLED, Line); // how wide the string would be on the OLED
-  u8g2_DrawStr(OLED, 60 - Altitude_width, 40, Line);     // print the string
+  uint8_t Altitude_width = u8g2_GetStrWidth(OLED, disp_str); // how wide the string would be on the OLED
+  u8g2_DrawStr(OLED, 60 - Altitude_width, 40, disp_str);     // print the string
 
   u8g2_SetFont(OLED, u8g2_font_9x15_tr); // smaller font
   if (isAltitudeUnitMeter)
@@ -1027,13 +1020,13 @@ void OLED_DrawAltitudeAndSpeed(u8g2_t *OLED, GPS_Position *GPS)
     uint16_t Heading = (GPS->Heading + 5) / 10;
     if (Heading >= 360)
       Heading -= 360;
-    Len = Format_UnsDec(Line, Heading, 3);
+    Len = Format_UnsDec(disp_str, Heading, 3);
   }
   else
-    Len = Format_String(Line, "---");
-  Line[Len] = 0;
-  uint8_t Track_width = u8g2_GetStrWidth(OLED, Line);
-  u8g2_DrawStr(OLED, 118 - Track_width, 40, Line);
+    Len = Format_String(disp_str, "---");
+  disp_str[Len] = 0;
+  uint8_t Track_width = u8g2_GetStrWidth(OLED, disp_str);
+  u8g2_DrawStr(OLED, 118 - Track_width, 40, disp_str);
 
   u8g2_SetFont(OLED, u8g2_font_6x12_tr); // small font
   u8g2_DrawStr(OLED, 122, 28, "o");      // degree sign
@@ -1065,16 +1058,16 @@ void OLED_DrawAltitudeAndSpeed(u8g2_t *OLED, GPS_Position *GPS)
       u8g2_DrawXBM(OLED, 0, 47, plus_width, plus_height, plus_bits);
     }
     if (isVarioUnitMPS)
-      Len = Format_UnsDec(Line, vario_value, 2, 1);
+      Len = Format_UnsDec(disp_str, vario_value, 2, 1);
     if (isVarioUnitFPM)
-      Len = Format_UnsDec(Line, vario_value, 2, 0);
+      Len = Format_UnsDec(disp_str, vario_value, 2, 0);
   }
   else
-    Len = Format_String(Line, "-.-");
-  Line[Len] = 0;
+    Len = Format_String(disp_str, "-.-");
+  disp_str[Len] = 0;
   u8g2_SetFont(OLED, u8g2_font_fub17_tr);
-  uint8_t Vario_width = u8g2_GetStrWidth(OLED, Line);
-  u8g2_DrawStr(OLED, 54 - Vario_width, 64, Line);
+  uint8_t Vario_width = u8g2_GetStrWidth(OLED, disp_str);
+  u8g2_DrawStr(OLED, 54 - Vario_width, 64, disp_str);
 
   if (isVarioUnitMPS)
   {
@@ -1100,14 +1093,14 @@ void OLED_DrawAltitudeAndSpeed(u8g2_t *OLED, GPS_Position *GPS)
     uint16_t speed = (GPS->Speed * 9 + 12) / 25;
     if (isSpeedUnitKnot)
       speed = (GPS->Speed * 199 + 512) >> 10;
-    Len = Format_UnsDec(Line, speed, 1, 0);
+    Len = Format_UnsDec(disp_str, speed, 1, 0);
   }
   else
-    Len = Format_String(Line, "--");
-  Line[Len] = 0;
+    Len = Format_String(disp_str, "--");
+  disp_str[Len] = 0;
   u8g2_SetFont(OLED, u8g2_font_fub17_tr);
-  uint8_t Speed_width = u8g2_GetStrWidth(OLED, Line);
-  u8g2_DrawStr(OLED, 114 - Speed_width, 64, Line);
+  uint8_t Speed_width = u8g2_GetStrWidth(OLED, disp_str);
+  u8g2_DrawStr(OLED, 114 - Speed_width, 64, disp_str);
 
   if (isSpeedUnitKMH)
   {
@@ -1145,44 +1138,44 @@ void OLED_DrawLoRaWAN(u8g2_t *OLED, GPS_Position *GPS) // draw LoRaWAN status pa
 #endif
 #ifdef WITH_LORAWAN
   const char *StateName[4] = {"Not-Joined", "Join-Req", "+Joined+", "PktSend"};
-  int Len = Format_String(Line, "LoRaWAN: ");
+  int Len = Format_String(disp_str, "LoRaWAN: ");
   if (WANdev.State == 2)
-    Len += Format_Hex(Line + Len, WANdev.DevAddr);
+    Len += Format_Hex(disp_str + Len, WANdev.DevAddr);
   else if (WANdev.State <= 3)
-    Len += Format_String(Line + Len, StateName[WANdev.State]);
+    Len += Format_String(disp_str + Len, StateName[WANdev.State]);
   else
-    Len += Format_Hex(Line + Len, WANdev.State);
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 0, 24, Line);
+    Len += Format_Hex(disp_str + Len, WANdev.State);
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 0, 24, disp_str);
 
   // if(WANdev.State<2)
-  // { Len =Format_HexBytes(Line, WANdev.AppKey  , 8); Line[Len]=0; u8g2_DrawStr(OLED, 12, 36, Line);
-  //   Len =Format_HexBytes(Line, WANdev.AppKey+8, 8); Line[Len]=0; u8g2_DrawStr(OLED, 12, 48, Line);
+  // { Len =Format_HexBytes(disp_str, WANdev.AppKey  , 8); disp_str[Len]=0; u8g2_DrawStr(OLED, 12, 36, disp_str);
+  //   Len =Format_HexBytes(disp_str, WANdev.AppKey+8, 8); disp_str[Len]=0; u8g2_DrawStr(OLED, 12, 48, disp_str);
   //   u8g2_SetFont(OLED, u8g2_font_open_iconic_all_1x_t); u8g2_DrawGlyph(OLED, 1, 36, 0xC1); u8g2_DrawGlyph(OLED, 1, 48, 0xC1); }
   // else
   if (WANdev.State >= 2)
   {
-    Len = Format_String(Line, "Up: ");
-    Len += Format_Hex(Line + Len, (uint16_t)WANdev.UpCount);
-    Len += Format_String(Line + Len, "  Dn: ");
-    Len += Format_Hex(Line + Len, (uint16_t)WANdev.DnCount);
-    Line[Len] = 0;
-    u8g2_DrawStr(OLED, 0, 36, Line);
+    Len = Format_String(disp_str, "Up: ");
+    Len += Format_Hex(disp_str + Len, (uint16_t)WANdev.UpCount);
+    Len += Format_String(disp_str + Len, "  Dn: ");
+    Len += Format_Hex(disp_str + Len, (uint16_t)WANdev.DnCount);
+    disp_str[Len] = 0;
+    u8g2_DrawStr(OLED, 0, 36, disp_str);
 
-    Len = Format_String(Line, "Rx:");
-    Len += Format_SignDec(Line + Len, (int16_t)WANdev.RxRSSI, 3);
-    Len += Format_String(Line + Len, "dBm ");
-    Len += Format_SignDec(Line + Len, ((int16_t)WANdev.RxSNR * 10 + 2) >> 2, 2, 1);
-    Len += Format_String(Line + Len, "dB");
-    Line[Len] = 0;
-    u8g2_DrawStr(OLED, 0, 48, Line);
+    Len = Format_String(disp_str, "Rx:");
+    Len += Format_SignDec(disp_str + Len, (int16_t)WANdev.RxRSSI, 3);
+    Len += Format_String(disp_str + Len, "dBm ");
+    Len += Format_SignDec(disp_str + Len, ((int16_t)WANdev.RxSNR * 10 + 2) >> 2, 2, 1);
+    Len += Format_String(disp_str + Len, "dB");
+    disp_str[Len] = 0;
+    u8g2_DrawStr(OLED, 0, 48, disp_str);
   }
-  Len = Format_HexBytes(Line, WANdev.AppKey, 2);
-  Line[Len++] = '.';
-  Line[Len++] = '.';
-  Len += Format_Hex(Line + Len, WANdev.AppKey[15]);
-  Line[Len] = 0;
-  u8g2_DrawStr(OLED, 72, 60, Line);
+  Len = Format_HexBytes(disp_str, WANdev.AppKey, 2);
+  disp_str[Len++] = '.';
+  disp_str[Len++] = '.';
+  Len += Format_Hex(disp_str + Len, WANdev.AppKey[15]);
+  disp_str[Len] = 0;
+  u8g2_DrawStr(OLED, 72, 60, disp_str);
   u8g2_SetFont(OLED, u8g2_font_open_iconic_all_1x_t);
   u8g2_DrawGlyph(OLED, 61, 60, 0xC1);
 
@@ -1190,10 +1183,10 @@ void OLED_DrawLoRaWAN(u8g2_t *OLED, GPS_Position *GPS) // draw LoRaWAN status pa
 /*
   Len=0;
   for(int Idx=0; Idx<16; Idx++)
-  { Len+=Format_Hex(Line+Len, WANdev.AppKey[Idx]); }
-  Line[Len]=0;
+  { Len+=Format_Hex(disp_str+Len, WANdev.AppKey[Idx]); }
+  disp_str[Len]=0;
   u8g2_SetFont(OLED, u8g2_font_5x8_tr);
-  u8g2_DrawStr(OLED, 0, 48, Line);
+  u8g2_DrawStr(OLED, 0, 48, disp_str);
 */
 #endif // WITH_LORAWAN
 }
