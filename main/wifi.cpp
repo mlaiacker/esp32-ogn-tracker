@@ -1,5 +1,5 @@
 #include <string.h>
-#include "config.h"  //Added By Fab501
+#include "hal.h"  //changed to hal by ML
 #include "wifi.h"
 #include "format.h"
 #ifdef DEBUG_PRINT
@@ -132,7 +132,7 @@ esp_err_t WIFI_PassiveScan(wifi_ap_record_t *AP, uint16_t &APs) //
 esp_err_t WIFI_Connect(wifi_ap_record_t *AP, const char *Pass, int8_t MinSig) // connect to given Access Point with gicen password
 { esp_err_t Err;
   memcpy(WIFI_Config.sta.ssid, AP->ssid, 32);
-  if(Pass) strncpy((char *)WIFI_Config.sta.password, Pass, 64);
+  if(Pass) strncpy((char *)WIFI_Config.sta.password, Pass, 63);
      else  WIFI_Config.sta.password[0]=0;
   memcpy(WIFI_Config.sta.bssid, AP->bssid, 6);
   WIFI_Config.sta.bssid_set = 1;
@@ -150,8 +150,8 @@ esp_err_t WIFI_Connect(wifi_ap_record_t *AP, const char *Pass, int8_t MinSig) //
 
 esp_err_t WIFI_Connect(const char *SSID, const char *Pass, int8_t MinSig)
 { esp_err_t Err;
-  strncpy((char *)WIFI_Config.sta.ssid, SSID, 32);
-  if(Pass && Pass[0]) strncpy((char *)WIFI_Config.sta.password, Pass, 64);
+  strncpy((char *)WIFI_Config.sta.ssid, SSID, 31);
+  if(Pass && Pass[0]) strncpy((char *)WIFI_Config.sta.password, Pass, 63);
                 else  WIFI_Config.sta.password[0]=0;
   WIFI_Config.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
   WIFI_Config.sta.sort_method = WIFI_CONNECT_AP_BY_SIGNAL;
