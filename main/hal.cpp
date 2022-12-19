@@ -401,7 +401,7 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 #if defined(WITH_HELTEC_V3)
 #define PIN_GPS_TXD GPIO_NUM_4
 #define PIN_GPS_RXD GPIO_NUM_5
-#define PIN_GPS_PPS GPIO_NUM_6
+//#define PIN_GPS_PPS GPIO_NUM_6
 #endif
 
 // Note: I had a problem with GPS ENABLE on GPIO13, thus I tied the enable wire to 3.3V for the time being.
@@ -1867,13 +1867,25 @@ uint16_t BatterySense(int Samples)
 #else
 uint16_t BatterySense(int Samples)
 {
+#ifdef WITH_HELTEC_V3
+	// for heltec V3 drive GPIO 37 low to enable battery reading
+	gpio_set_level(GPIO_NUM_37, 0);
+#endif
+
   uint32_t RawVoltage = 0;
   for (int Idx = 0; Idx < Samples; Idx++)
   {
     RawVoltage += adc1_get_raw(ADC_Chan_Batt);
   }
   RawVoltage = (RawVoltage + Samples / 2) / Samples;
-  uint16_t Volt = (uint16_t)esp_adc_cal_raw_to_voltage(RawVoltage, ADC_characs) * 2;
+#ifdef WITH_HELTEC_V3
+	// for heltec V3 drive GPIO 37 high to disable battery reading
+	gpio_set_level(GPIO_NUM_37, 1);
+	// the V3 board has a 390k and 100k voltage divider
+	uint16_t Volt = (uint16_t)esp_adc_cal_raw_to_voltage(RawVoltage, ADC_characs) * (390+100)/100;
+#else
+	  uint16_t Volt = (uint16_t)esp_adc_cal_raw_to_voltage(RawVoltage, ADC_characs) * 2;
+#endif
   // const uint16_t Bias = 80;  // apparently, there is 80mV bias in the battery voltage measurement
   // if(Volt>=Bias) Volt-=Bias;
   return Volt;
@@ -1926,6 +1938,15 @@ void IO_Configuration(void)
 #ifdef PIN_PERIPH_RST
   gpio_set_direction(PIN_PERIPH_RST, GPIO_MODE_OUTPUT);
   gpio_set_level(PIN_PERIPH_RST, 1);
+#endif
+
+#ifdef WITH_HELTEC_V3
+  // to enable battery voltage sensing
+  gpio_set_direction(GPIO_NUM_37, GPIO_MODE_OUTPUT);
+  // to enable display when on battery power pins 3 and 4 with 3v3
+  gpio_set_direction(GPIO_NUM_36, GPIO_MODE_OUTPUT);
+  // low will enable the p-ch mosfet
+  gpio_set_level(GPIO_NUM_36, 0);
 #endif
 
 #ifdef PIN_GPS_PPS
