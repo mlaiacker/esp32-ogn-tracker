@@ -1,6 +1,7 @@
 #include "hal.h"
+#ifdef WITH_APRS
 
-#include "tcpip_adapter.h"
+#include "esp_netif.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
 
@@ -11,8 +12,6 @@
 
 #include "proc.h"
 #include "gps.h"
-
-#ifdef WITH_APRS
 
 #include "wifi.h"
 #include "aprs.h"
