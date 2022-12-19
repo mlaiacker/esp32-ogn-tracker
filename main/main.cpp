@@ -155,11 +155,11 @@ extern "C" void app_main(void)
     xTaskCreate(vTaskLOG, "LOG", 4500, 0, tskIDLE_PRIORITY + 1, 0);
 #endif
 
-    xTaskCreate(vTaskRF,    "RF",    4000, 0, tskIDLE_PRIORITY+5, 0);
+    xTaskCreate(vTaskRF,    "RF",    2000, 0, tskIDLE_PRIORITY+5, 0);
 
-    xTaskCreate(vTaskPROC,  "PROC",  3500, 0, tskIDLE_PRIORITY+3, 0);
+    xTaskCreate(vTaskPROC,  "PROC",  2000, 0, tskIDLE_PRIORITY+3, 0);
 
-    xTaskCreate(vTaskGPS,   "GPS",   3000, 0, tskIDLE_PRIORITY+4, 0);
+    xTaskCreate(vTaskGPS,   "GPS",   2000, 0, tskIDLE_PRIORITY+4, 0);
 #if defined(WITH_BMP180) || defined(WITH_BMP280) || defined(WITH_BME280) || defined(WITH_MS5607) || defined(WITH_MS5611)
     xTaskCreate(vTaskSENS,  "SENS",  2000, 0, tskIDLE_PRIORITY+4, 0);
 #endif
@@ -194,7 +194,7 @@ extern "C" void app_main(void)
 #endif
 
 #if defined(WITH_OLED) || defined(WITH_U8G2_OLED) || defined(WITH_ST7789) || defined(WITH_ILI9341)
-    xTaskCreate(vTaskDISP, "DISP", 3000, 0, tskIDLE_PRIORITY + 2, 0);
+    xTaskCreate(vTaskDISP, "DISP", 2000, 0, tskIDLE_PRIORITY + 2, 0);
 #endif
 #ifdef WITH_SOUND
     xTaskCreate(vTaskSOUND, "SOUND", 2000, 0, tskIDLE_PRIORITY + 3, 0);
