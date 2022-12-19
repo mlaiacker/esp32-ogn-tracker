@@ -549,16 +549,18 @@ static void GPS_BurstStart(int CharDelay = 0) // when GPS starts sending the dat
 #endif
 #endif // WITH_GPS_MTK
 #ifdef WITH_GPS_SRF
-        strcpy(GPS_Cmd, "$PSRF100,1,"); // SiRF command to change the baud rate
-        Len = strlen(GPS_Cmd);
-        Len += Format_UnsDec(GPS_Cmd + Len, GPS_TargetBaudRate);
-        strcpy(GPS_Cmd + Len, ",8,1,0");
-        Len = strlen(GPS_Cmd);
-        Len += NMEA_AppendCheck(GPS_Cmd, Len);
-        GPS_Cmd[Len++] = '\r'; // this is apparently needed but it should not, as ESP32 does auto-CR ??
-        GPS_Cmd[Len++] = '\n';
-        GPS_Cmd[Len] = 0;
-        Format_String(GPS_UART_Write, GPS_Cmd, Len, 0);
+        {
+			strcpy(GPS_Cmd, "$PSRF100,1,"); // SiRF command to change the baud rate
+			uint8_t Len = strlen(GPS_Cmd);
+			Len += Format_UnsDec(GPS_Cmd + Len, GPS_TargetBaudRate);
+			strcpy(GPS_Cmd + Len, ",8,1,0");
+			Len = strlen(GPS_Cmd);
+			Len += NMEA_AppendCheck(GPS_Cmd, Len);
+			GPS_Cmd[Len++] = '\r'; // this is apparently needed but it should not, as ESP32 does auto-CR ??
+			GPS_Cmd[Len++] = '\n';
+			GPS_Cmd[Len] = 0;
+			Format_String(GPS_UART_Write, GPS_Cmd, Len, 0);
+        }
 #endif // WITH_GPS_SRF
        // GPS_UART_Flush(500);                                                 // wait for all data to be sent to the GPS
        // GPS_UART_SetBaudrate(GPS_TargetBaudRate); GPS_BaudRate=GPS_TargetBaudRate;   // switch serial port to the new baudrate
@@ -1179,7 +1181,6 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
   }
   else if (MsgID == MAVLINK_MSG_ID_SYSTEM_TIME)
   {
-    MAVLINK_msgs++;
     UnixTime_ms = mavlink_msg_system_time_get_time_unix_usec(&msg) / 1000;
     uint32_t UnixTime = UnixTime_ms / 1000;                                                  // [ s] Unix Time
     uint32_t UnixFrac = UnixTime_ms - (uint64_t)UnixTime * 1000;                             // [ms] Second fraction of the Unix time
@@ -1220,7 +1221,7 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
   }
   else if (MsgID == MAVLINK_MSG_ID_GPS_RAW_INT) // position form the GPS
   {
-    if(MAV_SysID==255 || MAV_SysID == 0) {
+    if(MAV_SysID==255 || MAV_SysID == 0) { // 255 is the GCS
       MAV_SysID = msg.sysid; // use the sysid of autopilot
     }
     mavlink_gps_raw_int_t RawGPS;
@@ -1279,9 +1280,8 @@ static void GPS_MAV(mavlink_message_t msg) // when GPS gets an MAV packet
     xSemaphoreGive(CONS_Mutex);
 #endif
   }
-  else if (MsgID == MAVLINK_MSG_ID_STATUSTEXT)
-    mavlink_msg_statustext_decode(&msg, &MAVLINK_last_text);
-  {
+  else if (MsgID == MAVLINK_MSG_ID_STATUSTEXT) {
+    mavlink_msg_statustext_decode(&msg, &MAVLINK_last_text); // maybe show this message on display
   }
 #ifdef DEBUG_PRINT
   else
