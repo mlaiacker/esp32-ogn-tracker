@@ -973,7 +973,11 @@ void OLED_DrawID(u8g2_t *OLED, GPS_Position *GPS)
 #endif
   }
   u8g2_SetFont(OLED, u8g2_font_5x8_tr);
-  u8g2_DrawStr(OLED, 96, 62, GIT_TAG);
+  if(strlen(GIT_TAG)>0){
+	  u8g2_DrawStr(OLED, 96, 62, GIT_TAG);
+  } else {
+	  u8g2_DrawStr(OLED, 88, 62, GIT_REV);
+  }
 }
 
 void OLED_DrawAltitudeAndSpeed(u8g2_t *OLED, GPS_Position *GPS)

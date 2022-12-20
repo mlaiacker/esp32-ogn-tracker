@@ -332,9 +332,9 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
 #endif
 
 #ifndef RFM_SPI_HOST
-#define RFM_SPI_HOST SPI3_HOST // or H or VSPI_HOST ?
-#define RFM_SPI_DMA 1          // DMA channel
-#define RFM_SPI_SPEED 4000000  // [Hz] 2MHz SPI clock rate for RF chip
+#define RFM_SPI_HOST  HSPI_HOST   // or H or VSPI_HOST ?
+#define RFM_SPI_DMA   SPI_DMA_CH_AUTO           // DMA channel
+#define RFM_SPI_SPEED 4000000     // [Hz] 2MHz SPI clock rate for RF chip
 #endif
 
 #ifdef WITH_ST7789

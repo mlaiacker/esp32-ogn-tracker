@@ -20,8 +20,8 @@
 #define WIFI_ADDRESS_MK4	0
 
 // #define WITH_HELTEC                        // HELTEC module: PCB LED on GPI025
-//#define WITH_HELTEC_V2                     // HELTEC module v2
-#define WITH_HELTEC_V3                     // HELTEC module v3
+#define WITH_HELTEC_V2                     // HELTEC module v2
+//#define WITH_HELTEC_V3                     // HELTEC module v3
 // #define WITH_TTGO                          // TTGO module: PCB LED on GPIO2, GPIO25 free to use as DAC2 output
 // #define WITH_TBEAM                          // T-Beam module
 //#define WITH_TBEAM_V10                      // T-Beam module
@@ -116,7 +116,7 @@
 #define WITH_GPS_SRF
 #define WITH_MAVLINK
 
-//#define WITH_PFLAA                         // PFLAU and PFLAA for compatibility with XCsoar and LK8000
+#define WITH_PFLAA                         // PFLAU and PFLAA for compatibility with XCsoar and LK8000
 #define WITH_LOOKOUT
 
 #define WITH_FANET                         // FANET transmission and reception
@@ -132,7 +132,8 @@
 #define WITH_HTTP                           // Open Web Interface
 
 #elif defined(WITH_HELTEC_V2)
-#define WITH_RFM95                         // RF chip selection:  both HELTEC and TTGO use sx1276 which is same as RFM95#define WITH_U8G2_OLED
+#define WITH_RFM95                         // RF chip selection:  both HELTEC and TTGO use sx1276 which is same as RFM95
+#define WITH_U8G2_OLED
 
 #define WITH_GPS_CONFIG                    // attempt to configure higher GPS baud rate and airborne mode
 #define WITH_GPS_UBX                       // GPS understands UBX
@@ -141,6 +142,7 @@
 #define WITH_MAVLINK
 
 #define WITH_PFLAA                         // PFLAU and PFLAA for compatibility with XCsoar and LK8000
+#define WITH_LOOKOUT
 
 #define WITH_SPIFFS                        // use SPIFFS file system in Flash
 #define WITH_LOG                           // log own positions and other received to SPIFFS
