@@ -4,7 +4,6 @@
 
 #include "hal.h"
 
-#include "driver/gpio.h"
 #include "driver/uart.h"
 #include "esp_vfs_dev.h"
 #include "driver/spi_master.h"
@@ -395,7 +394,7 @@ GPIO   HELTEC      TTGO       JACEK     M5_JACEK    T-Beam     T-Beamv10    Foll
                        // VK2828U   GN-801   MAVlink
 #define PIN_GPS_TXD GPIO_NUM_13 // green     green    green
 #define PIN_GPS_RXD GPIO_NUM_39 // blue      yellow   yellow
-#define PIN_GPS_PPS GPIO_NUM_38 // white     blue
+#define PIN_GPS_PPS GPIO_NUM_37 // white     blue
 #endif
 
 #if defined(WITH_HELTEC_V3)
@@ -829,13 +828,6 @@ void GPS_UART_Write(void *buf, size_t len) { uart_write_bytes(GPS_UART, buf, len
 void GPS_UART_Flush(int MaxWait) { uart_wait_tx_done(GPS_UART, MaxWait); }
 void GPS_UART_SetBaudrate(int BaudRate) { uart_set_baudrate(GPS_UART, BaudRate); }
 #endif
-
-#ifndef GPS_ON_LEVEL
-#define GPS_ON_LEVEL	1
-#endif
-
-#define GPS_ENABLE 	 gpio_set_level(PIN_GPS_ENA, GPS_ON_LEVEL)
-#define GPS_DISABLE  gpio_set_level(PIN_GPS_ENA, !GPS_ON_LEVEL)
 
 #ifdef PIN_GPS_PPS
 bool GPS_PPS_isOn(void)
@@ -1893,6 +1885,9 @@ uint16_t BatterySense(int Samples)
 	gpio_set_level(GPIO_NUM_37, 1);
 	// the V3 board has a 390k and 100k voltage divider
 	uint16_t Volt = (uint16_t)esp_adc_cal_raw_to_voltage(RawVoltage, ADC_characs) * (390+100)/100;
+#elif defined(WITH_HELTEC_V2)
+	// the V2 board has a 220k and 100k voltage divider
+	uint16_t Volt = (uint16_t)esp_adc_cal_raw_to_voltage(RawVoltage, ADC_characs) * (220+100)/100;
 #else
 	  uint16_t Volt = (uint16_t)esp_adc_cal_raw_to_voltage(RawVoltage, ADC_characs) * 2;
 #endif

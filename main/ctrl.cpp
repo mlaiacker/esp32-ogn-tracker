@@ -363,10 +363,8 @@ void SleepIn(void)
   xSemaphoreGive(CONS_Mutex);
   MAV_text("Sleep-in");
 
+  GPS_DISABLE;
 #ifdef WITH_GPS_UBX
-#ifdef WITH_GPA_ENA
-  GPS_DISABLE();
-#endif
   UBX_RXM_PMREQ PMREQ;
   PMREQ.duration = 0;
   PMREQ.flags = 0x01;
@@ -374,12 +372,8 @@ void SleepIn(void)
 #endif
 
 #ifdef WITH_GPS_MTK
-#ifdef WITH_GPA_ENA
-  GPS_DISABLE();
   Format_String(GPS_UART_Write, "$PMTK225,4*2F\r\n"); // backup mode: 7uA
-#else
-  Format_String(GPS_UART_Write, "$PMTK161,0*28\r\n"); // standby mode: 1mA
-#endif
+  //Format_String(GPS_UART_Write, "$PMTK161,0*28\r\n"); // standby mode: 1mA
 #endif
 
 #ifdef WITH_OLED
@@ -403,9 +397,7 @@ void SleepIn(void)
 
 void SleepOut(void)
 {
-#ifdef WITH_GPS_ENABLE
-  GPS_DISABLE();
-#endif
+  GPS_DISABLE;
   PowerMode = 2;
 #if defined(WITH_ST7789) || defined(WITH_ILI9341)
   LCD_SetBacklightLevel(6);
@@ -417,19 +409,13 @@ void SleepOut(void)
   OLED_DisplayON(1);
 #endif
 
+  GPS_ENABLE;
 #ifdef WITH_GPS_UBX
-#ifdef WITH_GPS_ENABLE
-  GPS_ENABLE();
-#endif
   Format_String(GPS_UART_Write, "\n");
 #endif
 
 #ifdef WITH_GPS_MTK
-#ifdef WITH_GPS_ENABLE
-  GPS_ENABLE();
-#else
   Format_String(GPS_UART_Write, "$PMTK161,1*29\r\n");
-#endif
 #endif
   xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
   Format_String(CONS_UART_Write, "Sleep-out\n");
@@ -438,6 +424,7 @@ void SleepOut(void)
 }
 
 #ifdef WITH_SLEEP
+#include "esp_sleep.h"
 static TickType_t LowBatt_Time = 0;
 
 static void LowBatt_Watch(void) // check battery voltage
@@ -461,9 +448,11 @@ static void LowBatt_Watch(void) // check battery voltage
     return;
   }
   Now -= LowBatt_Time;
-  if (Now >= 30000) // if low battery and voltage dropping persists for 30sec
+  if (Now >= 30000) // if low battery and voltage dropping persists for 10sec
   {
     SleepIn();  //
+    vTaskDelay(100);
+    esp_deep_sleep_start(); // will not return
     Sleep();    // enter sleep
     SleepOut(); // wake up
     LowBatt_Time = 0;
@@ -549,7 +538,7 @@ extern "C" void vTaskCTRL(void *pvParameters)
   {
     ProcessInput(); // process console input
 #ifdef WITH_SLEEP
-#if defined(WITH_FollowMe) || defined(WITH_TBEAM)
+#if defined(WITH_FollowMe) || defined(WITH_TBEAM) || defined(WITH_HELTEC_V3) || defined(WITH_HELTEC_V2)
     LowBatt_Watch();
 #endif
 #endif

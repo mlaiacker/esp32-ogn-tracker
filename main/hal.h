@@ -10,6 +10,8 @@
 #include "freertos/queue.h"
 #include "freertos/event_groups.h"
 
+#include "driver/gpio.h"
+
 // ============================================================================================================
 
 #define WITH_ESP32
@@ -225,6 +227,18 @@ extern AXP192 AXP;
 
 #ifdef WITH_SLEEP
 void Sleep(void);
+#endif
+
+#ifdef PIN_GPS_ENA
+#ifndef GPS_ON_LEVEL
+#define GPS_ON_LEVEL	1
+#endif
+
+#define GPS_ENABLE 	 gpio_set_level(PIN_GPS_ENA, GPS_ON_LEVEL)
+#define GPS_DISABLE  gpio_set_level(PIN_GPS_ENA, !GPS_ON_LEVEL)
+#else
+#define GPS_ENABLE
+#define GPS_DISABLE
 #endif
 
 #ifdef __cplusplus

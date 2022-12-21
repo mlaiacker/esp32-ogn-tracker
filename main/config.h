@@ -136,6 +136,7 @@
 #elif defined(WITH_HELTEC_V2)
 #define WITH_RFM95                         // RF chip selection:  both HELTEC and TTGO use sx1276 which is same as RFM95
 #define WITH_U8G2_OLED
+#define WITH_SLEEP
 
 #define WITH_GPS_CONFIG                    // attempt to configure higher GPS baud rate and airborne mode
 #define WITH_GPS_UBX                       // GPS understands UBX
