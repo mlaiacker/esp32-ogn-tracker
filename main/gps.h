@@ -56,17 +56,19 @@ int16_t GPS_AverageSpeed(void);             // [0.1m/s] calc. average speed base
 
 #ifdef WITH_MAVLINK
 #include "mavlink/common/mavlink.h"
-extern uint16_t MAVLINK_BattVolt;   // [mV]
-extern uint16_t MAVLINK_BattCurr;   // [10mA]
-extern uint8_t  MAVLINK_BattCap;    // [%]
 extern mavlink_statustext_t  MAVLINK_last_text; // to display on mavlink tab on OLED
-extern uint32_t MAVLINK_msgs;  // total messages received
 void MAV_text(const char *fmt, ...); // send a mavlink text message
+void MAV_send(mavlink_message_t *mav_msg_tx);
 extern  uint8_t  MAV_SysID;             // System-ID for MAVlink messages we send out
 extern uint8_t  MAV_Seq;                   // sequence number for MAVlink message sent out
+extern int64_t MAV_TimeOfs_ms; // [ms] diff. between UTC time and boot time reported in MAV messages
 #else
 #define MAV_text(fmt, ...) // not implemented
 #endif
+
+extern uint16_t MAVLINK_BattVolt;   // [mV]
+extern uint16_t MAVLINK_BattCurr;   // [10mA]
+extern uint8_t  MAVLINK_BattCap;    // [%]
 
 extern EventGroupHandle_t GPS_Event;
 const EventBits_t GPSevt_PPS    = 0x01;

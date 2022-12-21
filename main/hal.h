@@ -205,7 +205,9 @@ template <class Type>
 
 uint8_t I2C_Restart(uint8_t Bus);
 
+int8_t BattCapacity(uint16_t mVolt);
 uint16_t BatterySense(int Samples=4); // [mV]
+
 #ifdef WITH_TBEAM
 uint16_t KnobSense   (int Samples=4); // [ADC]
 #endif

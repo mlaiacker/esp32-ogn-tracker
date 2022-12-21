@@ -114,6 +114,8 @@
 #define WITH_GPS_UBX                       // GPS understands UBX
 #define WITH_GPS_MTK                       // GPS understands MTK
 #define WITH_GPS_SRF
+#define PIN_GPS_ENA	GPIO_NUM_36
+#define GPS_ON_LEVEL	0
 #define WITH_MAVLINK
 
 #define WITH_PFLAA                         // PFLAU and PFLAA for compatibility with XCsoar and LK8000
@@ -127,7 +129,7 @@
 
 #define WITH_SPIFFS                        // use SPIFFS file system in Flash
 #define WITH_LOG                           // log own positions and other received to SPIFFS
-#define WITH_BLE_SPP
+//#define WITH_BLE_SPP
 #define WITH_AP                            // Open Access Point MOde
 #define WITH_HTTP                           // Open Web Interface
 
@@ -139,6 +141,8 @@
 #define WITH_GPS_UBX                       // GPS understands UBX
 #define WITH_GPS_MTK                       // GPS understands MTK
 #define WITH_GPS_SRF
+#define PIN_GPS_ENA	GPIO_NUM_21 // actice low
+#define GPS_ON_LEVEL	0
 #define WITH_MAVLINK
 
 #define WITH_PFLAA                         // PFLAU and PFLAA for compatibility with XCsoar and LK8000
@@ -146,7 +150,7 @@
 
 #define WITH_SPIFFS                        // use SPIFFS file system in Flash
 #define WITH_LOG                           // log own positions and other received to SPIFFS
-#define WITH_BT_SPP
+//#define WITH_BT_SPP
 #define WITH_AP                            // Open Access Point MOde
 #define WITH_HTTP                           // Open Web Interface
 #define WITH_BME280

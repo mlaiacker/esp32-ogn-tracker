@@ -511,11 +511,6 @@ static void ParmForm_Restart(httpd_req_t *Req) {
 static void Table_System(httpd_req_t *Req) {
 	char Line[128];
 	int Len;
-	uint32_t Time = TimeSync_Time();
-	uint32_t Sec = (Time - 1) % 60;
-	GPS_Position *GPS = GPS_getPosition(Sec);
-	if (GPS == 0)
-		return;
 
 	httpd_resp_sendstr_chunk(Req, "<h2>System</h2>");
 	httpd_resp_sendstr_chunk(Req,
@@ -560,15 +555,15 @@ static void Table_System(httpd_req_t *Req) {
 	httpd_resp_send_chunk(Req, Line, Len);
 
 	Len = Format_String(Line, "<tr><td>GPS</td><td align=\"right\">");
-#ifdef WITH_GPS_MTK
-	Len += Format_String(Line + Len, "MTK GPS");
-#endif
-#ifdef WITH_GPS_UBX
-	Len += Format_String(Line + Len, "UBX GPS");
-#endif
-#ifdef WITH_GPS_SRF
-	Len += Format_String(Line + Len, "SRF GPS");
-#endif
+	if(GPS_Status.UBX){
+		Len += Format_String(Line + Len, "UBX GPS");
+	} else if(GPS_Status.NMEA) {
+		Len += Format_String(Line + Len, "GPS");
+	} else if(GPS_Status.MAV){
+		Len += Format_String(Line + Len, "MAVLINK");
+	} else {
+		Len += Format_String(Line + Len, "not detected");
+	}
 	Len += Format_String(Line + Len, "</td></tr>\n");
 	httpd_resp_send_chunk(Req, Line, Len);
 
@@ -578,6 +573,9 @@ static void Table_System(httpd_req_t *Req) {
 #endif
 #ifdef WITH_RFM69
   Len+=Format_String(Line+Len, "RFM69");
+#endif
+#ifdef WITH_SX1262
+  Len+=Format_String(Line+Len, "SX1262");
 #endif
 	Len += Format_String(Line + Len, "</td></tr>\n");
 	httpd_resp_send_chunk(Req, Line, Len);
@@ -693,7 +691,7 @@ static void Table_GPS(httpd_req_t *Req) {
 	int Len;
 	uint32_t Time = TimeSync_Time();
 	uint32_t Sec = (Time - 1) % 60;
-	GPS_Position *GPS = GPS_getPosition(Sec);
+	GPS_Position *GPS = GPS_getPosition();
 	if (GPS == 0)
 		return;
 
@@ -878,6 +876,9 @@ static void Table_RF(httpd_req_t *Req) {
 #ifdef WITH_SX1272
   Len+=Format_String(Line+Len, "sx1272");
 #endif
+#ifdef WITH_SX1262
+  Len+=Format_String(Line+Len, "sx1262");
+#endif
 	Len += Format_String(Line + Len, "</td></tr>\n");
 	httpd_resp_send_chunk(Req, Line, Len);
 
@@ -931,21 +932,22 @@ static void Table_Batt(httpd_req_t *Req) {
 	httpd_resp_sendstr_chunk(Req,
 			"<table class=\"table table-striped table-bordered\">\n");
 
-	Len = Format_String(Line, "<td>Voltage</td><td align=\"right\">");
-#ifdef WITH_MAVLINK
-	Len += Format_UnsDec(Line + Len, MAVLINK_BattVolt, 4, 3);
-#else
-  Len+=Format_UnsDec(Line+Len, BatteryVoltage>>8, 4, 3);        // print the battery voltage readout
-#endif
+	Len = Format_String(Line, "<tr><td>Voltage</td><td align=\"right\">");
+	if(GPS_Status.MAV){
+		Len += Format_UnsDec(Line + Len, MAVLINK_BattVolt, 4, 3);
+	} else {
+		Len+=Format_UnsDec(Line+Len, BatteryVoltage>>8, 4, 3);        // print the battery voltage readout
+	}
 	Len += Format_String(Line + Len, " V</td></tr>\n");
 	httpd_resp_send_chunk(Req, Line, Len);
 
 	Len = Format_String(Line, "<tr><td>Capacity</td><td align=\"right\">");
-#ifdef WITH_MAVLINK
-	uint8_t Cap = MAVLINK_BattCap;             // [%] from the drone's telemetry
-#else
-  uint8_t Cap=BattCapacity(BatteryVoltage>>8);         // [%] est. battery capacity based on the voltage readout
-#endif
+	uint8_t Cap = -1;
+	if(GPS_Status.MAV){
+		Cap = MAVLINK_BattCap;             // [%] from the drone's telemetry
+	} else {
+		Cap=BattCapacity(BatteryVoltage>>8);         // [%] est. battery capacity based on the voltage readout
+	}
 	Len += Format_UnsDec(Line + Len, (uint16_t) Cap);
 	Len += Format_String(Line + Len, " %</td></tr>\n");
 	httpd_resp_send_chunk(Req, Line, Len);
@@ -993,6 +995,32 @@ static void Table_Batt(httpd_req_t *Req) {
 #endif
 
 	httpd_resp_sendstr_chunk(Req, "</table>\n");
+
+#ifdef WITH_MAVLINK
+	httpd_resp_sendstr_chunk(Req, "<h2>MAVLINK</h2>");
+	httpd_resp_sendstr_chunk(Req, "<table class=\"table table-striped table-bordered\">\n");
+
+	Len=  Format_String(Line, "<tr><td>SysID</td><td align=\"right\">");
+	Len+= Format_UnsDec(Line+Len, MAV_SysID, 1,0);        // print
+	Len+= Format_String(Line + Len, "</td></tr>\n");
+	httpd_resp_send_chunk(Req, Line, Len);
+
+	Len=  Format_String(Line, "<tr><td>msg send</td><td align=\"right\">");
+	Len+= Format_UnsDec(Line+Len, MAV_Seq, 1, 0);        // print
+	Len+= Format_String(Line + Len, "</td></tr>\n");
+	httpd_resp_send_chunk(Req, Line, Len);
+
+	Len = Format_String(Line, "<tr><td>time</td><td align=\"right\">");
+	Len+= Format_UnsDec(Line+Len, MAV_TimeOfs_ms, 1, 3);        // print
+	Len+= Format_String(Line + Len, " s</td></tr>\n");
+	httpd_resp_send_chunk(Req, Line, Len);
+
+	Len = Format_String(Line, "<tr><td>Text</td><td align=\"right\">");
+	Len+= Format_String(Line+Len, MAVLINK_last_text.text);        // print
+	Len+= Format_String(Line + Len, "</td></tr>\n");
+	httpd_resp_send_chunk(Req, Line, Len);
+	httpd_resp_sendstr_chunk(Req, "</table>\n"); // end of mavlonk table
+#endif
 }
 
 // -------------------------------------------------------------------------------------------------------------

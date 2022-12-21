@@ -509,13 +509,9 @@ static void ProcessRxPacket(OGN_RxPacket<OGN_Packet> *RxPacket, uint8_t RxPacket
 #ifdef WITH_MAVLINK
     mavlink_adsb_vehicle_t MAV_RxReport;
     mavlink_message_t msg_tx;
-    uint8_t buf[MAVLINK_MAX_PACKET_LEN];
     RxPacket->Packet.Encode(&MAV_RxReport);
-    //mavlink_msg_adsb_vehicle_send_struct(0, &MAV_RxReport);
-    uint16_t len = mavlink_msg_adsb_vehicle_encode_chan(MAV_SysID, MAV_COMP_ID_ADSB, 0, &msg_tx, &MAV_RxReport);
-    len = mavlink_msg_to_send_buffer(buf, &msg_tx);
-    GPS_UART_Write(buf, len);
-    MAV_Seq++; // actually here the number of rx packages
+    mavlink_msg_adsb_vehicle_encode_chan(MAV_SysID, MAV_COMP_ID_ADSB, 0, &msg_tx, &MAV_RxReport);
+    MAV_send(&msg_tx);
 
     //MAV_RxMsg::Send(sizeof(MAV_RxReport), MAV_Seq++, MAV_SysID, MAV_COMP_ID_ADSB, MAV_ID_ADSB_VEHICLE, (const uint8_t *)&MAV_RxReport, GPS_UART_Write);
     // xSemaphoreTake(CONS_Mutex, portMAX_DELAY);

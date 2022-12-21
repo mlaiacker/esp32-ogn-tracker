@@ -830,13 +830,12 @@ void GPS_UART_Flush(int MaxWait) { uart_wait_tx_done(GPS_UART, MaxWait); }
 void GPS_UART_SetBaudrate(int BaudRate) { uart_set_baudrate(GPS_UART, BaudRate); }
 #endif
 
-#ifdef WITH_GPS_ENABLE
-void GPS_DISABLE(void)
-{
-  gpio_set_level(PIN_GPS_ENA, 0);
-}
-void GPS_ENABLE(void) { gpio_set_level(PIN_GPS_ENA, 1); }
+#ifndef GPS_ON_LEVEL
+#define GPS_ON_LEVEL	1
 #endif
+
+#define GPS_ENABLE 	 gpio_set_level(PIN_GPS_ENA, GPS_ON_LEVEL)
+#define GPS_DISABLE  gpio_set_level(PIN_GPS_ENA, !GPS_ON_LEVEL)
 
 #ifdef PIN_GPS_PPS
 bool GPS_PPS_isOn(void)
@@ -1859,6 +1858,17 @@ static int ADC_Init(void)
   return 0;
 }
 
+int8_t BattCapacity(uint16_t mVolt) // deduce battery capacity from its voltage
+{
+  if (mVolt >= 4100)
+    return 100; // if 4.1V or more then full
+  if (mVolt <= 1000)
+    return -1; // if below 1.0V then no-battery
+  if (mVolt <= 3600)
+    return 0; // if below 3.6V then empty
+  return (mVolt - 3600 + 2) / 5;
+} // otherwise a linear function from 3.6V to 4.1V
+
 #ifdef WITH_AXP
 uint16_t BatterySense(int Samples)
 {
@@ -1944,9 +1954,9 @@ void IO_Configuration(void)
   // to enable battery voltage sensing
   gpio_set_direction(GPIO_NUM_37, GPIO_MODE_OUTPUT);
   // to enable display when on battery power pins 3 and 4 with 3v3
-  gpio_set_direction(GPIO_NUM_36, GPIO_MODE_OUTPUT);
+  //gpio_set_direction(GPIO_NUM_36, GPIO_MODE_OUTPUT);
   // low will enable the p-ch mosfet
-  gpio_set_level(GPIO_NUM_36, 0);
+  //gpio_set_level(GPIO_NUM_36, 0);
 #endif
 
 #ifdef PIN_GPS_PPS
@@ -1958,12 +1968,7 @@ void IO_Configuration(void)
 #endif
 #ifdef PIN_GPS_ENA
   gpio_set_direction(PIN_GPS_ENA, GPIO_MODE_OUTPUT);
-  GPS_ENABLE();
-// #ifdef WITH_GPS_MTK
-//   gpio_set_level(PIN_GPS_ENA, 0);                       //
-// #else
-//   gpio_set_level(PIN_GPS_ENA, 1);                       //
-// #endif
+  GPS_ENABLE;
 #endif
 
 #ifdef GPS_UART

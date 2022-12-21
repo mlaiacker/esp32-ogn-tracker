@@ -617,17 +617,6 @@ void OLED_DrawBaro(u8g2_t *OLED, GPS_Position *GPS)
   u8g2_DrawStr(OLED, 0, 48, disp_str);
 }
 
-static int8_t BattCapacity(uint16_t mVolt) // deduce battery capacity from its voltage
-{
-  if (mVolt >= 4100)
-    return 100; // if 4.1V or more then full
-  if (mVolt <= 1000)
-    return -1; // if below 1.0V then no-battery
-  if (mVolt <= 3600)
-    return 0; // if below 3.6V then empty
-  return (mVolt - 3600 + 2) / 5;
-} // otherwise a linear function from 3.6V to 4.1V
-
 void OLED_DrawBattery(u8g2_t *OLED, GPS_Position *GPS) // draw battery status page
 {
 	int8_t Cap = -1;
