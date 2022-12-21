@@ -12,21 +12,10 @@
 #include "ctrl.h"
 #include "proc.h"
 
-#ifdef WITH_STRATUX
 #include "stratux.h"
-#endif
-
-#ifdef WITH_WIFI
 #include "wifi.h"
-#endif
-
-#ifdef WITH_AP
-#include "wifi.h"
-#endif
-
-#ifdef WITH_BT_SPP
 #include "bt.h"
-#endif
+#include "ap.h"
 
 #include "gps.h"
 #include "format.h"
@@ -762,39 +751,33 @@ void OLED_DrawStatusBar(u8g2_t *OLED, GPS_Position *GPS) // status bar on top of
     }
     Odd = !Odd;
   }
-#ifdef WITH_SD
   if (SD_isMounted())
   {
     u8g2_SetFont(OLED, u8g2_font_twelvedings_t_all);
     u8g2_DrawGlyph(OLED, 24, 12, 0x73);
   }
-#endif
-#ifdef WITH_BT_SPP
   if (BT_SPP_isConnected())
   {
     u8g2_SetFont(OLED, u8g2_font_open_iconic_all_1x_t);
     u8g2_DrawGlyph(OLED, 36, 11, 0x5E);
   } // 0x4A
-#endif
-// #ifdef WITH_STRATUX
-//   if(Stratux_isConnected())
-//   { u8g2_SetFont(OLED, u8g2_font_open_iconic_all_1x_t);
-//     u8g2_DrawGlyph(OLED, 43, 11, 0x50); }
-// #endif
-#ifdef WITH_WIFI
+
+   if(Stratux_isConnected())
+   { u8g2_SetFont(OLED, u8g2_font_open_iconic_all_1x_t);
+     u8g2_DrawGlyph(OLED, 43, 11, 0x50);
+   }
   if (WIFI_isConnected())
   {
     u8g2_SetFont(OLED, u8g2_font_open_iconic_all_1x_t);
     u8g2_DrawGlyph(OLED, 43, 11, 0x119);
   } // 0x50
-#endif
-#ifdef WITH_AP
-  if (WIFI_isAP())
+  // blink if connected
+  if (WIFI_isAP() && (Odd || !AP_isClientConnected()))
   {
     u8g2_SetFont(OLED, u8g2_font_open_iconic_all_1x_t);
     u8g2_DrawGlyph(OLED, 43, 11, 0xF8);
   } // 0x50
-#endif
+
   // u8g2_SetFont(OLED, u8g2_font_5x7_tr);
   // u8g2_SetFont(OLED, u8g2_font_5x8_tr);
   static uint8_t gps_sat_display = 0;

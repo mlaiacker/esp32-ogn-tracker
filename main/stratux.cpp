@@ -163,5 +163,15 @@ void vTaskSTX(void* pvParameters)
   }
 
 }
+#else
+// implemet these empty functions so we sve a lot of ifdefs in other places
+bool Stratux_isConnected(void){
+	return false;
+}
+int Stratux_Read (uint8_t &Byte){
+	return 0;
+}
+void Stratux_Write (char Byte){
+}
 
 #endif // WITH_STRATUX

@@ -37,7 +37,7 @@ extern FIFO<uint8_t, 8> KeyBuffer;
 
 // ============================================================================================================
 
-extern uint8_t PowerMode;                 // 0=sleep/minimal power, 1=comprimize, 2=full power
+extern volatile uint8_t PowerMode;                 // 0=sleep/minimal power, 1=comprimize, 2=full power
 
 // ============================================================================================================
 
@@ -118,6 +118,8 @@ void      SD_Unmount();
 bool      SD_isMounted();
 int       SD_getSectors(void);
 int       SD_getSectorSize(void);
+#else
+#define      SD_isMounted()	false
 #endif
 
 #ifdef WITH_BEEPER

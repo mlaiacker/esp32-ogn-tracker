@@ -28,13 +28,9 @@
 #include "stratux.h"
 #endif
 
-#if defined(WITH_BT_SPP) || defined(WITH_BLE_SPP)
 #include "bt.h"
-#endif
 
-#ifdef WITH_AP
 #include "ap.h"
-#endif
 
 #ifdef WITH_APRS
 #include "aprs.h" // APRS task
@@ -133,7 +129,6 @@ extern "C" void app_main(void)
 #endif
 #endif
 
-#if defined(WITH_BT_SPP) || defined(WITH_BLE_SPP)
     {
         int32_t Err = BT_SPP_Init(); // start BT SPP
                                      // #ifdef DEBUG_PRINT
@@ -144,7 +139,6 @@ extern "C" void app_main(void)
         xSemaphoreGive(CONS_Mutex);
         // #endif
     }
-#endif
 
 #ifdef WITH_SDLOG
     Log_Mutex = xSemaphoreCreateMutex();

@@ -219,9 +219,7 @@ int BT_SPP_Init(void)
 
   return Err; }
 
-#endif // WITH_BT_SPP
-
-#ifdef WITH_BLE_SPP                            // BLE BT
+#elif defined(WITH_BLE_SPP)                            // BLE BT
 
 #include "esp_bt.h"
 #include "esp_bt_defs.h"
@@ -529,6 +527,22 @@ int BT_SPP_Init(void)
   esp_ble_gap_set_security_param(ESP_BLE_SM_IOCAP_MODE, &IOcap, sizeof(IOcap));
 
   return Err; }
+#else
+// empty functions to save ifdefs elswere
+int  BT_SPP_Init(void){
+	return 0;
+}
+
+bool BT_SPP_isConnected(void){
+	return false;
+}
+
+int BT_SPP_Read (uint8_t &Byte){
+	return 0;
+}
+
+void BT_SPP_Write (char Byte){
+}
 
 #endif // WITH_BLE_SPP
 

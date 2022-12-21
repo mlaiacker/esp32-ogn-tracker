@@ -363,7 +363,6 @@ void SleepIn(void)
   xSemaphoreGive(CONS_Mutex);
   MAV_text("Sleep-in");
 
-  GPS_DISABLE;
 #ifdef WITH_GPS_UBX
   UBX_RXM_PMREQ PMREQ;
   PMREQ.duration = 0;
@@ -388,6 +387,7 @@ void SleepIn(void)
   LCD_SetBacklightLevel(0);
 #endif
 
+  GPS_DISABLE;
   PowerMode = 0;
   for (int Idx = 0; Idx < 1500; Idx++)
   { // LED_TimerCheck(1);
@@ -397,8 +397,8 @@ void SleepIn(void)
 
 void SleepOut(void)
 {
-  GPS_DISABLE;
   PowerMode = 2;
+  vTaskDelay(1);
 #if defined(WITH_ST7789) || defined(WITH_ILI9341)
   LCD_SetBacklightLevel(6);
 #endif
@@ -409,6 +409,7 @@ void SleepOut(void)
   OLED_DisplayON(1);
 #endif
 
+  vTaskDelay(1);
   GPS_ENABLE;
 #ifdef WITH_GPS_UBX
   Format_String(GPS_UART_Write, "\n");
@@ -430,7 +431,7 @@ static TickType_t LowBatt_Time = 0;
 static void LowBatt_Watch(void) // check battery voltage
 {
   uint16_t BattVolt = BatteryVoltage >> 8; // [mV]
-  if (BattVolt >= 3250 || BattVolt <= 700)
+  if (BattVolt >= 3450 || BattVolt <= 700)
   {
     LowBatt_Time = 0;
     return;
@@ -452,7 +453,12 @@ static void LowBatt_Watch(void) // check battery voltage
   {
     SleepIn();  //
     vTaskDelay(100);
-    esp_deep_sleep_start(); // will not return
+    if(BattVolt >= 3150){
+    	esp_deep_sleep(10*60e6); // will not return, sleep time in us
+    } else {
+    	// never wake up again
+    	esp_deep_sleep_start(); // will not return
+    }
     Sleep();    // enter sleep
     SleepOut(); // wake up
     LowBatt_Time = 0;

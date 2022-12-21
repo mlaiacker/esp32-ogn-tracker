@@ -19,9 +19,7 @@
 #include "esp_system.h"
 #include "esp_freertos_hooks.h"
 
-#if defined(WITH_BT_SPP) || defined(WITH_BLE_SPP)
 #include "bt.h"
-#endif
 
 #ifdef WITH_LORAWAN
 #include "lorawan.h"
@@ -47,12 +45,8 @@
 #include "sdmmc_cmd.h"
 #endif
 
-#ifdef WITH_AP
 #include "ap.h"
-#endif
-#ifdef WITH_STRATUX
 #include "stratux.h"
-#endif
 
 #ifdef WITH_BEEPER
 #include "driver/ledc.h"
@@ -93,7 +87,7 @@ extern "C"
 #include "bq24295.h"
 #endif
 
-uint8_t PowerMode = 2; // 0=sleep/minimal power, 1=comprimize, 2=full power
+volatile uint8_t PowerMode = 2; // 0=sleep/minimal power, 1=comprimize, 2=full power
 
 // ======================================================================================================
 /*
@@ -770,9 +764,7 @@ void CONS_UART_Write(char Byte)
 #if defined(WITH_BT_SPP) || defined(WITH_BLE_SPP)
   BT_SPP_Write(Byte);
 #endif
-#ifdef WITH_AP
   AP_Write(Byte);
-#endif
 #ifdef WITH_STRATUX
   Stratux_Write(Byte);
 #endif
@@ -791,13 +783,12 @@ int CONS_UART_Read(uint8_t &Byte)
     return 1;
   }
 #endif
-#ifdef WITH_STRATUX
+
   Ret = Stratux_Read(Byte);
   if (Ret > 0)
   {
     return 1;
   }
-#endif
   return Ret;
 }
 // int  CONS_UART_Free  (void)           { return UART2_Free(); }
@@ -1669,7 +1660,6 @@ void LED_TimerCheck(uint8_t Ticks)
 #endif
 }
 
-// bool Button_SleepRequest = 0;
 
 #ifdef WITH_SLEEP
 static bool SleepPending = 0;
@@ -1678,15 +1668,14 @@ extern void SleepOut(void);
 
 void Sleep(void)
 {
-  Format_String(CONS_UART_Write, "Sleep...\n");
 #ifdef WITH_LONGPRESS_SLEEP
-  gpio_wakeup_enable(PIN_BUTTON, GPIO_INTR_LOW_LEVEL); // _NEGEDGE ?
+  //gpio_wakeup_enable(PIN_BUTTON, GPIO_INTR_LOW_LEVEL); // _NEGEDGE ?
 #endif
-  esp_sleep_enable_gpio_wakeup();
+  //esp_sleep_enable_gpio_wakeup();
   vTaskDelay(100);
-  esp_light_sleep_start();
-  gpio_wakeup_enable(PIN_BUTTON, GPIO_INTR_DISABLE);
-  Format_String(CONS_UART_Write, "Wake up !\n");
+  //esp_light_sleep_start();
+  esp_deep_sleep_start(); // will not return
+  //gpio_wakeup_enable(PIN_BUTTON, GPIO_INTR_DISABLE);
 }
 
 #endif
@@ -1698,24 +1687,6 @@ const int8_t Button_FilterTime = 20; // [ms] anti-glitch filter width
 const int8_t Button_FilterThres = Button_FilterTime / 2;
 static int8_t Button_Filter = (-Button_FilterTime);
 
-// void Sleep(void)
-// {
-// #ifdef PIN_PERIPH_RST
-//   gpio_set_level(PIN_PERIPH_RST, 0);
-// #endif
-// #ifdef PIN_GPS_ENA
-//   gpio_set_level(PIN_GPS_ENA, 0);
-// #endif
-//   esp_light_sleep_start();
-//   Button_SleepRequest = 0;
-//   Button_PressTime=0;
-//  #ifdef PIN_PERIPH_RST
-//    gpio_set_level(PIN_PERIPH_RST, 0);
-//
-//    gpio_set_level(PIN_PERIPH_RST, 1);
-//  #endif
-// }
-
 static uint32_t Button_keptPressed(uint8_t Ticks)
 {
   uint32_t ReleaseTime = 0;
@@ -1725,13 +1696,13 @@ static uint32_t Button_keptPressed(uint8_t Ticks)
   if (!SleepPending && Button_PressTime >= 4000)
   {
     SleepIn();
+    vTaskDelay(100);
+    esp_deep_sleep_start();
     SleepPending = 1;
   }
 #endif
   if (Button_ReleaseTime) // if release-time counter non-zero
-  {                       // Format_String(CONS_UART_Write, "Button pressed: released for ");
-    // Format_UnsDec(CONS_UART_Write, Button_ReleaseTime, 4, 3);
-    // Format_String(CONS_UART_Write, "sec\n");
+  {
     ReleaseTime = Button_ReleaseTime; // then return the release time
     Button_ReleaseTime = 0;
   }
@@ -1743,13 +1714,7 @@ static uint32_t Button_keptReleased(uint8_t Ticks)
   uint32_t PressTime = 0;
   Button_ReleaseTime += Ticks; // count release time
   if (Button_PressTime)        // if pressed-time non-zero
-  {                            // Format_String(CONS_UART_Write, "Button released: pressed for ");
-    // Format_UnsDec(CONS_UART_Write, Button_PressTime, 4, 3);
-    // Format_String(CONS_UART_Write, "sec\n");
-    // if(Button_SleepRequest)
-    // { Format_String(CONS_UART_Write, "Sleep in 2 sec\n");
-    //   vTaskDelay(2000);
-    //   Sleep(); }
+  {
     PressTime = Button_PressTime; // return the pressed-time
 #ifdef WITH_SLEEP
     if (SleepPending)
@@ -1768,7 +1733,6 @@ int32_t Button_TimerCheck(uint8_t Ticks)
 {
   int32_t PressReleaseTime = 0;
 #ifdef PIN_BUTTON
-  // CONS_UART_Write(Button_isPressed()?'^':'_');
   if (Button_isPressed())
   {
     Button_Filter += Ticks;
