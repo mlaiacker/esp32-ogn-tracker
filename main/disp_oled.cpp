@@ -41,7 +41,7 @@ int OLED_DisplayStatus(uint32_t Time, uint8_t LineIdx)
   return 0;
 }
 
-int OLED_DisplayPosition(GPS_Position *GPS = 0, uint8_t LineIdx = 2)
+int OLED_DisplayPosition(GPS_Position *GPS, uint8_t LineIdx)
 {
   if (GPS && GPS->isValid())
   {

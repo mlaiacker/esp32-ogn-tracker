@@ -431,7 +431,7 @@ static TickType_t LowBatt_Time = 0;
 static void LowBatt_Watch(void) // check battery voltage
 {
   uint16_t BattVolt = BatteryVoltage >> 8; // [mV]
-  if (BattVolt >= 3450 || BattVolt <= 700)
+  if (BattVolt >= 3550 || BattVolt <= 700)
   {
     LowBatt_Time = 0;
     return;
@@ -449,7 +449,7 @@ static void LowBatt_Watch(void) // check battery voltage
     return;
   }
   Now -= LowBatt_Time;
-  if (Now >= 30000) // if low battery and voltage dropping persists for 10sec
+  if (Now >= 30000) // if low battery and voltage dropping persists for x ms
   {
     SleepIn();  //
     vTaskDelay(100);

@@ -1,9 +1,9 @@
+#pragma once
 
 #ifdef WITH_OLED
 
 int OLED_DisplayStatus  (uint32_t Time, uint8_t LineIdx=0);
-int OLED_DisplayPosition(GPS_Position *GPS=0, uint8_t LineIdx=2);
-
+int OLED_DisplayPosition(GPS_Position *GPS=0, uint8_t LineIdx = 2);
 #endif
 
 #ifdef WITH_U8G2_OLED
