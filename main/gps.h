@@ -1,6 +1,5 @@
 #pragma once
 #include "hal.h"
-
 #include "timesync.h"
 #include "ogn.h"
 #include "lowpass2.h"
@@ -40,11 +39,10 @@ typedef union
              bool BaudConfig:1; // baudrate is configured
              bool ModeConfig:1; // navigation mode is configured
              bool RateConfig:1; // navigation rate is configured
-             bool           :1; //
            } ;
-         } Status;                          //
+         } GPS_Status_t;                          //
 
-extern Status GPS_Status;                   // GPS status bits
+extern GPS_Status_t GPS_Status;                   // GPS status bits
 
 uint32_t GPS_getBaudRate(void);             // [bps]
 
@@ -60,8 +58,9 @@ extern mavlink_statustext_t  MAVLINK_last_text; // to display on mavlink tab on 
 void MAV_text(const char *fmt, ...); // send a mavlink text message
 void MAV_send(mavlink_message_t *mav_msg_tx);
 extern  uint8_t  MAV_SysID;             // System-ID for MAVlink messages we send out
-extern uint8_t  MAV_Seq;                   // sequence number for MAVlink message sent out
+extern int  MAV_port;   
 extern int64_t MAV_TimeOfs_ms; // [ms] diff. between UTC time and boot time reported in MAV messages
+void GPS_MAV(const mavlink_message_t *msg);
 #else
 #define MAV_text(fmt, ...) // not implemented
 #endif
@@ -80,4 +79,3 @@ extern FlightMonitor Flight;                // detect/monitor takeoff/flight/lan
   extern "C"
 #endif
 void vTaskGPS(void* pvParameters);
-

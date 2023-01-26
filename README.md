@@ -72,6 +72,8 @@ To get the OGN-Tracker source code from this github repository:
 cd
 git clone https://github.com/mlaiacker/esp32-ogn-tracker.git --recursive
 cd esp32-ogn-tracker
+idf.py set-target esp32 # only for V2
+idf.py set-target esp32s3 # only for V3
 idf.py build
 ```
 

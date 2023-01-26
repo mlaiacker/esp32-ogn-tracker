@@ -70,6 +70,7 @@ extern LoRaWANnode WANdev;
 void CONS_UART_Init       (void);
 int  CONS_UART_Read       (uint8_t &Byte); // non-blocking
 void CONS_UART_Write      (char     Byte); // blocking
+void CONS_UART_Write      (void *buf, size_t len);
 int  CONS_UART_Free       (void);          // how many bytes can be written to the transmit buffer
 int  CONS_UART_Full       (void);          // how many bytes already in the transmit buffer
 void CONS_UART_SetBaudrate(int BaudRate);

@@ -1005,8 +1005,8 @@ static void Table_Batt(httpd_req_t *Req) {
 	Len+= Format_String(Line + Len, "</td></tr>\n");
 	httpd_resp_send_chunk(Req, Line, Len);
 
-	Len=  Format_String(Line, "<tr><td>msg send</td><td align=\"right\">");
-	Len+= Format_UnsDec(Line+Len, MAV_Seq, 1, 0);        // print
+	Len=  Format_String(Line, "<tr><td>port</td><td align=\"right\">");
+	Len+= Format_UnsDec(Line+Len, MAV_port, 1, 0);        // print
 	Len+= Format_String(Line + Len, "</td></tr>\n");
 	httpd_resp_send_chunk(Req, Line, Len);
 

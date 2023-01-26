@@ -27,6 +27,17 @@
 
 #include "igc-key.h"
 
+#ifdef WITH_MAVLINK
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include "mavlink/mavlink_helpers.h"
+#include "mavlink/common/mavlink.h"
+// for message RX
+mavlink_status_t cons_mav_status_rx;
+mavlink_message_t cons_mav_msg_rx;
+#endif
 // #include "ymodem.h"
 
 // #define DEBUG_PRINT
@@ -474,6 +485,22 @@ static void ProcessInput(void)
     int Err = CONS_UART_Read(Byte);
     if (Err <= 0)
       break; // get byte from console, if none: exit the loop
+#ifdef WITH_MAVLINK
+      // also try to parse mavlink from CONS
+      if (mavlink_parse_char(1, Byte, &cons_mav_msg_rx, &cons_mav_status_rx))
+      {
+        GPS_MAV(&cons_mav_msg_rx);
+        if( MAV_port != 0){        
+          MAV_port = 0;
+          MAV_text("OGN tracker connected");
+        }
+        break;
+      } else if (MAV_port == 0){
+        // we detect mavlink once so form now on ignore the other stuff
+        break;
+      }
+#endif
+
 #ifndef WITH_GPS_UBX_PASS
     if (Byte == 0x03)
       ProcessCtrlC(); // if Ctrl-C received: print parameters
@@ -485,15 +512,15 @@ static void ProcessInput(void)
       ProcessCtrlL(); // if Ctrl-L received: list log files
     if (Byte == 0x16)
       ProcessCtrlV(); // if Ctrl-V received: suspend (verbose) printout
-    if (Byte == 0x18)
+/*    if (Byte == 0x18) // if Ctrl-X received then restart
     {
 #ifdef WITH_SPIFFS
       FlashLog_SaveReq = 1;
 #endif
       vTaskDelay(1000);
       esp_restart();
-    } // if Ctrl-X received then restart
-      // if(Byte==0x19) Shutdown();                                    // if Ctrl-Y receiver: shutdown
+    }*/  
+    // if(Byte==0x19) Shutdown();                                    // if Ctrl-Y receiver: shutdown
 #endif
     NMEA.ProcessByte(Byte); // pass the byte through the NMEA processor
     if (NMEA.isComplete())  // if complete NMEA:
@@ -513,6 +540,7 @@ static void ProcessInput(void)
       UBX.Clear();
     }
 #endif
+
   }
 }
 

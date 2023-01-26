@@ -20,8 +20,8 @@
 #define WIFI_ADDRESS_MK4	0
 
 // #define WITH_HELTEC                        // HELTEC module: PCB LED on GPI025
-#define WITH_HELTEC_V2                     // HELTEC module v2
-//#define WITH_HELTEC_V3                     // HELTEC module v3
+//#define WITH_HELTEC_V2                     // HELTEC module v2
+#define WITH_HELTEC_V3                     // HELTEC module v3
 // #define WITH_TTGO                          // TTGO module: PCB LED on GPIO2, GPIO25 free to use as DAC2 output
 // #define WITH_TBEAM                          // T-Beam module
 //#define WITH_TBEAM_V10                      // T-Beam module

@@ -47,7 +47,7 @@ mavlink_status_t mav_status_rx;
 mavlink_message_t mav_msg_rx;
 int64_t MAV_TimeOfs_ms = 0; // [ms] diff. between UTC time and boot time reported in MAV messages
 uint8_t  MAV_SysID = 255;             // System-ID for MAVlink messages we send out
-uint8_t  MAV_Seq = 0;                   // sequence number for MAVlink message sent out
+int  MAV_port = -1; // serial port we have mavlink data
 mavlink_statustext_t MAVLINK_last_text;
 
 #endif
@@ -81,7 +81,7 @@ uint8_t GPS_SatCnt = 0;
 
 uint8_t GPS_Satellites = 0; // number of satellites in the solution, zero when no lock
 
-Status GPS_Status; // GPS status flags
+GPS_Status_t GPS_Status; // GPS status flags
 
 static union
 {
@@ -1138,14 +1138,13 @@ static uint64_t MAV_getUnixTime(const mavlink_message_t *msg) // [ms] extract ti
   return UnixTime_ms;
 }
 
-static void GPS_MAV(const mavlink_message_t *msg) // when GPS gets an MAV packet
+void GPS_MAV(const mavlink_message_t *msg) // when GPS gets an MAV packet
 {
   TickType_t TickCount = xTaskGetTickCount();
-  GPS_Status.MAV = 1;
   LED_PCB_Flash(10);
-  GPS_Status.BaudConfig = (GPS_getBaudRate() == GPS_TargetBaudRate);
   uint8_t MsgID = msg->msgid;
   uint64_t UnixTime_ms = MAV_getUnixTime(msg); // get the time from the MAVlink message
+  GPS_Status.MAV = 1;
 
   if ((MsgID != MAVLINK_MSG_ID_SYSTEM_TIME) && UnixTime_ms)
   {
@@ -1311,16 +1310,18 @@ void MAV_text(const char *fmt, ...)
   vsnprintf((char *)mav_text.text, sizeof(mav_text.text), fmt, ap);
   va_end(ap);
 
-  uint16_t len = mavlink_msg_statustext_encode_chan(MAV_SysID, MAV_COMP_ID_ADSB, 0, &mav_text_msg_tx, &mav_text);
+  mavlink_msg_statustext_encode_chan(MAV_SysID, MAV_COMP_ID_ADSB, 0, &mav_text_msg_tx, &mav_text);
   MAV_send(&mav_text_msg_tx);
 }
 // send a mavlink message out
 void MAV_send(mavlink_message_t *mav_msg_tx){
 	uint16_t len = mavlink_msg_to_send_buffer(mav_buf, mav_msg_tx);
-	GPS_UART_Write(mav_buf, len);
-	if(len>0) {
-		  MAV_Seq++; // actually here the number of rx packages
-	}
+  if(MAV_port==1){
+	  GPS_UART_Write(mav_buf, len);  
+  }
+  if(MAV_port==0){
+	  CONS_UART_Write(mav_buf, len);  
+  }
 }
 #endif // MAVLINK
 
@@ -1416,16 +1417,13 @@ void  vTaskGPS(void *pvParameters)
 #endif
     LineIdle += Delta;    // count idle time
     NoValidData += Delta; // count time without any valid NMEA nor UBX packet
-    // uint16_t Bytes=0;
-    // uint16_t MaxBytesPerTick = 1+(GPS_getBaudRate()+2500)/5000;
     for (;;) // loop over bytes in the GPS UART buffer
     {
       uint8_t Byte;
       int Err = GPS_UART_Read(Byte);
       if (Err <= 0)
         break; // get Byte from serial port, if no bytes then break this loop
-      // CONS_UART_Write(Byte);                                              // copy the GPS output to console (for debug only)
-      // Bytes++;
+
       LineIdle = 0;           // if there was a byte: restart idle counting
       NMEA.ProcessByte(Byte); // process through the NMEA interpreter
 #ifdef WITH_GPS_UBX
@@ -1435,11 +1433,16 @@ void  vTaskGPS(void *pvParameters)
       if (mavlink_parse_char(0, Byte, &mav_msg_rx, &mav_status_rx))
       {
         GPS_MAV(&mav_msg_rx);
+        if( MAV_port != 1){        
+          MAV_port = 1;
+          MAV_text("OGN tracker connected");
+        }
+        GPS_Status.BaudConfig = (GPS_getBaudRate() == GPS_TargetBaudRate);
         NoValidData = 0;
         break;
       }
-
 #endif
+
       if (NMEA.isComplete()) // NMEA completely received ?
       {
         if (NMEA.isChecked())
@@ -1509,14 +1512,19 @@ void  vTaskGPS(void *pvParameters)
         GPS_UART_Write('\n');
 #endif
       }
-      xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
-      Format_String(CONS_UART_Write, "TaskGPS: ");
-      Format_UnsDec(CONS_UART_Write, NewBaudRate);
-      Format_String(CONS_UART_Write, "bps\n");
-      xSemaphoreGive(CONS_Mutex);
+      //xSemaphoreTake(CONS_Mutex, portMAX_DELAY);
+      //Format_String(CONS_UART_Write, "TaskGPS: ");
+      //Format_UnsDec(CONS_UART_Write, NewBaudRate);
+      //Format_String(CONS_UART_Write, "bps\n");
+      //xSemaphoreGive(CONS_Mutex);
       GPS_UART_SetBaudrate(NewBaudRate);
-      MAV_text("TaskGPS: %dbps",NewBaudRate);
+      //MAV_text("TaskGPS: %dbps",NewBaudRate);
       NoValidData = 0;
     }
+#ifdef WITH_MAVLINK
+      if(MAV_port==0){
+        GPS_Status.MAV = 1; // set flag to indicate we have mavlink but on other port
+      }
+#endif      
   }
 }

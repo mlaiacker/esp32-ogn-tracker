@@ -731,17 +731,19 @@ SemaphoreHandle_t CONS_Mutex;
 
 void CONS_UART_Init(void)
 {
-  setvbuf(stdin, NULL, _IONBF, 0); // Disable buffering on stdin
-  esp_vfs_dev_uart_set_rx_line_endings(ESP_LINE_ENDINGS_CR);
-  esp_vfs_dev_uart_set_tx_line_endings(ESP_LINE_ENDINGS_CRLF);
+  //setvbuf(stdin, NULL, _IONBF, 0); // Disable buffering on stdin
+  //esp_vfs_dev_uart_set_rx_line_endings(ESP_LINE_ENDINGS_CR);
+  //esp_vfs_dev_uart_set_tx_line_endings(ESP_LINE_ENDINGS_CRLF);
   const uart_config_t UARTconfig =
       {.baud_rate = DEFAULT_CONbaud,
        .data_bits = UART_DATA_8_BITS,
        .parity = UART_PARITY_DISABLE,
        .stop_bits = UART_STOP_BITS_1,
-       .use_ref_tick = true};
+       .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+       .rx_flow_ctrl_thresh = 0,
+       .use_ref_tick = 0};
   uart_param_config(CONS_UART, &UARTconfig);
-  uart_driver_install(CONS_UART, 1024, 0, 0, NULL, 0);
+  uart_driver_install(CONS_UART, 1024, 256, 0, NULL, 0);
   esp_vfs_dev_uart_use_driver(CONS_UART);
 }
 
@@ -756,6 +758,8 @@ bool CONS_InpReady(void)
 */
 // int  CONS_UART_Read       (uint8_t &Byte) { return uart_read_bytes  (CONS_UART, &Byte, 1, 0); }  // non-blocking
 // void CONS_UART_Write      (char     Byte) {        uart_write_bytes (CONS_UART, &Byte, 1);    }  // blocking ?
+
+void CONS_UART_Write(void *buf, size_t len) { uart_write_bytes(CONS_UART, buf, len); }
 
 void CONS_UART_Write(char Byte)
 {
